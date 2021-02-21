@@ -2,6 +2,9 @@ import numpy as np
 
 
 class Numeric1DWaveSimulator:
+    """
+    todo: Add class doc string here.
+    """
 
     def __init__(self, _delta_x, _delta_t, _speed_of_sound, _number_of_grid_points, _number_of_time_steps):
         # Distance between grid points.
