@@ -219,3 +219,9 @@ class Numeric1DWaveSimulator:
         temp[dim - 1, dim - 1] = 0
         temp[dim - 1, dim - 2] = 0
         return temp
+
+    def update(self):
+        """
+
+        :return:
+        """
