@@ -234,7 +234,7 @@ class Numeric1DWaveSimulator:
         temp[dim - 1, dim - 2] = 0
         return temp
 
-    def update(self):
+    def update(self) -> None:
         """
         Updates the amplitudes to the next time step and sets the current and former state accordingly. The counter for
         the time steps is then increased by one.
@@ -247,10 +247,12 @@ class Numeric1DWaveSimulator:
                                                    )
         self.time_step += 1
 
-    def run(self):
+    def run(self) -> np.ndarray:
         """
-
-        :return:
+        Checks the stability of the scheme and then runs the simulation using the according formula. This is done
+        updating the simulation until the number of time steps is reached at which point the method will return the
+        result of the simulation.
+        :return: The result of the simulation. Each row in the matrix corresponds to a time step.
         """
         self.stability_test()
         while self.time_step <= self.number_of_time_steps:
@@ -264,11 +266,11 @@ if __name__ == "__main__":
     # Initial velocities of the amplitudes.
     v0 = np.array([0, 0, 1, -1, 1, 0, 0, 0, 0, 0])
     # Grid spacing.
-    dx = 1
+    dx = .1
     # Spacing of the time steps.
-    dt = 1
+    dt = .01
     # speed of sound.
-    c = 1
+    c = 10
     # Number of grid points.
     n = 10
     # Number of time steps.
