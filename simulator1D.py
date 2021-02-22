@@ -222,7 +222,7 @@ class Numeric1DWaveSimulator:
         populated.
         :param dim: Dimension N of the NxN matrix.
         :param grid_cons: grid constant corresponding to the grid of the simulation.
-        :return: The
+        :return: The matrix used to calculate the next time step.
         """
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
@@ -243,7 +243,8 @@ class Numeric1DWaveSimulator:
         temp = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
         self.former_amplitudes = self.current_amplitudes
         self.current_amplitudes = temp
-        self.amplitudes_time_evolution = np.append(self.amplitudes_time_evolution, np.array([self.current_amplitudes]))
+        self.amplitudes_time_evolution = np.vstack([self.amplitudes_time_evolution, np.array([self.current_amplitudes])]
+                                                   )
         self.time_step += 1
 
     def run(self):
@@ -259,7 +260,7 @@ class Numeric1DWaveSimulator:
 
 if __name__ == "__main__":
     # Initial amplitudes.
-    a0 = np.array([1, -1, 1, -1, 1, -1, 1, -1, 1, -1])
+    a0 = np.array([0, -1, 1, -1, 1, -1, 1, -1, 1, 0])
     # Initial velocities of the amplitudes.
     v0 = np.array([0, 0, 1, -1, 1, 0, 0, 0, 0, 0])
     # Grid spacing.
@@ -273,5 +274,5 @@ if __name__ == "__main__":
     # Number of time steps.
     t = 10
     my_sim = Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
-    print(my_sim.time_step_matrix)
-    print(my_sim.run())
+    result = my_sim.run()
+    print(result)
