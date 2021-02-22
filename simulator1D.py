@@ -19,10 +19,15 @@ class Numeric1DWaveSimulator:
         # Initial velocities of the points.
         self._initial_velocities = _initial_velocities
         # grid constant.
-        self._grid_constant = self.delta_t * self.speed_of_sound / self.delta_x
+        self.grid_constant = self.delta_t * self.speed_of_sound / self.delta_x
+        # Defines the first position as the entered initial position.
         self.current_positions = self.initial_positions
+        # Defines the former position lso as the initial position.
+        # todo: I dont know if this right physically. Look this up.
         self.former_position = self.initial_positions
-        self.time_step_matrix =
+        # creates the time step matrix.
+        # todo: Check if this part blows up.
+        self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.grid_constant)
 
     def set_delta_x(self, new_delta_x) -> None:
         """
@@ -188,7 +193,29 @@ class Numeric1DWaveSimulator:
     get_initial_velocities = property(get_initial_velocities, set_initial_velocities)
 
     def stability_test(self):
-        if not 0 <= self._grid_constant <= 1:
-            print("The scheme may be unstable since the grid constant is "+str(self._grid_constant)+". It should be"
-                                                                                                    "between 0  and 1.")
+        """
+        Checks if the entered values of the grid spacing, time spacing and speed of sound is between 0  and 1. If this
+        is not the case a warning message will be displayed.
+        :return: None
+        """
+        if not 0 <= self.grid_constant <= 1:
+            print("The scheme may be unstable since the grid constant is " + str(self.grid_constant) + ". It should be"
+                                                                                                       "between 0  and 1.")
 
+    @staticmethod
+    def create_time_step_matrix(dim: int, grid_cons) -> np.ndarray:
+        """
+        Should calculate the matrix connecting the time steps.
+        :param dim: Dimension N of the NxN matrix.
+        :param grid_cons: grid constant corresponding to the grid of the simultion.
+        :return:
+        """
+        temp = np.zeros((dim, dim))
+        rearrange_array = np.arange(dim - 1)
+        temp[rearrange_array, rearrange_array + 1] = 1
+        temp = 2 * (1 - grid_cons) * np.identity(dim) + grid_cons * temp + grid_cons * temp.T
+        temp[0, 0] = 0
+        temp[0, 1] = 0
+        temp[dim - 1, dim - 1] = 0
+        temp[dim - 1, dim - 2] = 0
+        return temp
