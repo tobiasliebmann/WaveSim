@@ -2,11 +2,8 @@ import numpy as np
 
 
 class Numeric1DWaveSimulator:
-    """
-    todo: Add class doc string here.
-    """
-
-    def __init__(self, _delta_x, _delta_t, _speed_of_sound, _number_of_grid_points, _number_of_time_steps):
+    def __init__(self, _delta_x, _delta_t, _speed_of_sound, _number_of_grid_points, _number_of_time_steps,
+                 _initial_positions, _initial_velocities):
         # Distance between grid points.
         self._delta_x = _delta_x
         # Time steps taken in the simulation.
@@ -17,6 +14,15 @@ class Numeric1DWaveSimulator:
         self._number_of_grid_points = _number_of_grid_points
         # Number of time steps after which the simulation will terminate.
         self._number_of_time_steps = _number_of_time_steps
+        # Initial positions of the points.
+        self._initial_positions = _initial_positions
+        # Initial velocities of the points.
+        self._initial_velocities = _initial_velocities
+        # grid constant.
+        self._grid_constant = self.delta_t * self.speed_of_sound / self.delta_x
+        self.current_positions = self.initial_positions
+        self.former_position = self.initial_positions
+        self.time_step_matrix =
 
     def set_delta_x(self, new_delta_x) -> None:
         """
@@ -64,15 +70,12 @@ class Numeric1DWaveSimulator:
 
     def set_speed_of_sound(self, new_speed_of_sound) -> None:
         """
-        Setter method for the speed of sound. The new speed of sound must be of type float or int and greater than
-        zero. If this is not the case, the program will raise an according error.
+        Setter method for the speed of sound. The new speed of sound must be of type float or int.
+        If this is not the case, the program will raise an according error.
         :return: -
         """
         if isinstance(new_speed_of_sound, (int, float)):
-            if new_speed_of_sound > 0:
-                self._speed_of_sound = new_speed_of_sound
-            else:
-                raise ValueError("The speed of sound must be greater than zero.")
+            self._speed_of_sound = new_speed_of_sound
         else:
             raise TypeError("The speed of sound must be of type int or float.")
 
@@ -128,9 +131,64 @@ class Numeric1DWaveSimulator:
         """
         return self._number_of_time_steps
 
+    def set_initial_positions(self, new_initial_positions: np.ndarray) -> None:
+        """
+        The setter method for the initial positions at t = 0. The new initial positions must be a numpy array and its
+        length has to coincide with the number of grid points. The methods tests if these conditions are met and raises
+        according errors.
+        :param new_initial_positions: New initial positions of the
+        :return: None
+        """
+        if isinstance(new_initial_positions, np.ndarray):
+            if len(new_initial_positions) == self._number_of_grid_points:
+                self._initial_positions = new_initial_positions
+            else:
+                raise ValueError("The number of grid points and the length of the new initial positions must coincide.")
+        else:
+            raise TypeError("The new initial position must be a numpy array.")
+
+    def get_initial_positions(self) -> np.ndarray:
+        """
+        Getter method for the initial positions of the grid points at t = 0.
+        :return: The initial positions.
+        """
+        return self._initial_positions
+
+    def set_initial_velocities(self, new_initial_velocities: np.ndarray) -> None:
+        """
+        The setter method for the initial velocities at t = 0. The new initial velocities must be a numpy array and its
+        length has to coincide with the number of grid points. The methods tests if these conditions are met and raises
+        according errors.
+        :param new_initial_velocities:
+        :return: None
+        """
+        if isinstance(new_initial_velocities, np.ndarray):
+            if len(new_initial_velocities) == self._number_of_grid_points:
+                self._initial_velocities = new_initial_velocities
+            else:
+                raise ValueError("The number of grid points and the length of the new initial velocities must coincide."
+                                 )
+        else:
+            raise TypeError("The new initial velocities must be a numpy array.")
+
+    def get_initial_velocities(self) -> np.ndarray:
+        """
+        Getter method for the initial positions of the grid points at t = 0.
+        :return: The initial positions.
+        """
+        return self._initial_velocities
+
     # Make all the instance variable properties.
-    _delta_x = property(get_delta_x, set_delta_x)
-    _delta_t = property(get_delta_t, set_delta_t)
-    _speed_of_sound = property(get_speed_of_sound, set_speed_of_sound)
-    _number_of_grid_points = property(get_number_of_grid_points, set_number_of_grid_points)
-    _number_of_time_steps = property(get_number_of_time_steps, set_number_of_time_steps)
+    delta_x = property(get_delta_x, set_delta_x)
+    delta_t = property(get_delta_t, set_delta_t)
+    speed_of_sound = property(get_speed_of_sound, set_speed_of_sound)
+    number_of_grid_points = property(get_number_of_grid_points, set_number_of_grid_points)
+    number_of_time_steps = property(get_number_of_time_steps, set_number_of_time_steps)
+    initial_positions = property(get_initial_positions, set_initial_positions)
+    get_initial_velocities = property(get_initial_velocities, set_initial_velocities)
+
+    def stability_test(self):
+        if not 0 <= self._grid_constant <= 1:
+            print("The scheme may be unstable since the grid constant is "+str(self._grid_constant)+". It should be"
+                                                                                                    "between 0  and 1.")
+
