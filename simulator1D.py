@@ -23,7 +23,7 @@ class Numeric1DWaveSimulator:
         # Defines the first position as the entered initial position.
         self.current_positions = self.initial_positions
         # Defines the former position lso as the initial position.
-        # todo: I dont know if this right physically. Look this up.
+        # todo: I don't know if this right physically. Look this up.
         self.former_position = self.initial_positions
         # creates the time step matrix.
         # todo: Check if this part blows up.
@@ -207,7 +207,7 @@ class Numeric1DWaveSimulator:
         """
         Should calculate the matrix connecting the time steps.
         :param dim: Dimension N of the NxN matrix.
-        :param grid_cons: grid constant corresponding to the grid of the simultion.
+        :param grid_cons: grid constant corresponding to the grid of the simulation.
         :return:
         """
         temp = np.zeros((dim, dim))
