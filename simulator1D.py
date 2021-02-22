@@ -206,6 +206,8 @@ class Numeric1DWaveSimulator:
         if not 0 <= self.grid_constant <= 1:
             print("The scheme may be unstable since the grid constant is " + str(self.grid_constant) + ". It should be"
                                                                                                        "between 0  and 1.")
+        else:
+            print("Scheme is stable.")
 
     @staticmethod
     def create_time_step_matrix(dim: int, grid_cons) -> np.ndarray:
@@ -229,10 +231,11 @@ class Numeric1DWaveSimulator:
 
     def update(self):
         """
-        Updates the
+        Updates the amplitudes to the next time step and sets the current and former state accordingly. The counter for
+        the time steps is then increased by one.
         :return: None
         """
-        temp = np.matmul(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
+        temp = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
         self.former_amplitudes = self.current_amplitudes
         self.current_amplitudes = temp
         self.amplitudes_time_evolution = np.append(self.amplitudes_time_evolution, np.array([self.current_amplitudes]))
@@ -250,4 +253,20 @@ class Numeric1DWaveSimulator:
 
 
 if __name__ == "__main__":
-    print("Hello")
+    # Initial amplitudes.
+    a0 = np.array([1, -1, 1, -1, 1, -1, 1, -1, 1, -1])
+    # Initial velocities of the amplitudes.
+    v0 = np.array([0, 0, 1, -1, 1, 0, 0, 0, 0, 0])
+    # Grid spacing.
+    dx = 1
+    # Spacing of the time steps.
+    dt = 1
+    # speed of sound.
+    c = 1
+    # Number of grid points.
+    n = 10
+    # Number of time steps.
+    t = 10
+    my_sim = Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
+    print(my_sim.time_step_matrix)
+    print(my_sim.run())
