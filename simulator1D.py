@@ -268,7 +268,7 @@ if __name__ == "__main__":
     # Grid spacing.
     dx = .1
     # Spacing of the time steps.
-    dt = .01
+    dt = .005
     # speed of sound.
     c = 10
     # Number of grid points.
