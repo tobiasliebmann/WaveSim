@@ -258,7 +258,7 @@ class Numeric1DWaveSimulator:
         :return: None
         """
         if self.time_step == 0:
-            print(self.time_step_matrix)
+            # print(self.time_step_matrix)
             self.former_amplitudes = self.current_amplitudes
             # The first is given by this equation.
             self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix, self.current_amplitudes) + self.delta_t * self.initial_velocities
@@ -287,7 +287,7 @@ if __name__ == "__main__":
     # Initial amplitudes.
     a0 = np.array([0, -1, 1, -1, 1, -1, 1, -1, 1, 0])
     # Initial velocities of the amplitudes.
-    v0 = np.array([0, 0, 1, -1, 1, 0, 0, 0, 0, 0])
+    v0 = np.array([0, 0, 1, 1, 1, 0, 0, 0, 0, 0])
     # Grid spacing.
     dx = .1
     # Spacing of the time steps.
