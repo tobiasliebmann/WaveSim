@@ -1,31 +1,12 @@
-import simulator1D as sim1D
-
-import visualization as vis
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-# Initial amplitudes.
-a0 = np.array([0, -1, 1, -1, 1, -1, 1, -1, 1, 0])
-# Initial velocities of the amplitudes.
-v0 = np.array([0, 0, 1, 1, -1, 0, 0, 0, 0, 0])
-# Grid spacing.
-dx: float = 0.1
-# Spacing of the time steps.
-dt = 0.005
-# speed of sound.
-c = 10
-# Number of grid points.
-n = 10
-# Number of time steps.
-t = 11
-my_sim = sim1D.Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
-result = my_sim.run()
-print(result)
+TWOPI = 2 * np.pi
+
 fig, ax = plt.subplots()
 
-t = 
+t = np.arange(0.0, TWOPI, 0.001)
 s = np.sin(t)
 l = plt.plot(t, s)
 
