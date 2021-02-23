@@ -25,7 +25,7 @@ class Numeric1DWaveSimulator:
         # Initial velocities of the points.
         self.initial_velocities = initial_velocities
         # grid constant.
-        self.courant_number = self.delta_t * self.speed_of_sound / self.delta_x
+        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x)**2
         # Defines the first position as the entered initial position.
         self.current_amplitudes = self.initial_amplitudes
         # There are no former amplitudes at t = 0.
