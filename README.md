@@ -10,7 +10,7 @@ finite difference method
 <br>
 <br>
 <p align="center">
-<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;f''(x)\approx\frac{f(x&plus;\Delta&space;x)&space;&plus;&space;f(x-\Delta&space;x)&space;-&space;2f(x)}{\Delta&space;x^{2}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;f''(x)\approx\frac{f(x&plus;\Delta&space;x)&space;&plus;&space;f(x-\Delta&space;x)&space;-&space;2f(x)}{\Delta&space;x^{2}}" title="\large f''(x)\approx\frac{f(x+\Delta x) + f(x-\Delta x) - 2f(x)}{\Delta x^{2}}." /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;f''(x)\approx\frac{f(x&plus;\Delta&space;x)&space;&plus;&space;f(x-\Delta&space;x)&space;-&space;2f(x)}{\Delta&space;x^{2}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;f''(x)\approx\frac{f(x&plus;\Delta&space;x)&space;&plus;&space;f(x-\Delta&space;x)&space;-&space;2f(x)}{\Delta&space;x^{2}}" title="\large f''(x)\approx\frac{f(x+\Delta x) + f(x-\Delta x) - 2f(x)}{\Delta x^{2}}" /></a>
 </p>
 The above equation is a central finite difference. Using this expression 
 simplifies the wave equation to
@@ -25,7 +25,7 @@ from one time step to another
 <br>
 <br>
 <p align="center">
-<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" title="\large u_{i,j+1}=\alpha (u_{i+1,j} + u_{i-1,j}) + 2(1-\alpha)u_{i,j} - u_{i,j-1}, \, u_{i,j}=u(i\Delta x,j\Delta t)." />.</a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" title="\large u_{i,j+1}=\alpha (u_{i+1,j} + u_{i-1,j}) + 2(1-\alpha)u_{i,j} - u_{i,j-1}, \, u_{i,j}=u(i\Delta x,j\Delta t)." /></a>
 </p>
 The above equation is visualized in the image below, where the amplitude
 of the i-th point at the (j+1)-th time step is given the point at the time
