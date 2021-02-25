@@ -1,6 +1,11 @@
-# WaveSim
-A simulation of the wave equation in Python. In the beginning everything 
-will be 1D. The Wave equation in 1D reads:
+# Wave equation simulator
+
+This repo solves a 1D wave equation on a grid. In the future it will be
+updated for 2D.
+
+## Basic equation
+
+The Wave equation in 1D reads
 <br>
 <p align="center">
 <a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;\frac{1}{c^{2}}\frac{\partial^{2}u(x,t)}{\partial&space;t^{2}}&space;=&space;\frac{\partial^{2}u(x,t)}{\partial&space;x^{2}}." target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;\frac{1}{c^{2}}\frac{\partial^{2}u(x,t)}{\partial&space;t^{2}}&space;=&space;\frac{\partial^{2}u(x,t)}{\partial&space;x^{2}}." title="\large \frac{1}{c^{2}}\frac{\partial^{2}u(x,t)}{\partial t^{2}} = \frac{\partial^{2}u(x,t)}{\partial x^{2}}." /></a>
