@@ -172,15 +172,17 @@ class Numeric1DWaveSimulator:
         :param new_initial_amplitudes: New initial amplitudes for the initial condition.
         :return: None
         """
+        # Threshold value under which a variable will be taken as zero
+        threshold_value = 10**(-10)
         if isinstance(new_initial_amplitudes, np.ndarray):
             if len(new_initial_amplitudes) == self.number_of_grid_points:
-                if new_initial_amplitudes[0] == 0 and new_initial_amplitudes[-1] == 0:
+                if new_initial_amplitudes[0] <= threshold_value and new_initial_amplitudes[-1] <= threshold_value:
                     self._initial_amplitudes = new_initial_amplitudes
                 else:
                     raise ValueError("The first and last entry of the amplitudes have to be 0 to respect the boundary "
                                      "conditions")
             else:
-                raise ValueError("The number of grid points and the length of the new initial amplitudes must "
+                raise ValueError("The number of grid points and the length of the initial amplitudes must "
                                  "coincide.")
         else:
             raise TypeError("The initial amplitudes must be a numpy array.")
@@ -202,9 +204,11 @@ class Numeric1DWaveSimulator:
         :param new_initial_velocities:
         :return: None
         """
+        # Threshold value under which a variable will be taken as zero
+        threshold_value = 10**(-10)
         if isinstance(new_initial_velocities, np.ndarray):
             if len(new_initial_velocities) == self.number_of_grid_points:
-                if new_initial_velocities[0] == 0 and new_initial_velocities[-1] == 0:
+                if new_initial_velocities[0] <= threshold_value and new_initial_velocities[-1] <= threshold_value:
                     self._initial_velocities = new_initial_velocities
                 else:
                     raise ValueError("The first and last entry of the velocities have to be 0 to respect the boundary "
@@ -281,23 +285,3 @@ class Numeric1DWaveSimulator:
         while self.time_step <= self.number_of_time_steps:
             self.update()
         return self.amplitudes_time_evolution
-
-
-if __name__ == "__main__":
-    # Initial amplitudes.
-    a0 = np.array([0, -1, 1, -1, 1, -1, 1, -1, 1, 0])
-    # Initial velocities of the amplitudes.
-    v0 = np.array([0, 0, 1, 1, 1, 0, 0, 0, 0, 0])
-    # Grid spacing.
-    dx = .1
-    # Spacing of the time steps.
-    dt = .005
-    # speed of sound.
-    c = 10
-    # Number of grid points.
-    n = 10
-    # Number of time steps.
-    t = 10
-    my_sim = Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
-    result = my_sim.run()
-    print(result)
