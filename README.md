@@ -24,4 +24,4 @@ The above equation is visualized in the image below, where the amplitude
 of the i-th point at the (j+1)-th time step is given the point at the time
 step and its neighbors. Further it relies on the state of the amplitudes at
 the (j-1)-ths time step.
-![Visualization of the wave at different time steps](/images/time_step_visualization.png)
+![](/images/time_step_visualization.png)
