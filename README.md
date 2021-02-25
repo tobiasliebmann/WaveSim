@@ -33,3 +33,14 @@ the (j-1)-ths time step.
 <p align="center"> 
 <img src=/images/time_step_visualization.png>
 </p>
+The state of N amplitudes at time step j can be imagined as a vector
+<br>
+<br>
+<p align="center">
+<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;\vec{u}_{j}=\left(u_{0,j},\ldots,u_{N-1,j}\right)." target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;\vec{u}_{j}=\left(u_{0,j},\ldots,u_{N-1,j}\right)." title="\large \vec{u}_{j}=\left(u_{0,j},\ldots,u_{N-1,j}\right)." /></a>
+</p>
+This transform the update equation to a linear equation involving an
+update matrix, the j-th state and the (j-1)-th state
+<p align="center">
+<a href="https://www.codecogs.com/eqnedit.php?latex=\vec{u}_{j&plus;1}=T\vec{u}_{j}-u_{j-1},&space;\,&space;T=\begin{pmatrix}&space;0&space;&&space;0&space;&&space;\ldots&space;&&space;0&space;&&space;0\\&space;0&space;&&space;2\left(1-\alpha\right)&space;&&space;\alpha&space;&&space;0&space;&&space;0\\&space;\vdots&space;&&space;\alpha&space;&&space;\ddots&space;&&space;\alpha&space;&&space;\vdots\\&space;0&space;&&space;0&space;&&space;\alpha&space;&&space;2\left(1-\alpha\right)&space;&&space;0\\&space;0&space;&&space;0&space;&&space;\ldots&space;&&space;0&space;&&space;0&space;\end{pmatrix}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\vec{u}_{j&plus;1}=T\vec{u}_{j}-u_{j-1},&space;\,&space;T=\begin{pmatrix}&space;0&space;&&space;0&space;&&space;\ldots&space;&&space;0&space;&&space;0\\&space;0&space;&&space;2\left(1-\alpha\right)&space;&&space;\alpha&space;&&space;0&space;&&space;0\\&space;\vdots&space;&&space;\alpha&space;&&space;\ddots&space;&&space;\alpha&space;&&space;\vdots\\&space;0&space;&&space;0&space;&&space;\alpha&space;&&space;2\left(1-\alpha\right)&space;&&space;0\\&space;0&space;&&space;0&space;&&space;\ldots&space;&&space;0&space;&&space;0&space;\end{pmatrix}" title="\vec{u}_{j+1}=T\vec{u}_{j}-u_{j-1}, \, T=\begin{pmatrix} 0 & 0 & \ldots & 0 & 0\\ 0 & 2\left(1-\alpha\right) & \alpha & 0 & 0\\ \vdots & \alpha & \ddots & \alpha & \vdots\\ 0 & 0 & \alpha & 2\left(1-\alpha\right) & 0\\ 0 & 0 & \ldots & 0 & 0 \end{pmatrix}" /></a>
+</p>
