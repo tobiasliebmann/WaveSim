@@ -18,7 +18,10 @@ Now this does not look particularly simple. But setting fully discretizing
 space and time results in the following equation for updating the equation
 from one time step to another
 <br>
-<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" title="\large u_{i,j+1}=\alpha (u_{i+1,j} + u_{i-1,j}) + 2(1-\alpha)u_{i,j} - u_{i,j-1}, \, u_{i,j}=u(i\Delta x,j\Delta t)." /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;u_{i,j&plus;1}=\alpha&space;(u_{i&plus;1,j}&space;&plus;&space;u_{i-1,j})&space;&plus;&space;2(1-\alpha)u_{i,j}&space;-&space;u_{i,j-1},&space;\,&space;u_{i,j}=u(i\Delta&space;x,j\Delta&space;t)" title="\large u_{i,j+1}=\alpha (u_{i+1,j} + u_{i-1,j}) + 2(1-\alpha)u_{i,j} - u_{i,j-1}, \, u_{i,j}=u(i\Delta x,j\Delta t)." />.</a>
 <br>
-
-
+The above equation is visualized in the image below, where the amplitude
+of the i-th point at the (j+1)-th time step is given the point at the time
+step and its neighbors. Further it relies on the state of the amplitudes at
+the (j-1)-ths time step.
+![Visualization of the wave at different time steps](/images/time_step_visualization.png)
