@@ -185,7 +185,6 @@ and the initial conditions
 </p>
 resulted in the wave shown below.
 <br>
-<br>
 <p align="center">
 <img src=/images/wave_animation.gif>
 </p>
