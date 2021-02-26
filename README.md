@@ -77,4 +77,22 @@ amplitudes and T time steps this corresponds to
 <p align="center">
 <img src=/images/boundary_condition.jpg>
 </p>
+The frame of zeros in the matrix T makes sure that the boundary condition
+is always fulfilled.
 
+## Initial conditions
+
+The wave equation is second order partial derivative because of this two
+initial conditions
+<br>
+<br>
+<p align="center">
+<img src=/images/initial_conditions.jpg>
+</p>
+These equations have to be discretized now. The first condition is 
+fulfilled by setting
+<br>
+<br>
+<p align="center">
+<img src=/images/first_initial_condition.jpg>
+</p>
