@@ -135,21 +135,21 @@ solution of the wave equation.
 
 In this section the stability of the discrete scheme will be examined
 using the Von-Neumann-stability formalism. This theory examines the 
-stability of a discrete scheme by looking at the propagation of errors
-in the examined scheme. The total error of the i-th amplitude at the j-th
-time step of the scheme is therefor decomposed into a Fourier series
-, where A is the so called amplification factor. The amplification is
-assumed to behave according to a power law
+stability of a discrete scheme by looking at the propagation of errors. 
+The total error of the i-th amplitude at the j-th
+time step of the scheme is therefore decomposed into a Fourier series
+, where A is the so called amplification factor. The amplification factor 
+is assumed to behave according to a power law in time
 <br>
 <br>
 <p align="center">
 <img src=/images/error_fourier.jpg>
 </p>
 A scheme is unstable if the modulus of the amplification factor is greater
-than 1 |A| > 1. Further, the scheme diverges if the amplification factor of
-one Fourier component is greater than. The errors propagte in the scheme
+than 1, |A| > 1. Further, the scheme diverges if the amplification factor of
+one Fourier component is greater than 1. The errors propagate in the scheme
 via the update equation. Plugging one Fourier component into the update
-equation from the j-th to (j+1)-th time step results in
+equation from the j-th to the (j+1)-th time step results in
 <br>
 <br>
 <p align="center">
@@ -161,10 +161,12 @@ The possible solutions for A read
 <p align="center">
 <img src=/images/beta_equation.jpg>
 </p>
-This ultimate leads to following the Courant number
+This ultimately leads to the following Courant number
 <br>
 <br>
 <p align="center">
 <img src=/images/courant_number_equation.jpg>
 </p>
-As long as this condition is fulfilled the scheme ist guaranteed to be stable.
+As long as this condition is fulfilled the scheme is guaranteed to be stable.
+
+## Results
