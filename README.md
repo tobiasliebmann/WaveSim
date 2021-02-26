@@ -183,4 +183,9 @@ and the initial conditions
 <p align="center">
 <img src=/images/wave_sim_initial_conditions.jpg>
 </p>
-resulted in the wave shown below
+resulted in the wave shown below.
+<br>
+<br>
+<p align="center">
+<img src=/images/wave_animation.gif>
+</p>
