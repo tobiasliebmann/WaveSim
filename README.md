@@ -128,3 +128,36 @@ of the first time step
 <p align="center">
 <img src=/images/first_time_step_matrix_equation.jpg>
 </p>
+This equation reflects the impact of the initial conditions on the
+solution of the wave equation.
+
+## Stability analysis
+
+In this section the stability of the discrete scheme will be examined
+using the Von-Neumann-stability formalism. This theory examines the 
+stability of a discrete scheme by looking at the propagation of errors
+in the examined scheme. The total error of the i-th amplitude at the j-th
+time step of the scheme is therefor decomposed into a Fourier series
+, where A is the so called amplification factor. The amplification is
+assumed to behave according to a power law
+<br>
+<br>
+<p align="center">
+<img src=/images/error_fourier.jpg>
+</p>
+A scheme is unstable if the modulus of the amplification factor is greater
+than 1 |A| > 1. Further, the scheme diverges if the amplification factor of
+one Fourier component is greater than. The errors propagte in the scheme
+via the update equation. Plugging one Fourier component into the update
+equation from the j-th to (j+1)-th time step results in
+<br>
+<br>
+<p align="center">
+<img src=/images/amplification_factor_equation.jpg>
+</p>
+The possible solutions for A then read
+<br>
+<br>
+<p align="center">
+<img src=/images/beta_equation.jpg>
+</p>
