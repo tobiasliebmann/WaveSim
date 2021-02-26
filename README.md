@@ -60,7 +60,7 @@ update matrix T, the j-th state and the (j-1)-th state
 <br>
 <br>
 <p align="center">
-<img src=time_step_linear_equation.jpg>
+<img src=/images/time_step_linear_equation.jpg>
 </p>
 The frame of zeros in the matrix T correspond to the boundary condition
 which were already quitely implemented without mentioning. The disussion
