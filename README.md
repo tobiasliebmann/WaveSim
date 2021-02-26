@@ -1,9 +1,16 @@
 # Wave equation simulator
 
-This repo solves a 1D wave equation on a grid. In the future it will be
-updated for 2D.
+The Python code in this repository solves a 1D wave equation on a grid. 
+In the future it will be updated for 2D wave equations. The topics which
+will be discussed are:
 
-## Basic equation
+- Discritization of the wave equation
+- Choosing and implementation of a boundary condition
+- Implementation of initial conditions
+- Stability analysis
+
+
+## Discretizing the wave equation
 
 The Wave equation in 1D reads
 <br>
