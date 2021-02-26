@@ -46,10 +46,8 @@ the (j-1)-ths time step.
 <img src=/images/time_step_visualization.png>
 </p>
 The state of N amplitudes at time step j can be imagined as a vector
-<br>
-<br>
 <p align="center">
-<a href="https://www.codecogs.com/eqnedit.php?latex=\large&space;\vec{u}_{j}=\left(u_{0,j},\ldots,u_{N-1,j}\right)." target="_blank"><img src="https://latex.codecogs.com/gif.latex?\large&space;\vec{u}_{j}=\left(u_{0,j},\ldots,u_{N-1,j}\right)." title="\large \vec{u}_{j}=\left(u_{0,j},\ldots,u_{N-1,j}\right)." /></a>
+<img src=/images/time_step_vector.jpg>
 </p>
 This transforms the update equation to a linear equation involving an
 update matrix T, the j-th state and the (j-1)-th state
