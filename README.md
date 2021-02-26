@@ -62,10 +62,19 @@ update matrix T, the j-th state and the (j-1)-th state
 <p align="center">
 <img src=/images/time_step_linear_equation.jpg>
 </p>
-The frame of zeros in the matrix T correspond to the boundary condition
-which were already quitely implemented without mentioning. The disussion
-regarding the boundary condition will follow now.
+The frame of zeros in the matrix T correspond to the boundary condition of
+fixed end points which was already quitely implemented without mentioning.
+Further only the diagonal and the off-diagonal elements of T are populated. 
+The discussion regarding the boundary condition will follow now.
 
 ## Boundary condition
 
-The 
+As stated in the last chapter the chosen boundary condition are
+fixed endpoints for all time steps. For a 1D grid consisting of N 
+amplitudes and T time steps this corresponds to
+<br>
+<br>
+<p align="center">
+<img src=/images/boundary_condition.jpg>
+</p>
+
