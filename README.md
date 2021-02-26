@@ -107,3 +107,10 @@ central finite difference
 <p align="center">
 <img src=/images/second_initial_condition.jpg>
 </p>
+This equation can now be rearranged to get an expression for the amplitudes
+at the -1 time step
+<br>
+<br>
+<p align="center">
+<img src=/images/minus_first_time_step.jpg>
+</p>
