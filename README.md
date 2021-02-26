@@ -97,13 +97,6 @@ fulfilled by setting
 <img src=/images/first_initial_condition.jpg>
 </p>
 This result can now be inserted in the basic update equation to calculate
-the first time step
-<br>
-<br>
-<p align="center">
-<img src=/images/first_initial_condition.jpg>
-</p>
-This result can now be inserted in the basic update equation to calculate
 the first time step. However, doing this causes a problem since the it
 involves the amplitudes at time step -1 which are not defined at this
 point. But, the amplitudes at this time step can be calculated using the
