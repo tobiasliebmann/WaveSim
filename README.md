@@ -47,6 +47,7 @@ the (j-1)-ths time step.
 </p>
 The state of N amplitudes at time step j can be imagined as a vector
 <br>
+<br>
 <p align="center">
 <img src=/images/time_step_vector.jpg>
 </p>
