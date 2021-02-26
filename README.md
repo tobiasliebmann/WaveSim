@@ -114,3 +114,10 @@ at the -1 time step
 <p align="center">
 <img src=/images/minus_first_time_step.jpg>
 </p>
+Using the derived expressions results in the following expression for the
+amplitude of the first time step
+<br>
+<br>
+<p align="center">
+<img src=/images/first_time_step_amplitude.jpg>
+</p>
