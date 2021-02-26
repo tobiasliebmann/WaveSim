@@ -105,5 +105,5 @@ central finite difference
 <br>
 <br>
 <p align="center">
-<img src=/images/first_initial_condition.jpg>
+<img src=/images/second_initial_condition.jpg>
 </p>
