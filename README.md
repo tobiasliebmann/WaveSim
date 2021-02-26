@@ -155,9 +155,16 @@ equation from the j-th to (j+1)-th time step results in
 <p align="center">
 <img src=/images/amplification_factor_equation.jpg>
 </p>
-The possible solutions for A then read
+The possible solutions for A read
 <br>
 <br>
 <p align="center">
 <img src=/images/beta_equation.jpg>
 </p>
+This ultimate leads to following the Courant number
+<br>
+<br>
+<p align="center">
+<img src=/images/courant_number_equation.jpg>
+</p>
+As long as this condition is fulfilled the scheme ist guaranteed to be stable.
