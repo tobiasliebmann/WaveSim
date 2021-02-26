@@ -27,7 +27,7 @@ a0[0] = 0.
 a0[-1] = 0.
 
 # Initial velocities of the amplitudes.
-v0 = np.concatenate((np.full(int(n/2), 10), np.full(int(n/2), -10)))
+v0 = np.zeros(n)
 # v0 = np.cos(x_coord)
 v0[0] = 0.
 v0[-1] = 0.
@@ -69,6 +69,8 @@ def animate(i):
 # call the animator.  blit=True means only re-draw the parts that have changed.
 anim = animation.FuncAnimation(fig, animate, init_func=init, frames=t, interval=50, blit=True, repeat=True)
 
-# anim.save("basic_animation.gif", fps=30)
+anim.save("wave_animation.gif", fps=30)
+
+print("Image was saved.")
 
 plt.show()

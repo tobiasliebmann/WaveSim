@@ -170,3 +170,4 @@ This ultimately leads to the following Courant number
 As long as this condition is fulfilled the scheme is guaranteed to be stable.
 
 ## Results
+
