@@ -121,3 +121,10 @@ amplitude of the first time step
 <p align="center">
 <img src=/images/first_time_step_amplitude.jpg>
 </p>
+Using the matrix T results in a rather handy expression for the amplitudes
+of the first time step
+<br>
+<br>
+<p align="center">
+<img src=/images/first_time_step_matrix_equation.jpg>
+</p>
