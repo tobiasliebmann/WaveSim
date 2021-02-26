@@ -13,7 +13,7 @@ c = 10
 # Number of grid points.
 n = 100
 # Number of time steps.
-t = 1000
+t = 200
 # Grid spacing.
 dx = 1 / (n - 1)
 

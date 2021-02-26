@@ -171,3 +171,16 @@ As long as this condition is fulfilled the scheme is guaranteed to be stable.
 
 ## Results
 
+A simulation using the values
+<br>
+<br>
+<p align="center">
+<img src=/images/grid_parameters.jpg>
+</p>
+and the initial conditions
+<br>
+<br>
+<p align="center">
+<img src=/images/wave_sim_initial_conditions.jpg>
+</p>
+resulted in the wave shown below
