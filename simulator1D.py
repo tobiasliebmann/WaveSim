@@ -296,8 +296,15 @@ class Numeric1DWaveSimulator:
         :return:
         """
         current_time_string = dt.datetime.utcnow()
-        df = pd.read_csv(link, delimiter=";")
-        df.append()
+        try:
+            pd.read_csv(link)
+        except FileNotFoundError:
+            with open(link, "a") as file:
+                first_row = {"UTC date time": current_time_string, ""}
+
+
+
+
 
     def load_data(self, link):
         """
