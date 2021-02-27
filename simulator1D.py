@@ -296,12 +296,12 @@ class Numeric1DWaveSimulator:
         :return:
         """
         current_time_string = dt.datetime.utcnow()
-        with open(link):
-            
+        df = pd.read_csv(link, delimiter=";")
+        df.append()
 
-
-    def load_data(self):
+    def load_data(self, link):
         """
 
         :return:
         """
+        df = pd.read_csv()
