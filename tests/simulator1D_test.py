@@ -170,12 +170,25 @@ class Sim1DTest(ut.TestCase):
             self.my_sim.number_of_grid_points = 5
             self.my_sim.initial_velocities = np.array([1, 1, 1, 1, 1])
 
-    def test_update(self):
+    def test_update1(self):
         """
-        Tests if the update method returns the correct results.
-        :return:
+        Tests if the update method is correct by checking the latest entry in the attribute amplitudes_time_evolution
+        after calling the update method. The simulator is reset and the update formula is called two times to test the
+        correctness of the method for the first and any following time steps.
+        :return: None
         """
-        self.my_sim =
+        # Reset the simulator with new values.
+        self.my_sim = sim.Numeric1DWaveSimulator(1., 1., 1., 5, 1, np.array([0, 0, 1, 0, 0]),
+                                                 np.array([0, 0, 0, 0, 0]))
+        # Update the simulator manually.
+        self.my_sim.update()
+        # Test if the update formula is correct by calling the current_amplitudes attribute of the simulator.
+        np.testing.assert_almost_equal(self.my_sim.amplitudes_time_evolution[-1], np.array([0, 0.5, 0, 0.5, 0]))
+
+        # Update the simulator manually.
+        self.my_sim.update()
+        # Test update formula.
+        np.testing.assert_almost_equal(self.my_sim.amplitudes_time_evolution[-1], np.array([0, 0., 0., 0., 0.]))
 
 
 if __name__ == "__main__":
