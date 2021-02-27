@@ -124,7 +124,58 @@ class Sim1DTest(ut.TestCase):
         with self.assertRaises(ValueError):
             self.my_sim.number_of_time_steps = 0
 
-    
+    def initial_amplitudes(self):
+        """
+        Test if an error is raised if the initial amplitudes do not have the right data type, length (which should
+        coincide with the number of grid points) or fulfill the boundary conditions, which means that there start and
+        end point must be equal to zero.
+        :return: None
+        """
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_amplitudes = 1
+
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_amplitudes = "Hello"
+
+        with self.assertRaises(ValueError):
+            # Set the number of grid points and the number of grid points in the initial condition to different values.
+            self.my_sim.number_of_grid_points = 4
+            self.my_sim.initial_amplitudes = np.array([1, 1, 1])
+
+        with self.assertRaises(ValueError):
+            # Test if an error is if the end points of the initial amplitudes are not zero.
+            self.my_sim.number_of_grid_points = 5
+            self.my_sim.initial_amplitudes = np.array([1, 1, 1, 1, 1])
+
+    def test_initial_velocities(self):
+        """
+        Test if an error is raised if the initial velocities do not have the right data type, length (which should
+        coincide with the number of grid points) or fulfill the boundary conditions, which means that there start and
+        end point must be equal to zero.
+        :return:
+        """
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_velocities = 1
+
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_velocities = "Test string"
+
+        with self.assertRaises(ValueError):
+            # Set the number of grid points and the number of grid points in the initial condition to different values.
+            self.my_sim.number_of_grid_points = 4
+            self.my_sim.initial_velocities = np.array([1, 1, 1])
+
+        with self.assertRaises(ValueError):
+            # Test if an error is if the end points of the initial amplitudes are not zero.
+            self.my_sim.number_of_grid_points = 5
+            self.my_sim.initial_velocities = np.array([1, 1, 1, 1, 1])
+
+    def test_update(self):
+        """
+        Tests if the update method returns the correct results.
+        :return:
+        """
+        self.my_sim =
 
 
 if __name__ == "__main__":
