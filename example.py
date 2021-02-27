@@ -7,13 +7,13 @@ import matplotlib.animation as animation
 import time
 
 # Spacing of the time steps.
-dt = 0.0005
+dt = 0.0002
 # speed of sound.
 c = 10
 # Number of grid points.
-n = 100
+n = 500
 # Number of time steps.
-t = 200
+t = 100
 # Grid spacing.
 dx = 1 / (n - 1)
 
@@ -21,7 +21,7 @@ dx = 1 / (n - 1)
 x_coord = np.arange(0., n * dx, dx)
 
 # Initial amplitudes.
-a0 = np.exp(-(x_coord - 0.5)**2 / (2 * 0.1**2))
+a0 = np.exp(-(x_coord - 0.5)**2 / (2 * 0.01**2))
 # a0 = np.cos(x_coord)
 a0[0] = 0.
 a0[-1] = 0.
@@ -69,8 +69,8 @@ def animate(i):
 # call the animator.  blit=True means only re-draw the parts that have changed.
 anim = animation.FuncAnimation(fig, animate, init_func=init, frames=t, interval=50, blit=True, repeat=True)
 
-anim.save("wave_animation.gif", fps=30)
+# anim.save("wave_animation.gif", fps=30)
 
-print("Image was saved.")
+# print("Image was saved.")
 
 plt.show()

@@ -10,6 +10,7 @@ will be discussed are:
 - Stability analysis
 - Results
 - Benchmark
+- Sources
 
 
 ## Discretizing the wave equation
@@ -137,7 +138,7 @@ In this section the stability of the discrete scheme will be examined
 using the Von-Neumann-stability formalism. This theory examines the 
 stability of a discrete scheme by looking at the propagation of errors. 
 The total error of the i-th amplitude at the j-th
-time step of the scheme is therefore decomposed into a Fourier series
+time step is decomposed into a Fourier series
 , where A is the so called amplification factor. The amplification factor 
 is assumed to behave according to a power law in time
 <br>
@@ -161,7 +162,9 @@ The possible solutions for A read
 <p align="center">
 <img src=/images/beta_equation.jpg>
 </p>
-This ultimately leads to the following Courant number
+For a better understanding of this section let me introduce the Courant
+number. This is the central variable defining the stability of a scheme,
+which has to fulfill the condition
 <br>
 <br>
 <p align="center">
@@ -188,3 +191,9 @@ resulted in the wave shown below.
 <p align="center">
 <img src=/images/wave_animation.gif>
 </p>
+
+## Benchmark
+Coming soon.
+
+## Sources
+Coming soon.
