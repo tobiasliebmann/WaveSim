@@ -4,6 +4,8 @@ import datetime as dt
 
 import pandas as pd
 
+import os
+
 
 class Numeric1DWaveSimulator:
     # todo: Add class doc string.
@@ -29,7 +31,7 @@ class Numeric1DWaveSimulator:
         # Initial velocities of the points.
         self.initial_velocities = initial_velocities
         # grid constant.
-        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x)**2
+        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
         # Defines the first position as the entered initial position.
         self.current_amplitudes = self.initial_amplitudes
         # There are no former amplitudes at t = 0.
@@ -177,7 +179,7 @@ class Numeric1DWaveSimulator:
         :return: None
         """
         # Threshold value under which a variable will be taken as zero
-        threshold_value = 10**(-10)
+        threshold_value = 10 ** (-10)
         if isinstance(new_initial_amplitudes, np.ndarray):
             if len(new_initial_amplitudes) == self.number_of_grid_points:
                 if new_initial_amplitudes[0] <= threshold_value and new_initial_amplitudes[-1] <= threshold_value:
@@ -209,7 +211,7 @@ class Numeric1DWaveSimulator:
         :return: None
         """
         # Threshold value under which a variable will be taken as zero
-        threshold_value = 10**(-10)
+        threshold_value = 10 ** (-10)
         if isinstance(new_initial_velocities, np.ndarray):
             if len(new_initial_velocities) == self.number_of_grid_points:
                 if new_initial_velocities[0] <= threshold_value and new_initial_velocities[-1] <= threshold_value:
@@ -233,7 +235,7 @@ class Numeric1DWaveSimulator:
             print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
                                                                                                   "between 0  and 1.")
         else:
-            print("Scheme is stable. The Courant number is", str(self.courant_number)+".")
+            print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
     @staticmethod
     def create_time_step_matrix(dim: int, courant_number: float) -> np.ndarray:
@@ -269,7 +271,8 @@ class Numeric1DWaveSimulator:
             # print(self.time_step_matrix)
             self.former_amplitudes = self.current_amplitudes
             # The first is given by this equation.
-            self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix, self.current_amplitudes) + self.delta_t * self.initial_velocities
+            self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix,
+                                             self.current_amplitudes) + self.delta_t * self.initial_velocities
         else:
             temp = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
             self.former_amplitudes = self.current_amplitudes
@@ -295,15 +298,22 @@ class Numeric1DWaveSimulator:
         This method saves the
         :return:
         """
+        header_flag = True
         current_time_string = dt.datetime.utcnow()
-        try:
-            pd.read_csv(link)
-        except FileNotFoundError:
-            with open(link, "a") as file:
-                first_row = {"UTC date time": current_time_string, ""}
-
-
-
+        new_row = pd.DataFrame({"UTC date time": current_time_string,
+                                "number of grid points": self.number_of_grid_points,
+                                "number of time steps": self.number_of_time_steps,
+                                "grid spacing Δx": self.delta_x,
+                                "time spacing Δt": self.delta_t,
+                                "initial amplitudes": [self.initial_amplitudes],
+                                "initial velocities": [self.initial_velocities]})
+        # "result": list(self.amplitudes_time_evolution)
+        if os.path.isfile(link):
+            header_flag = False
+            if os.stat(link).st_size == 0:
+                header_flag = True
+        with open(link, "a") as file:
+            new_row.to_csv(file, header=header_flag, index=False, sep=";")
 
 
     def load_data(self, link):
@@ -311,4 +321,3 @@ class Numeric1DWaveSimulator:
 
         :return:
         """
-        df = pd.read_csv()
