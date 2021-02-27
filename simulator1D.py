@@ -1,5 +1,9 @@
 import numpy as np
 
+import datetime as dt
+
+import pandas as pd
+
 
 class Numeric1DWaveSimulator:
     # todo: Add class doc string.
@@ -285,3 +289,19 @@ class Numeric1DWaveSimulator:
         while self.time_step <= self.number_of_time_steps:
             self.update()
         return self.amplitudes_time_evolution
+
+    def save_data(self, link):
+        """
+        This method saves the
+        :return:
+        """
+        current_time_string = dt.datetime.utcnow()
+        with open(link):
+            
+
+
+    def load_data(self):
+        """
+
+        :return:
+        """
