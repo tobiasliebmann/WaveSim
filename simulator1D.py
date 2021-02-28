@@ -293,28 +293,25 @@ class Numeric1DWaveSimulator:
             self.update()
         return self.amplitudes_time_evolution
 
-    def save_data(self, link):
+    def save_data(self, link_data_folder="") -> None:
         """
         This method saves the
+        :param link_data_folder:
         :return:
         """
-        header_flag = True
-        current_time_string = dt.datetime.utcnow()
-        new_row = pd.DataFrame({"UTC date time": current_time_string,
+        utc_time = dt.datetime.utcnow().replace(microsecond=0)
+        if not isinstance(link_data_folder, str):
+            raise ValueError("The provided link must be a string.")
+        new_row = pd.DataFrame({"UTC date time": utc_time,
                                 "number of grid points": self.number_of_grid_points,
                                 "number of time steps": self.number_of_time_steps,
                                 "grid spacing Δx": self.delta_x,
                                 "time spacing Δt": self.delta_t,
                                 "initial amplitudes": [self.initial_amplitudes],
-                                "initial velocities": [self.initial_velocities]})
-        # "result": list(self.amplitudes_time_evolution)
-        if os.path.isfile(link):
-            header_flag = False
-            if os.stat(link).st_size == 0:
-                header_flag = True
-        with open(link, "a") as file:
-            new_row.to_csv(file, header=header_flag, index=False, sep=";")
-
+                                "initial velocities": [self.initial_velocities],
+                                "result": [self.amplitudes_time_evolution]})
+        with open(link_data_folder+str("wave_sim1D_")+str(utc_time), "a") as file:
+            new_row.to_csv(file, header=True, index=False, sep=";")
 
     def load_data(self, link):
         """

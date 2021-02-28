@@ -40,7 +40,7 @@ result = my_sim.run()
 end = time.time()
 print("Executing the simulation takes:", "%0.04f" % (end - start), "ms")
 
-my_sim.save_data("test_data.csv")
+my_sim.save_data(link_data_folder="test_data/")
 
 # Here begins the visualization part.
 fig = plt.figure()
