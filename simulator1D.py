@@ -4,8 +4,6 @@ import datetime as dt
 
 import pandas as pd
 
-import os
-
 
 class Numeric1DWaveSimulator:
     # todo: Add class doc string.
@@ -311,7 +309,8 @@ class Numeric1DWaveSimulator:
                                 "initial velocities": [self.initial_velocities],
                                 "result": [self.amplitudes_time_evolution]})
         with open(link_data_folder+str("wave_sim1D_")+str(utc_time), "a") as file:
-            new_row.to_csv(file, header=True, index=False, sep=";")
+            with np.printoptions(threshold=np.inf):
+                new_row.to_csv(file, header=True, index=False, sep=";")
 
     def load_data(self, link):
         """
