@@ -1,0 +1,6 @@
+First;Second;Third
+5.0;"<FloatingArray>
+[1.0, 2.0, 3.0]
+Length: 3, dtype: Float64";"     0    1    2
+0  1.0  2.0  3.0
+1  4.0  5.0  6.0"
