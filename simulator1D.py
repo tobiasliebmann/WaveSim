@@ -2,8 +2,6 @@ import numpy as np
 
 import datetime as dt
 
-import pandas as pd
-
 
 class Numeric1DWaveSimulator:
     # todo: Add class doc string.
@@ -38,6 +36,21 @@ class Numeric1DWaveSimulator:
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
         # This array saves the time evolution of the amplitudes.
         self.amplitudes_time_evolution = np.array([self.initial_amplitudes])
+
+    @classmethod
+    def init_from_file(cls, link_to_file):
+        """
+        
+        :param link_to_file:
+        :return:
+        """
+        if isinstance(link_to_file, str):
+            loaded_data = np.load(link_to_file, allow_pickle=True)
+            nogp, nots, sos,delta_x, delta_t, ini_amp, init_vel, amps_t = loaded_data
+            return cls(delta_x, delta_t, sos, nogp, nots, ini_amp, init_vel)
+        else:
+            raise ValueError("The provided link must be a string.")
+
 
     @property
     def delta_x(self) -> float:
@@ -300,6 +313,7 @@ class Numeric1DWaveSimulator:
         utc_time = dt.datetime.utcnow().replace(microsecond=0)
         obj_to_save = np.array([self.number_of_grid_points,
                                 self.number_of_time_steps,
+                                self.speed_of_sound,
                                 self.delta_x,
                                 self.delta_t,
                                 self.initial_amplitudes,
@@ -322,10 +336,11 @@ class Numeric1DWaveSimulator:
             loaded_data = np.load(link_to_file, allow_pickle=True)
             self.number_of_grid_points = loaded_data[0]
             self.number_of_time_steps = loaded_data[1]
-            self.delta_x = loaded_data[2]
-            self.delta_t = loaded_data[3]
-            self.initial_amplitudes = loaded_data[4]
-            self.initial_velocities = loaded_data[5]
-            self.amplitudes_time_evolution = loaded_data[6]
+            self.speed_of_sound = loaded_data[2]
+            self.delta_x = loaded_data[3]
+            self.delta_t = loaded_data[4]
+            self.initial_amplitudes = loaded_data[5]
+            self.initial_velocities = loaded_data[6]
+            self.amplitudes_time_evolution = loaded_data[7]
         else:
             raise ValueError("The provided link must be a string.")
