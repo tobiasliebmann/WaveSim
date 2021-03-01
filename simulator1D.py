@@ -305,10 +305,10 @@ class Numeric1DWaveSimulator:
                                 "number of time steps": self.number_of_time_steps,
                                 "grid spacing Δx": self.delta_x,
                                 "time spacing Δt": self.delta_t,
-                                "initial amplitudes": [self.initial_amplitudes],
-                                "initial velocities": [self.initial_velocities],
-                                "result": [self.amplitudes_time_evolution]})
-        with open(link_data_folder+str("wave_sim1D_")+str(utc_time), "a") as file:
+                                "initial amplitudes": [self.initial_amplitudes.tolist()],
+                                "initial velocities": [self.initial_velocities.tolist()],
+                                "result": [self.amplitudes_time_evolution.tolist()]})
+        with open(link_data_folder+str("wave_sim1D_")+str(utc_time)+".csv", "a") as file:
             with np.printoptions(threshold=np.inf):
                 new_row.to_csv(file, header=True, index=False, sep=";")
 
