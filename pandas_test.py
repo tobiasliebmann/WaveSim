@@ -1,8 +1,8 @@
-import pandas as pd
-
 import numpy as np
 
 import datetime as dt
+
+import os
 
 # df = pd.read_csv("test_data2.csv")
 # new_row = pd.DataFrame({"First": "Test 1", "Second": "Test 2", "Third": [np.array([[1., 2.], [3., 4.], [5., 6.]]).tolist()]})
@@ -15,6 +15,14 @@ num = 5.
 my_array = np.array([1., 2., 3.])
 my_matrix = np.array([[1., 2., 3.], [4., 5., 6.]])
 
+data_to_save = np.array([num,  my_array, my_matrix], dtype=object)
+
+np.save("np_data2.npy", data_to_save, allow_pickle=True)
+
+loaded_data = np.load("np_data2.npy", allow_pickle=True)
+
+print(type(loaded_data[0]))
+
 """
 df = pd.DataFrame({"First": num,
                    "Second": [pd.array(my_array)],
@@ -23,10 +31,6 @@ df = pd.DataFrame({"First": num,
 with open("new_test_data.csv", "a") as file:
     df.to_csv(file, header=True, index=False, sep=";")
 """
-
-df2 = pd.read_csv("new_test_data.csv", delimiter=";")
-print(pd.array(df2["Second"]))
-
 """
 # Try to load data from a file
 print("Start loading data.")

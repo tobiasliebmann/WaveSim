@@ -291,29 +291,41 @@ class Numeric1DWaveSimulator:
             self.update()
         return self.amplitudes_time_evolution
 
-    def save_data(self, link_data_folder="") -> None:
+    def save_data(self, link_to_file=None) -> None:
         """
         This method saves the
-        :param link_data_folder:
+        :param link_to_file:
         :return:
         """
         utc_time = dt.datetime.utcnow().replace(microsecond=0)
-        if not isinstance(link_data_folder, str):
-            raise ValueError("The provided link must be a string.")
-        new_row = pd.DataFrame({"UTC date time": utc_time,
-                                "number of grid points": self.number_of_grid_points,
-                                "number of time steps": self.number_of_time_steps,
-                                "grid spacing Δx": self.delta_x,
-                                "time spacing Δt": self.delta_t,
-                                "initial amplitudes": [self.initial_amplitudes.tolist()],
-                                "initial velocities": [self.initial_velocities.tolist()],
-                                "result": [self.amplitudes_time_evolution.tolist()]})
-        with open(link_data_folder+str("wave_sim1D_")+str(utc_time)+".csv", "a") as file:
-            with np.printoptions(threshold=np.inf):
-                new_row.to_csv(file, header=True, index=False, sep=";")
+        obj_to_save = np.array([self.number_of_grid_points,
+                                self.number_of_time_steps,
+                                self.delta_x,
+                                self.delta_t,
+                                self.initial_amplitudes,
+                                self.initial_velocities,
+                                self.amplitudes_time_evolution], dtype=object)
+        if link_to_file is not None:
+            if isinstance(link_to_file, str):
+                np.save(link_to_file, obj_to_save, allow_pickle=True)
+            else:
+                raise ValueError("The provided link must be a string.")
+        else:
+            np.save("wave_sim_1D"+str(utc_time)+".npy", obj_to_save, allow_pickle=True)
 
-    def load_data(self, link):
+    def load_data(self, link_to_file):
         """
 
         :return:
         """
+        if isinstance(link_to_file, str):
+            loaded_data = np.load(link_to_file, allow_pickle=True)
+            self.number_of_grid_points = loaded_data[0]
+            self.number_of_time_steps = loaded_data[1]
+            self.delta_x = loaded_data[2]
+            self.delta_t = loaded_data[3]
+            self.initial_amplitudes = loaded_data[4]
+            self.initial_velocities = loaded_data[5]
+            self.amplitudes_time_evolution = loaded_data[6]
+        else:
+            raise ValueError("The provided link must be a string.")
