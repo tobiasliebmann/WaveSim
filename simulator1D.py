@@ -46,11 +46,9 @@ class Numeric1DWaveSimulator:
         """
         if isinstance(link_to_file, str):
             loaded_data = np.load(link_to_file, allow_pickle=True)
-            nogp, nots, sos,delta_x, delta_t, init_amp, init_vel, amps_t = loaded_data
-            return cls(delta_x, delta_t, sos, nogp, nots, init_amp, init_vel)
+            return cls(*loaded_data)
         else:
             raise ValueError("The provided link must be a string.")
-
 
     @property
     def delta_x(self) -> float:
