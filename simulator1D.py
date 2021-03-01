@@ -40,14 +40,14 @@ class Numeric1DWaveSimulator:
     @classmethod
     def init_from_file(cls, link_to_file):
         """
-        
+
         :param link_to_file:
         :return:
         """
         if isinstance(link_to_file, str):
             loaded_data = np.load(link_to_file, allow_pickle=True)
-            nogp, nots, sos,delta_x, delta_t, ini_amp, init_vel, amps_t = loaded_data
-            return cls(delta_x, delta_t, sos, nogp, nots, ini_amp, init_vel)
+            nogp, nots, sos,delta_x, delta_t, init_amp, init_vel, amps_t = loaded_data
+            return cls(delta_x, delta_t, sos, nogp, nots, init_amp, init_vel)
         else:
             raise ValueError("The provided link must be a string.")
 
