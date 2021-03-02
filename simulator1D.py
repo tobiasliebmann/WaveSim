@@ -40,13 +40,22 @@ class Numeric1DWaveSimulator:
     @classmethod
     def init_from_file(cls, link_to_file):
         """
-
-        :param link_to_file:
+        This method functions as a second constructor, which can be used to initialize a simulator via a file.
+        :param link_to_file: This is the link to the file in which the data is stored. It should be a .npy file.
         :return:
         """
         if isinstance(link_to_file, str):
+            # Load the data.
             loaded_data = np.load(link_to_file, allow_pickle=True)
-            return cls(*loaded_data)
+            # Save the time evolution matrix for later use.
+            temp = loaded_data[-1]
+            # Delete the time evolution matrix since it is not needed in the initializer.
+            del loaded_data[-1]
+            # Make new instance of the class using the loaded data.
+            new_obj = cls(*loaded_data)
+            # Set the time evolution matrix.
+            new_obj.amplitudes_time_evolution = temp
+            return new_obj
         else:
             raise ValueError("The provided link must be a string.")
 
@@ -304,16 +313,17 @@ class Numeric1DWaveSimulator:
 
     def save_data(self, link_to_file=None) -> None:
         """
-        This method saves the
-        :param link_to_file:
+        This method saves the current attributes of a simulator object in a npy-file. If no link is provided in the form
+        of a string, the method will create a file using the current date and time.
+        :param link_to_file: Optional variable which is a link to a npy-file, where the data is saved.
         :return:
         """
         utc_time = dt.datetime.utcnow().replace(microsecond=0)
-        obj_to_save = np.array([self.number_of_grid_points,
-                                self.number_of_time_steps,
-                                self.speed_of_sound,
-                                self.delta_x,
+        obj_to_save = np.array([self.delta_x,
                                 self.delta_t,
+                                self.speed_of_sound,
+                                self.number_of_grid_points,
+                                self.number_of_time_steps,
                                 self.initial_amplitudes,
                                 self.initial_velocities,
                                 self.amplitudes_time_evolution], dtype=object)
@@ -325,18 +335,18 @@ class Numeric1DWaveSimulator:
         else:
             np.save("wave_sim_1D"+str(utc_time)+".npy", obj_to_save, allow_pickle=True)
 
-    def load_data(self, link_to_file):
+    def load_data(self, link_to_file: str) -> None:
         """
 
         :return:
         """
         if isinstance(link_to_file, str):
             loaded_data = np.load(link_to_file, allow_pickle=True)
-            self.number_of_grid_points = loaded_data[0]
-            self.number_of_time_steps = loaded_data[1]
+            self.delta_x = loaded_data[0]
+            self.delta_t = loaded_data[1]
             self.speed_of_sound = loaded_data[2]
-            self.delta_x = loaded_data[3]
-            self.delta_t = loaded_data[4]
+            self.number_of_grid_points = loaded_data[3]
+            self.number_of_time_steps = loaded_data[4]
             self.initial_amplitudes = loaded_data[5]
             self.initial_velocities = loaded_data[6]
             self.amplitudes_time_evolution = loaded_data[7]
