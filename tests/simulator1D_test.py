@@ -6,14 +6,14 @@ from .. import simulator1D as sim
 
 
 class Sim1DTest(ut.TestCase):
+
+    # Define the initial conditions
     initial_positions = np.array([0, 0, 0, 0, 0, 0])
 
     initial_velocities = np.array([0, 1, 1, 1, 1, 0])
 
     # Initialize simulator
     my_sim = sim.Numeric1DWaveSimulator(1, 1, 0.5, 6, 6, initial_positions, initial_velocities)
-
-    # todo: Add tests for the initializer.
 
     def test_create_time_step_matrix(self):
         """
@@ -198,7 +198,7 @@ class Sim1DTest(ut.TestCase):
 
     def test_save_load_errors(self):
         """
-        This tests only tests the errors of the save and load mathods.
+        This tests only tests the errors of the save and load methods.
         :return: None
         """
         with self.assertRaises(ValueError):
@@ -212,18 +212,15 @@ class Sim1DTest(ut.TestCase):
         a file, read out again and then compared.
         :return: None
         """
-        test_sim1 =
-        self.my_sim.save_data(link_to_file="test_file.npy")
-        print(len(self.my_sim.initial_amplitudes))
-        print(self.my_sim.initial_amplitudes)
-        print(self.my_sim.number_of_grid_points)
-        test_sim = sim.Numeric1DWaveSimulator.init_from_file("test_file.npy")
-        self.assertAlmostEqual(self.my_sim.delta_x, test_sim.delta_x)
-        self.assertAlmostEqual(self.my_sim.delta_t, test_sim.delta_t)
-        # self.assertAlmostEqual(self.my_sim.number_of_grid_points, test_sim.number_of_grid_points)
-        # self.assertAlmostEqual(self.my_sim.number_of_time_steps, test_sim.number_of_time_steps)
-        # self.assertAlmostEqual(self.my_sim.initial_amplitudes, test_sim.initial_amplitudes)
-        # self.assertAlmostEqual(self.my_sim.initial_velocities, test_sim.initial_velocities)
+        test_sim1 = sim.Numeric1DWaveSimulator(1, 1, 0.5, 6, 6, self.initial_positions, self.initial_velocities)
+        test_sim1.save_data(link_to_file="test_file.npy")
+        test_sim2 = sim.Numeric1DWaveSimulator.init_from_file("test_file.npy")
+        self.assertAlmostEqual(test_sim1.delta_x, test_sim2.delta_x)
+        self.assertAlmostEqual(test_sim1.delta_t, test_sim2.delta_t)
+        self.assertAlmostEqual(test_sim1.number_of_grid_points, test_sim2.number_of_grid_points)
+        self.assertAlmostEqual(test_sim1.number_of_time_steps, test_sim2.number_of_time_steps)
+        np.testing.assert_almost_equal(test_sim1.initial_amplitudes, test_sim2.initial_amplitudes)
+        np.testing.assert_almost_equal(test_sim1.initial_velocities, test_sim2.initial_velocities)
 
 
 if __name__ == "__main__":

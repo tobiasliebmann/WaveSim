@@ -145,10 +145,11 @@ class Numeric1DWaveSimulator:
     @number_of_grid_points.setter
     def number_of_grid_points(self, new_number_of_grid_points: int) -> None:
         """
+        todo: When the number of grid points is changed the initial conditions must also be changed.
         Setter method for the number of grid points used in the 1D simulation. This number must be of type int and
         greater than zero. If this is not the case this method will raise an error.
         :param new_number_of_grid_points: Number of grid points in the 1D simulation.
-        :return: -
+        :return: None
         """
         if isinstance(new_number_of_grid_points, int):
             if new_number_of_grid_points > 0:
@@ -172,7 +173,7 @@ class Numeric1DWaveSimulator:
         Setter method for the number of time steps used in the 1D simulation. This number must be of type int and
         greater than zero. If this is not the case this method will raise an error.
         :param new_number_of_time_steps:
-        :return: -
+        :return: None
         """
         if isinstance(new_number_of_time_steps, int):
             if new_number_of_time_steps > 0:
