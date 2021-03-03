@@ -78,6 +78,7 @@ class Numeric1DWaveSimulator:
         :param new_delta_x: New distance between grid points.
         :return: -
         """
+        # Check if new grid spacing is an int or float.
         if isinstance(new_delta_x, (float, int)):
             if new_delta_x > 0:
                 # Cast the new grid spacing as a float.
@@ -103,6 +104,7 @@ class Numeric1DWaveSimulator:
         :param new_delta_t: size of the time steps in the simulation.
         :return: -
         """
+        # Check if the the new time delta is an int or float.
         if isinstance(new_delta_t, (int, float)):
             if new_delta_t > 0:
                 # Cast the new grid spacing as a float.
@@ -127,6 +129,7 @@ class Numeric1DWaveSimulator:
         If this is not the case, the program will raise an according error.
         :return: -
         """
+        # Check if speed of sound is an int or float.
         if isinstance(new_speed_of_sound, (int, float)):
             # Cast the new grid spacing as a float.
             self._speed_of_sound = float(new_speed_of_sound)
@@ -145,7 +148,6 @@ class Numeric1DWaveSimulator:
     @number_of_grid_points.setter
     def number_of_grid_points(self, new_number_of_grid_points: int) -> None:
         """
-        todo: When the number of grid points is changed the initial conditions must also be changed.
         Setter method for the number of grid points used in the 1D simulation. This number must be of type int and
         greater than zero. If this is not the case this method will raise an error.
         :param new_number_of_grid_points: Number of grid points in the 1D simulation.
@@ -200,10 +202,13 @@ class Numeric1DWaveSimulator:
         :param new_initial_amplitudes: New initial amplitudes for the initial condition.
         :return: None
         """
-        # Threshold value under which a variable will be taken as zero
+        # Threshold value under which a variable will be taken as zero.
         threshold_value = 10 ** (-10)
+        # Check if the initial amplitude is a numpy array.
         if isinstance(new_initial_amplitudes, np.ndarray):
+            # Check if the length of the initial conditions coincides with the number of grid points.
             if len(new_initial_amplitudes) == self.number_of_grid_points:
+                # Check if the initial amplitudes respect the boundary conditions.
                 if new_initial_amplitudes[0] <= threshold_value and new_initial_amplitudes[-1] <= threshold_value:
                     self._initial_amplitudes = new_initial_amplitudes
                 else:
@@ -234,8 +239,11 @@ class Numeric1DWaveSimulator:
         """
         # Threshold value under which a variable will be taken as zero
         threshold_value = 10 ** (-10)
+        # Check if the initial velocity is a numpy array.
         if isinstance(new_initial_velocities, np.ndarray):
+            # Check initial velocities and the number of grid points coincide.
             if len(new_initial_velocities) == self.number_of_grid_points:
+                # Check if the initial velocity fort the first and last grid point are zero.
                 if new_initial_velocities[0] <= threshold_value and new_initial_velocities[-1] <= threshold_value:
                     self._initial_velocities = new_initial_velocities
                 else:
@@ -269,12 +277,15 @@ class Numeric1DWaveSimulator:
         :param courant_number: grid constant corresponding to the grid of the simulation.
         :return: The matrix used to calculate the next time step.
         """
+        # If the courant_number is not a float, cast it as such
         if courant_number != float:
             courant_number = float(courant_number)
+        # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
         temp = 2 * (1 - courant_number) * np.identity(dim) + courant_number * temp + courant_number * temp.T
+        # Set these elements to zero, so that the boundary conditions are fulfilled.
         temp[0, 0] = 0
         temp[0, 1] = 0
         temp[1, 0] = 0
@@ -289,18 +300,29 @@ class Numeric1DWaveSimulator:
         the time steps is then increased by one.
         :return: None
         """
+        # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
+        if self.number_of_grid_points != len(self.initial_amplitudes):
+            raise ValueError("The number of grid points and the length of the initial amplitudes must coincide.")
+        elif self.number_of_grid_points != len(self.initial_velocities):
+            raise ValueError("The number of grid points and the length of the initial velocities must coincide.")
+        # First time step.
         if self.time_step == 0:
             # print(self.time_step_matrix)
             self.former_amplitudes = self.current_amplitudes
             # The first is given by this equation.
             self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix,
                                              self.current_amplitudes) + self.delta_t * self.initial_velocities
+        # Not the first time step.
         else:
+            # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
             temp = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
+            # Set the former and current amplitude accordingly.
             self.former_amplitudes = self.current_amplitudes
             self.current_amplitudes = temp
+        # Add the freshly calculated time step at the end of the time evolution matrix.
         self.amplitudes_time_evolution = np.vstack(
             [self.amplitudes_time_evolution, np.array([self.current_amplitudes])])
+        # Increase the time step counter by one.
         self.time_step += 1
 
     def run(self) -> np.ndarray:
@@ -322,7 +344,9 @@ class Numeric1DWaveSimulator:
         :param link_to_file: Optional variable which is a link to a npy-file, where the data is saved.
         :return: None
         """
+        # Save the UTC time.
         utc_time = dt.datetime.utcnow().replace(microsecond=0)
+        # Save the important values of the simulator in numpy array.
         obj_to_save = np.array([self.delta_x,
                                 self.delta_t,
                                 self.speed_of_sound,
@@ -331,10 +355,15 @@ class Numeric1DWaveSimulator:
                                 self.initial_amplitudes,
                                 self.initial_velocities,
                                 self.amplitudes_time_evolution], dtype=object)
+        # Check if a link was provided
         if link_to_file is not None:
+            # Check if the provided link is a string
             if isinstance(link_to_file, str):
+                # Save the data in the npy format.
                 np.save(link_to_file, obj_to_save, allow_pickle=True)
             else:
                 raise ValueError("The provided link must be a string.")
         else:
-            np.save(("wave_sim_1D"+str(utc_time)+".npy").replace(" ", "_"), obj_to_save, allow_pickle=True)
+            # If no link was provided save the file with the following name
+            file_name = ("wave_sim_1D"+str(utc_time)+".npy").replace(" ", "_")
+            np.save(file_name, obj_to_save, allow_pickle=True)
