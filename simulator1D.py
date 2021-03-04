@@ -4,14 +4,27 @@ import datetime as dt
 
 
 class Numeric1DWaveSimulator:
-    # todo: Add class doc string.
 
     # Counter for the time steps taken int he algorithm.
     time_step = 0
 
-    def __init__(self, delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
-                 initial_amplitudes, initial_velocities):
-
+    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
+                 number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
+        """
+        Initializer for the 1D wave equation simulator. After the variables are passed the initializer calculates the
+        courant number and the sets the current amplitudes to the initial amplitudes. Further, the time step matrix
+        to transition from one time step to another is calculated. Lastly, the time evolution matrix, which saves the
+        amplitudes for all the time steps, is initialized.
+        :param delta_x: Distance between two neighbouring grid points.
+        :param delta_t: Time difference between two time steps in the simulation.
+        :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
+        :param number_of_grid_points: Number of grid points used in the simulation
+        :param number_of_time_steps: Number of time steps after which the simulation terminates.
+        :param initial_amplitudes: Amplitudes corresponding to the initial conditions. It has to satisfy the boundary
+        condition by the first and last entries being zero.
+        :param initial_velocities: Velocities corresponding to the initial amplitudes. They have to satisfy the boundary
+        conditions and thus the first and last entries have to be zero.
+        """
         # Distance between individual grid points.
         self.delta_x = delta_x
         # Time steps taken in the simulation.
@@ -307,7 +320,6 @@ class Numeric1DWaveSimulator:
             raise ValueError("The number of grid points and the length of the initial velocities must coincide.")
         # First time step.
         if self.time_step == 0:
-            # print(self.time_step_matrix)
             self.former_amplitudes = self.current_amplitudes
             # The first is given by this equation.
             self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix,
