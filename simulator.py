@@ -3,12 +3,11 @@ import numpy as np
 import datetime as dt
 
 
-class Numeric1DWaveSimulator:
-
+class NumericWaveSimulator:
     # Counter for the time steps taken int he algorithm.
     time_step = 0
 
-    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
+    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: tuple,
                  number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
         """
         Initializer for the 1D wave equation simulator. After the variables are passed the initializer calculates the
@@ -39,16 +38,17 @@ class Numeric1DWaveSimulator:
         self.initial_amplitudes = initial_amplitudes
         # Initial velocities of the points.
         self.initial_velocities = initial_velocities
-        # grid constant.
-        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
         # Defines the first position as the entered initial position.
         self.current_amplitudes = self.initial_amplitudes
         # There are no former amplitudes at t = 0.
         self.former_amplitudes = None
-        # Creates the time step matrix.
-        self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
         # This array saves the time evolution of the amplitudes.
         self.amplitudes_time_evolution = np.array([self.initial_amplitudes])
+        # Dimension of the grid.
+        if isinstance(self.number_of_grid_points, int):
+            self._dim = (self.number_of_grid_points,)
+        else:
+            self._dim = self.number_of_grid_points
 
     @classmethod
     def init_from_file(cls, link_to_file: str):
@@ -150,7 +150,7 @@ class Numeric1DWaveSimulator:
             raise TypeError("The speed of sound must be of type int or float.")
 
     @property
-    def number_of_grid_points(self) -> int:
+    def number_of_grid_points(self) -> tuple:
         """
         Getter method for the number of grid points in the simulation. Returns the number of grid points used in the
         simulation.
@@ -171,8 +171,17 @@ class Numeric1DWaveSimulator:
                 self._number_of_grid_points = new_number_of_grid_points
             else:
                 raise ValueError("The number of grid point must be greater than zero.")
+        elif isinstance(new_number_of_grid_points, tuple):
+            if all(isinstance(n, int) for n in self.number_of_grid_points):
+                if all(n > 0 for n in self.number_of_grid_points):
+                    self._number_of_grid_points = new_number_of_grid_points
+                else:
+                    raise ValueError("The number of grid points must be greater than zero.")
+            else:
+                raise TypeError("The number of grid points must be of type int.")
         else:
-            raise TypeError("The number of grid points must be of type int.")
+            raise TypeError("The number of grid points must be of type int or tuple.")
+
 
     @property
     def number_of_time_steps(self) -> int:
@@ -268,6 +277,58 @@ class Numeric1DWaveSimulator:
         else:
             raise TypeError("The new initial velocities must be a numpy array.")
 
+    def save_data(self, link_to_file: str = None) -> None:
+        """
+        This method saves the current attributes of a simulator object in a npy-file. If no link is provided in the form
+        of a string, the method will create a file using the current date and time.
+        :param link_to_file: Optional variable which is a link to a npy-file, where the data is saved.
+        :return: None
+        """
+        # Save the UTC time.
+        utc_time = dt.datetime.utcnow().replace(microsecond=0)
+        # Save the important values of the simulator in numpy array.
+        obj_to_save = np.array([self.delta_x,
+                                self.delta_t,
+                                self.speed_of_sound,
+                                self.number_of_grid_points,
+                                self.number_of_time_steps,
+                                self.initial_amplitudes,
+                                self.initial_velocities,
+                                self.amplitudes_time_evolution], dtype=object)
+        # Check if a link was provided
+        if link_to_file is not None:
+            # Check if the provided link is a string
+            if isinstance(link_to_file, str):
+                # Save the data in the npy format.
+                np.save(link_to_file, obj_to_save, allow_pickle=True)
+            else:
+                raise ValueError("The provided link must be a string.")
+        else:
+            # If no link was provided save the file with the following name
+            file_name = ("wave_sim_1D" + str(utc_time) + ".npy").replace(" ", "_")
+            np.save(file_name, obj_to_save, allow_pickle=True)
+
+
+class Numeric1DWaveSimulator(NumericWaveSimulator):
+
+    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: tuple,
+                 number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
+        """
+
+        :param delta_x:
+        :param delta_t:
+        :param speed_of_sound:
+        :param number_of_grid_points:
+        :param number_of_time_steps:
+        :param initial_amplitudes:
+        :param initial_velocities:
+        """
+        super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
+                         initial_amplitudes, initial_velocities)
+        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+        # Creates the time step matrix.
+        self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
+
     def stability_test(self) -> None:
         """
         Checks if the entered values of the grid spacing, time spacing and speed of sound is between 0  and 1. If this
@@ -348,34 +409,3 @@ class Numeric1DWaveSimulator:
         while self.time_step <= self.number_of_time_steps:
             self.update()
         return self.amplitudes_time_evolution
-
-    def save_data(self, link_to_file: str = None) -> None:
-        """
-        This method saves the current attributes of a simulator object in a npy-file. If no link is provided in the form
-        of a string, the method will create a file using the current date and time.
-        :param link_to_file: Optional variable which is a link to a npy-file, where the data is saved.
-        :return: None
-        """
-        # Save the UTC time.
-        utc_time = dt.datetime.utcnow().replace(microsecond=0)
-        # Save the important values of the simulator in numpy array.
-        obj_to_save = np.array([self.delta_x,
-                                self.delta_t,
-                                self.speed_of_sound,
-                                self.number_of_grid_points,
-                                self.number_of_time_steps,
-                                self.initial_amplitudes,
-                                self.initial_velocities,
-                                self.amplitudes_time_evolution], dtype=object)
-        # Check if a link was provided
-        if link_to_file is not None:
-            # Check if the provided link is a string
-            if isinstance(link_to_file, str):
-                # Save the data in the npy format.
-                np.save(link_to_file, obj_to_save, allow_pickle=True)
-            else:
-                raise ValueError("The provided link must be a string.")
-        else:
-            # If no link was provided save the file with the following name
-            file_name = ("wave_sim_1D"+str(utc_time)+".npy").replace(" ", "_")
-            np.save(file_name, obj_to_save, allow_pickle=True)
