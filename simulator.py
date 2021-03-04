@@ -182,7 +182,6 @@ class NumericWaveSimulator:
         else:
             raise TypeError("The number of grid points must be of type int or tuple.")
 
-
     @property
     def number_of_time_steps(self) -> int:
         """
@@ -311,7 +310,7 @@ class NumericWaveSimulator:
 
 class Numeric1DWaveSimulator(NumericWaveSimulator):
 
-    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: tuple,
+    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
                  number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
         """
 
