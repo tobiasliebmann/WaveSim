@@ -51,11 +51,11 @@ class Numeric1DWaveSimulator:
         self.amplitudes_time_evolution = np.array([self.initial_amplitudes])
 
     @classmethod
-    def init_from_file(cls, link_to_file):
+    def init_from_file(cls, link_to_file: str):
         """
         This method functions as a second constructor, which can be used to initialize a simulator via a file.
         :param link_to_file: This is the link to the file in which the data is stored. It should be a .npy file.
-        :return: Numeric1DWaveSimulator, Returns a Numeric1DWaveSimulator object with the variables that are declared in
+        :return: Returns a Numeric1DWaveSimulator object with the variables that are declared in
         the file.
         """
         if isinstance(link_to_file, str):
@@ -89,7 +89,7 @@ class Numeric1DWaveSimulator:
         Setter method for the distance between the grid points delta_x. The function only takes floats and ints
         which are greater than zero. The method will raise errors if this is not the case.
         :param new_delta_x: New distance between grid points.
-        :return: -
+        :return: None.
         """
         # Check if new grid spacing is an int or float.
         if isinstance(new_delta_x, (float, int)):
@@ -342,14 +342,14 @@ class Numeric1DWaveSimulator:
         Checks the stability of the scheme and then runs the simulation using the according formula. This is done
         updating the simulation until the number of time steps is reached at which point the method will return the
         result of the simulation.
-        :return: The result of the simulation. Each row in the matrix corresponds to a time step.
+        :return: The result of the simulation. Each row in the matrix corresponds to the amplitudes in one time step.
         """
         self.stability_test()
         while self.time_step <= self.number_of_time_steps:
             self.update()
         return self.amplitudes_time_evolution
 
-    def save_data(self, link_to_file=None) -> None:
+    def save_data(self, link_to_file: str = None) -> None:
         """
         This method saves the current attributes of a simulator object in a npy-file. If no link is provided in the form
         of a string, the method will create a file using the current date and time.
