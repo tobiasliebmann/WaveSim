@@ -12,10 +12,7 @@ class NumericWaveSimulator(ABC):
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points,
                  number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
         """
-        Initializer for the 1D wave equation simulator. After the variables are passed the initializer calculates the
-        courant number and the sets the current amplitudes to the initial amplitudes. Further, the time step matrix
-        to transition from one time step to another is calculated. Lastly, the time evolution matrix, which saves the
-        amplitudes for all the time steps, is initialized.
+        Initializer for an abstract wave simulator object.
         :param delta_x: Distance between two neighbouring grid points.
         :param delta_t: Time difference between two time steps in the simulation.
         :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
@@ -43,6 +40,7 @@ class NumericWaveSimulator(ABC):
         # This array saves the time evolution of the amplitudes.
         self.amplitudes_time_evolution = np.array([self.initial_amplitudes])
         # Dimension of the grid.
+        # todo: Not sure if I need this.
         if isinstance(self.number_of_grid_points, int):
             self._dim = (self.number_of_grid_points,)
         else:
@@ -306,6 +304,7 @@ class NumericWaveSimulator(ABC):
         """
         pass
 
+
 # ---------------------------
 # 1D wave equation simulation
 # ---------------------------
@@ -316,19 +315,21 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
                  number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
         """
-        todo: Add documentation here.
-        :param delta_x:
-        :param delta_t:
-        :param speed_of_sound:
-        :param number_of_grid_points:
-        :param number_of_time_steps:
-        :param initial_amplitudes:
-        :param initial_velocities:
+        Initializer for the 1D wave equation simulator. After the variables are passed the initializer calculates the
+        courant number and the sets the current amplitudes to the initial amplitudes. Further, the time step matrix
+        to transition from one time step to another is calculated. Lastly, the time evolution matrix, which saves the
+        amplitudes for all the time steps, is initialized.
+        :param delta_x: Distance between two neighbouring grid points.
+        :param delta_t: Time difference between two time steps in the simulation.
+        :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
+        :param number_of_grid_points: Number of grid points used in the simulation
+        :param number_of_time_steps: Number of time steps after which the simulation terminates.
+        :param initial_amplitudes: Amplitudes corresponding to the first initial condition.
+        :param initial_velocities: Velocities of the amplitudes corresponding to the second initial condition.
         """
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitudes, initial_velocities)
         # Courant number of the problem.
-        # todo: Maybe make this a abstract property with a static method for initialization.
         self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
         # Creates the time step matrix.
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
@@ -452,65 +453,126 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
             self.update()
         return self.amplitudes_time_evolution
 
+
 # ---------------------------
 # 2D wave equation simulation
 # ---------------------------
 
 
 class Numeric2DWaveSimulator(NumericWaveSimulator):
+    allowed_boundary_conditions = {"cyclical", "fixed edges", "loose edges"}
 
-    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
-                 number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
+    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: tuple,
+                 number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray,
+                 boundary_condition: str) -> None:
         """
-
-        :param delta_x:
-        :param delta_t:
-        :param speed_of_sound:
-        :param number_of_grid_points:
-        :param number_of_time_steps:
-        :param initial_amplitudes:
-        :param initial_velocities:
+        Initializer for the 2D wave equation simulator. After the variables are passed the initializer calculates the
+        courant number and the initializer sets the current amplitudes to the initial amplitudes. Further, the time
+        step matrix is calculated. Lastly, the time evolution matrix, which saves the amplitudes for all the time steps,
+        is initialized.
+        :param delta_x: Distance between two neighbouring grid points.
+        :param delta_t: Time difference between two time steps in the simulation.
+        :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
+        :param number_of_grid_points: Number of grid points used in the simulation
+        :param number_of_time_steps: Number of time steps after which the simulation terminates.
+        :param initial_amplitudes: Amplitudes corresponding to the first initial condition.
+        :param initial_velocities: Velocities of the amplitudes corresponding to the second initial condition.
         """
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitudes, initial_velocities)
         # Courant number of the problem.
-        # todo: Maybe make this a abstract property with a static method for initialization.
+        # todo: Update this attribute.
         self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
         # Creates the time step matrix.
+        # todo: Update this attribute.
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
+        #
+        self.boundary_condition = boundary_condition
 
     @property
-    def number_of_grid_points(self) -> int:
+    def boundary_condition(self):
+        return self._boundary_condition
+
+    @boundary_condition.setter
+    def boundary_condition(self, new_boundary_condition: str) -> None:
+        """
+        Setter method for the boundary condition. The boundary condition can either be cyclical, fixed edges or loose
+        edges.
+        :param new_boundary_condition: New boundary condition.
+        :return: None
+        """
+        if isinstance(new_boundary_condition, str):
+            if new_boundary_condition in self.allowed_boundary_conditions:
+                self._boundary_condition = new_boundary_condition
+            else:
+                raise ValueError("The boundary condition has to be: cyclical, fixed edges or loose edges.")
+        else:
+            raise TypeError("The boundary condition has to be a string.")
+
+    @property
+    def number_of_grid_points(self) -> tuple:
         return self._number_of_grid_points
 
     @number_of_grid_points.setter
-    def number_of_grid_points(self, new_number_of_grid_points: int) -> None:
-        if isinstance(new_number_of_grid_points, int):
-            if new_number_of_grid_points > 0:
-                self._number_of_grid_points = new_number_of_grid_points
+    def number_of_grid_points(self, new_number_of_grid_points: tuple) -> None:
+        if isinstance(new_number_of_grid_points, tuple):
+            if len(new_number_of_grid_points) == 2:
+                if all(isinstance(n, int) for n in new_number_of_grid_points):
+                    self._number_of_grid_points = new_number_of_grid_points
+                else:
+                    raise ValueError("The number of grid point must be greater than zero.")
             else:
-                raise ValueError("The number of grid point must be greater than zero.")
+                raise ValueError("The tuple representing the number of grid points must be of length two.")
         else:
             raise TypeError("The number of grid points must be of type int or tuple.")
+
+    def boundary_condition_check(self, matrix: np.ndarray) -> bool:
+        """
+        Checks if a given matrix fulfills the current boundary condition. This means for cyclical boundary conditions
+        the first an last elements of the grid must be linked, for fixed edges there must be a ring of zeros surrounding
+        the matrix and for loose edges the diagonals and off-diagonals are completely populated.
+        :return: If the matrix fulfills the conditions return True, else False.
+        """
+        # Remember: The first entry of np.array.shape is the number of rows and the second is number of columns.
+        number_of_rows, number_of_columns = matrix.shape
+        threshold_value = 10 ** (-10)
+        # Cyclical boundary condition.
+        if self.boundary_condition == "cyclical":
+            return matrix[0, number_of_columns] > threshold_value and matrix[number_of_rows, 0] > threshold_value
+        # Fixed edges.
+        elif self.boundary_condition == "fixed edges":
+            def row_check(array: np.ndarray) -> bool:
+                """
+                Checks if all the entries in an array are smaller than the thresh hold value.
+                :param array: A numpy array of float or int.
+                :return: Ture if the described condition is fulfilled, else False.
+                """
+                return all(n <= threshold_value for n in array)
+
+            return row_check(matrix[0]) and row_check(matrix[number_of_rows - 1]) and row_check(matrix[0].T) and \
+                   row_check(matrix[number_of_columns - 1].T)
+        # Loose edges.
+        else:
+            # Since the loose edges does not have any boundary conditions can be anything.
+            return True
 
     @property
     def initial_amplitudes(self) -> np.ndarray:
         return self._initial_amplitudes
 
+    # todo: Update this method.
     @initial_amplitudes.setter
     def initial_amplitudes(self, new_initial_amplitudes: np.ndarray) -> None:
-        # Threshold value under which a variable will be taken as zero.
-        threshold_value = 10 ** (-10)
         # Check if the initial amplitude is a numpy array.
         if isinstance(new_initial_amplitudes, np.ndarray):
             # Check if the length of the initial conditions coincides with the number of grid points.
-            if len(new_initial_amplitudes) == self.number_of_grid_points:
+            if new_initial_amplitudes.shape == self.number_of_grid_points:
                 # Check if the initial amplitudes respect the boundary conditions.
-                if new_initial_amplitudes[0] <= threshold_value and new_initial_amplitudes[-1] <= threshold_value:
+                # todo: I might remove this later.
+                if self.boundary_condition_check(new_initial_amplitudes):
                     self._initial_amplitudes = new_initial_amplitudes
                 else:
-                    raise ValueError("The first and last entry of the amplitudes have to be 0 to respect the boundary "
-                                     "conditions")
+                    raise ValueError("The initial condition has to respect the boundary condition.")
             else:
                 raise ValueError("The number of grid points and the length of the initial amplitudes must "
                                  "coincide.")
@@ -521,6 +583,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
     def initial_velocities(self) -> np.ndarray:
         return self._initial_velocities
 
+    # todo: Update this method.
     @initial_velocities.setter
     def initial_velocities(self, new_initial_velocities: np.ndarray) -> None:
         # Threshold value under which a variable will be taken as zero
@@ -528,19 +591,20 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Check if the initial velocity is a numpy array.
         if isinstance(new_initial_velocities, np.ndarray):
             # Check initial velocities and the number of grid points coincide.
-            if len(new_initial_velocities) == self.number_of_grid_points:
+            if new_initial_velocities.shape == self.number_of_grid_points:
                 # Check if the initial velocity fort the first and last grid point are zero.
-                if new_initial_velocities[0] <= threshold_value and new_initial_velocities[-1] <= threshold_value:
+                # todo: I might remove this later.
+                if self.boundary_condition_check(new_initial_velocities):
                     self._initial_velocities = new_initial_velocities
                 else:
-                    raise ValueError("The first and last entry of the velocities have to be 0 to respect the boundary "
-                                     "conditions")
+                    raise ValueError("The velocities of the initial amplitudes must respect the boundary values.")
             else:
                 raise ValueError("The number of grid points and the length of the new initial velocities must coincide."
                                  )
         else:
             raise TypeError("The new initial velocities must be a numpy array.")
 
+    # todo: Update this method.
     def stability_test(self) -> None:
         if not 0 <= self.courant_number <= 1:
             print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
@@ -548,6 +612,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
+    # todo: Update this method.
     @staticmethod
     def create_time_step_matrix(dim: int, courant_number: float) -> np.ndarray:
         # If the courant_number is not a float, cast it as such
@@ -567,6 +632,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         temp[dim - 1, dim - 2] = 0
         return temp
 
+    # todo: Update this method.
     def update(self) -> None:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != len(self.initial_amplitudes):
