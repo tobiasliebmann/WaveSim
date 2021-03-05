@@ -1,4 +1,4 @@
-import simulator1D as sim1D
+import simulator as sim
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,13 +34,13 @@ v0[-1] = 0.
 # print(v0)
 
 # run the simulation.
-my_sim = sim1D.Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
+my_sim = sim.Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
 start = time.time()
 result = my_sim.run()
 end = time.time()
 print("Executing the simulation takes:", "%0.04f" % (end - start), "ms")
 
-my_sim.save_data()
+# my_sim.save_data()
 
 # Here begins the visualization part.
 fig = plt.figure()
