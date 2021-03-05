@@ -306,6 +306,10 @@ class NumericWaveSimulator(ABC):
         """
         pass
 
+# ---------------------------
+# 1D wave equation simulation
+# ---------------------------
+
 
 class Numeric1DWaveSimulator(NumericWaveSimulator):
 
@@ -447,6 +451,10 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         while self.time_step <= self.number_of_time_steps:
             self.update()
         return self.amplitudes_time_evolution
+
+# ---------------------------
+# 2D wave equation simulation
+# ---------------------------
 
 
 class Numeric2DWaveSimulator(NumericWaveSimulator):
