@@ -312,6 +312,148 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
                  number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
         """
+        todo: Add documentation here.
+        :param delta_x:
+        :param delta_t:
+        :param speed_of_sound:
+        :param number_of_grid_points:
+        :param number_of_time_steps:
+        :param initial_amplitudes:
+        :param initial_velocities:
+        """
+        super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
+                         initial_amplitudes, initial_velocities)
+        # Courant number of the problem.
+        # todo: Maybe make this a abstract property with a static method for initialization.
+        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+        # Creates the time step matrix.
+        self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
+
+    @property
+    def number_of_grid_points(self) -> int:
+        return self._number_of_grid_points
+
+    @number_of_grid_points.setter
+    def number_of_grid_points(self, new_number_of_grid_points: int) -> None:
+        if isinstance(new_number_of_grid_points, int):
+            if new_number_of_grid_points > 0:
+                self._number_of_grid_points = new_number_of_grid_points
+            else:
+                raise ValueError("The number of grid point must be greater than zero.")
+        else:
+            raise TypeError("The number of grid points must be of type int or tuple.")
+
+    @property
+    def initial_amplitudes(self) -> np.ndarray:
+        return self._initial_amplitudes
+
+    @initial_amplitudes.setter
+    def initial_amplitudes(self, new_initial_amplitudes: np.ndarray) -> None:
+        # Threshold value under which a variable will be taken as zero.
+        threshold_value = 10 ** (-10)
+        # Check if the initial amplitude is a numpy array.
+        if isinstance(new_initial_amplitudes, np.ndarray):
+            # Check if the length of the initial conditions coincides with the number of grid points.
+            if len(new_initial_amplitudes) == self.number_of_grid_points:
+                # Check if the initial amplitudes respect the boundary conditions.
+                if new_initial_amplitudes[0] <= threshold_value and new_initial_amplitudes[-1] <= threshold_value:
+                    self._initial_amplitudes = new_initial_amplitudes
+                else:
+                    raise ValueError("The first and last entry of the amplitudes have to be 0 to respect the boundary "
+                                     "conditions")
+            else:
+                raise ValueError("The number of grid points and the length of the initial amplitudes must "
+                                 "coincide.")
+        else:
+            raise TypeError("The initial amplitudes must be a numpy array.")
+
+    @property
+    def initial_velocities(self) -> np.ndarray:
+        return self._initial_velocities
+
+    @initial_velocities.setter
+    def initial_velocities(self, new_initial_velocities: np.ndarray) -> None:
+        # Threshold value under which a variable will be taken as zero
+        threshold_value = 10 ** (-10)
+        # Check if the initial velocity is a numpy array.
+        if isinstance(new_initial_velocities, np.ndarray):
+            # Check initial velocities and the number of grid points coincide.
+            if len(new_initial_velocities) == self.number_of_grid_points:
+                # Check if the initial velocity fort the first and last grid point are zero.
+                if new_initial_velocities[0] <= threshold_value and new_initial_velocities[-1] <= threshold_value:
+                    self._initial_velocities = new_initial_velocities
+                else:
+                    raise ValueError("The first and last entry of the velocities have to be 0 to respect the boundary "
+                                     "conditions")
+            else:
+                raise ValueError("The number of grid points and the length of the new initial velocities must coincide."
+                                 )
+        else:
+            raise TypeError("The new initial velocities must be a numpy array.")
+
+    def stability_test(self) -> None:
+        if not 0 <= self.courant_number <= 1:
+            print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
+                                                                                                  "between 0  and 1.")
+        else:
+            print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
+
+    @staticmethod
+    def create_time_step_matrix(dim: int, courant_number: float) -> np.ndarray:
+        # If the courant_number is not a float, cast it as such
+        if courant_number != float:
+            courant_number = float(courant_number)
+        # Define a temporary matrix to fill the off diagonals.
+        temp = np.zeros((dim, dim))
+        rearrange_array = np.arange(dim - 1)
+        temp[rearrange_array, rearrange_array + 1] = 1
+        temp = 2 * (1 - courant_number) * np.identity(dim) + courant_number * temp + courant_number * temp.T
+        # Set these elements to zero, so that the boundary conditions are fulfilled.
+        temp[0, 0] = 0
+        temp[0, 1] = 0
+        temp[1, 0] = 0
+        temp[dim - 2, dim - 1] = 0
+        temp[dim - 1, dim - 1] = 0
+        temp[dim - 1, dim - 2] = 0
+        return temp
+
+    def update(self) -> None:
+        # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
+        if self.number_of_grid_points != len(self.initial_amplitudes):
+            raise ValueError("The number of grid points and the length of the initial amplitudes must coincide.")
+        elif self.number_of_grid_points != len(self.initial_velocities):
+            raise ValueError("The number of grid points and the length of the initial velocities must coincide.")
+        # First time step.
+        if self.time_step == 0:
+            self.former_amplitudes = self.current_amplitudes
+            # The first is given by this equation.
+            self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix,
+                                             self.current_amplitudes) + self.delta_t * self.initial_velocities
+        # Not the first time step.
+        else:
+            # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
+            temp = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
+            # Set the former and current amplitude accordingly.
+            self.former_amplitudes = self.current_amplitudes
+            self.current_amplitudes = temp
+        # Add the freshly calculated time step at the end of the time evolution matrix.
+        self.amplitudes_time_evolution = np.vstack(
+            [self.amplitudes_time_evolution, np.array([self.current_amplitudes])])
+        # Increase the time step counter by one.
+        self.time_step += 1
+
+    def run(self) -> np.ndarray:
+        self.stability_test()
+        while self.time_step <= self.number_of_time_steps:
+            self.update()
+        return self.amplitudes_time_evolution
+
+
+class Numeric2DWaveSimulator(NumericWaveSimulator):
+
+    def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
+                 number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
+        """
 
         :param delta_x:
         :param delta_t:
