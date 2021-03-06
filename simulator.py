@@ -39,12 +39,6 @@ class NumericWaveSimulator(ABC):
         self.former_amplitudes = None
         # This array saves the time evolution of the amplitudes.
         self.amplitudes_time_evolution = np.array([self.initial_amplitudes])
-        # Dimension of the grid.
-        # todo: Not sure if I need this.
-        if isinstance(self.number_of_grid_points, int):
-            self._dim = (self.number_of_grid_points,)
-        else:
-            self._dim = self.number_of_grid_points
 
     @classmethod
     def init_from_file(cls, link_to_file: str):
@@ -272,15 +266,13 @@ class NumericWaveSimulator(ABC):
         """
         pass
 
-    @staticmethod
+    # @staticmethod
     @abstractmethod
-    def create_time_step_matrix(dim: int, courant_number: float) -> np.ndarray:
+    def create_time_step_matrix(self, dim: int) -> np.ndarray:
         """
         Returns the matrix connecting the time steps. This matrix is a quadratic matrix with dimension
         dim x dim. The Matrix has only zeros in the first and last row and only diagonal and off diagonals are
         populated.
-        :param dim: Dimension N of the NxN matrix.
-        :param courant_number: grid constant corresponding to the grid of the simulation.
         :return: The matrix used to calculate the next time step.
         """
         pass
@@ -330,9 +322,9 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitudes, initial_velocities)
         # Courant number of the problem.
-        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+        self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Creates the time step matrix.
-        self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
+        self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
 
     @property
     def number_of_grid_points(self) -> int:
@@ -403,16 +395,13 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         else:
             print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
-    @staticmethod
-    def create_time_step_matrix(dim: int, courant_number: float) -> np.ndarray:
-        # If the courant_number is not a float, cast it as such
-        if courant_number != float:
-            courant_number = float(courant_number)
+    def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
-        temp = 2 * (1 - courant_number) * np.identity(dim) + courant_number * temp + courant_number * temp.T
+        temp = 2 * (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp + \
+               self.courant_number * temp.T
         # Set these elements to zero, so that the boundary conditions are fulfilled.
         temp[0, 0] = 0
         temp[0, 1] = 0
@@ -482,11 +471,12 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                          initial_amplitudes, initial_velocities)
         # Courant number of the problem.
         # todo: Update this attribute.
-        self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
-        # Creates the time step matrix.
-        # todo: Update this attribute.
-        self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points, self.courant_number)
-        #
+        self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
+        # Creates the time step matrix which is multiplied by the state matrix on the left.
+        self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[0])
+        # Creates the time step matrix which is multiplied by the state matrix on the right.
+        self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
+        # boundary condition, should be one of the the options in the allowed_boundary_conditions attribute.
         self.boundary_condition = boundary_condition
 
     @property
@@ -586,8 +576,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
     # todo: Update this method.
     @initial_velocities.setter
     def initial_velocities(self, new_initial_velocities: np.ndarray) -> None:
-        # Threshold value under which a variable will be taken as zero
-        threshold_value = 10 ** (-10)
         # Check if the initial velocity is a numpy array.
         if isinstance(new_initial_velocities, np.ndarray):
             # Check initial velocities and the number of grid points coincide.
@@ -612,27 +600,31 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
-    # todo: Update this method.
-    @staticmethod
-    def create_time_step_matrix(dim: int, courant_number: float) -> np.ndarray:
-        # If the courant_number is not a float, cast it as such
-        if courant_number != float:
-            courant_number = float(courant_number)
+    # todo: Update this method for the different boundary conditions. Maybe don't make this a static method.
+    def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
-        temp = 2 * (1 - courant_number) * np.identity(dim) + courant_number * temp + courant_number * temp.T
+        temp = 2 * (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp\
+               + self.courant_number * temp.T
         # Set these elements to zero, so that the boundary conditions are fulfilled.
-        temp[0, 0] = 0
-        temp[0, 1] = 0
-        temp[1, 0] = 0
-        temp[dim - 2, dim - 1] = 0
-        temp[dim - 1, dim - 1] = 0
-        temp[dim - 1, dim - 2] = 0
+        if self.boundary_condition == "cyclical":
+            # todo: Write this case.
+            pass
+        elif self.boundary_condition == "fixed edges":
+            temp[0, 0] = 0
+            temp[0, 1] = 0
+            temp[1, 0] = 0
+            temp[dim - 2, dim - 1] = 0
+            temp[dim - 1, dim - 1] = 0
+            temp[dim - 1, dim - 2] = 0
+        # Boundary condition of fixed edges. The matrix remains the same.
+        else:
+            pass
         return temp
 
-    # todo: Update this method.
+    # todo: Update this method for the different time step matrices.
     def update(self) -> None:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != len(self.initial_amplitudes):
