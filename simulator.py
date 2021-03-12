@@ -550,7 +550,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
     def initial_amplitudes(self) -> np.ndarray:
         return self._initial_amplitudes
 
-    # todo: Update this method.
+    # todo: I would like to be able to enter a 2D function as initial condition.
     @initial_amplitudes.setter
     def initial_amplitudes(self, new_initial_amplitudes: np.ndarray) -> None:
         # Check if the initial amplitude is a numpy array.
@@ -573,7 +573,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
     def initial_velocities(self) -> np.ndarray:
         return self._initial_velocities
 
-    # todo: Update this method.
+    # todo: I would like to be able to enter a 2D function as initial condition.
     @initial_velocities.setter
     def initial_velocities(self, new_initial_velocities: np.ndarray) -> None:
         # Check if the initial velocity is a numpy array.
@@ -592,7 +592,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             raise TypeError("The new initial velocities must be a numpy array.")
 
-    # todo: Update this method.
+    # todo: Look up how to implement this in a 2D scheme.
     def stability_test(self) -> None:
         if not 0 <= self.courant_number <= 1:
             print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
@@ -600,6 +600,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
+    # todo: I was here last time.
     # todo: Update this method for the different boundary conditions. Maybe don't make this a static method.
     def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
@@ -610,15 +611,17 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                + self.courant_number * temp.T
         # Set these elements to zero, so that the boundary conditions are fulfilled.
         if self.boundary_condition == "cyclical":
-            # todo: Write this case.
-            pass
+            # I don't know if this is correct at the moment.
+            # todo: It could be the case that the whole matrix needs a frame of connections to make it cyclical.
+            temp[self.number_of_grid_points[0]-1, 0] = self.courant_number
+            temp[0, self.number_of_grid_points[1]-1] = self.courant_number
         elif self.boundary_condition == "fixed edges":
-            temp[0, 0] = 0
-            temp[0, 1] = 0
-            temp[1, 0] = 0
-            temp[dim - 2, dim - 1] = 0
-            temp[dim - 1, dim - 1] = 0
-            temp[dim - 1, dim - 2] = 0
+            temp[0, 0] = 0.
+            temp[0, 1] = 0.
+            temp[1, 0] = 0.
+            temp[dim - 2, dim - 1] = 0.
+            temp[dim - 1, dim - 1] = 0.
+            temp[dim - 1, dim - 2] = 0.
         # Boundary condition of fixed edges. The matrix remains the same.
         else:
             pass
@@ -627,11 +630,12 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
     # todo: Update this method for the different time step matrices.
     def update(self) -> None:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
-        if self.number_of_grid_points != len(self.initial_amplitudes):
-            raise ValueError("The number of grid points and the length of the initial amplitudes must coincide.")
-        elif self.number_of_grid_points != len(self.initial_velocities):
-            raise ValueError("The number of grid points and the length of the initial velocities must coincide.")
+        if self.number_of_grid_points != self.initial_amplitudes.shape:
+            raise ValueError("The shape of the grid and the initial amplitudes must coincide.")
+        elif self.number_of_grid_points != self.initial_velocities.shape:
+            raise ValueError("The shape of the grid points and the initial velocities must coincide.")
         # First time step.
+        # todo: Calculate the first time step for the different boundary conditions.
         if self.time_step == 0:
             self.former_amplitudes = self.current_amplitudes
             # The first is given by this equation.
@@ -640,7 +644,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Not the first time step.
         else:
             # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
-            temp = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
+            temp = np.dot(self.time_step_matrix_left, self.current_amplitudes) +\
+                   np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
             # Set the former and current amplitude accordingly.
             self.former_amplitudes = self.current_amplitudes
             self.current_amplitudes = temp
