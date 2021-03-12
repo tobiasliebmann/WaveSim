@@ -607,14 +607,14 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
-        temp = 2 * (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp\
+        temp = 2 * (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp \
                + self.courant_number * temp.T
         # Set these elements to zero, so that the boundary conditions are fulfilled.
         if self.boundary_condition == "cyclical":
             # I don't know if this is correct at the moment.
             # todo: It could be the case that the whole matrix needs a frame of connections to make it cyclical.
-            temp[self.number_of_grid_points[0]-1, 0] = self.courant_number
-            temp[0, self.number_of_grid_points[1]-1] = self.courant_number
+            temp[self.number_of_grid_points[0] - 1, 0] = self.courant_number
+            temp[0, self.number_of_grid_points[1] - 1] = self.courant_number
         elif self.boundary_condition == "fixed edges":
             temp[0, 0] = 0.
             temp[0, 1] = 0.
@@ -627,7 +627,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             pass
         return temp
 
-    # todo: Update this method for the different time step matrices.
     def update(self) -> None:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != self.initial_amplitudes.shape:
@@ -635,16 +634,17 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         elif self.number_of_grid_points != self.initial_velocities.shape:
             raise ValueError("The shape of the grid points and the initial velocities must coincide.")
         # First time step.
-        # todo: Calculate the first time step for the different boundary conditions.
         if self.time_step == 0:
+            # Save the initial amplitudes as the former amplitudes.
             self.former_amplitudes = self.current_amplitudes
             # The first is given by this equation.
-            self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix,
-                                             self.current_amplitudes) + self.delta_t * self.initial_velocities
+            self.current_amplitudes = (1 / 2) * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
+                                                 np.dot(self.current_amplitudes, self.time_step_matrix_right)) +\
+                                      self.delta_t * self.initial_velocities
         # Not the first time step.
         else:
             # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
-            temp = np.dot(self.time_step_matrix_left, self.current_amplitudes) +\
+            temp = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
                    np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
             # Set the former and current amplitude accordingly.
             self.former_amplitudes = self.current_amplitudes
