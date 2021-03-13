@@ -17,6 +17,7 @@ class Sim1DTest(ut.TestCase):
 
     def test_create_time_step_matrix(self):
         """
+        todo: Update this method. I changed how the method to create the time step matrix works.
         Tests if the time_step_matrix is created correctly. It should have a frame of zeros and only the diagonals and
         off-diagonals should be filled with numbers.
         :return: None
@@ -33,7 +34,7 @@ class Sim1DTest(ut.TestCase):
                                    [0., 0., 0., 0., 0., 0., 0., 0.7, 0.6, 0.],
                                    [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
         # Construct time step matrix.
-        constructed_matrix = self.my_sim.create_time_step_matrix(10, 0.7)
+        constructed_matrix = self.my_sim.create_time_step_matrix(10)
         # Use a numpy test here since I couldn't find a fitting test in the unittest package. The method
         # assert_almost_equal is used since we are dealing with floats.
         np.testing.assert_almost_equal(constructed_matrix, compare_matrix)
