@@ -17,7 +17,8 @@ dim = (n, n)
 # Number of time steps.
 t = 100
 # Grid spacing.
-dx = 1 / (n - 1)
+# dx = 1 / (n - 1)
+dx = 0.1
 
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
@@ -25,7 +26,7 @@ x_coord = np.arange(0., n * dx, dx)
 x_mat, y_mat = np.meshgrid(x_coord, x_coord, sparse=True)
 
 # Initial amplitudes.
-a0 = np.exp(-((x_mat - 0.5) ** 2 + (y_mat - 0.5) ** 2) / (2 * 0.2 ** 2))
+a0 = np.exp(-((x_mat - n * dx / 2) ** 2 + (y_mat - n * dx / 2) ** 2) / (2 * 0.2 ** 2))
 # a0 = np.cos(x_coord)
 # a0[0] = 0.
 # a0[-1] = 0.
@@ -38,7 +39,7 @@ v0 = np.zeros(dim)
 # print(v0)
 
 # run the simulation.
-my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "cyclical")
+my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "fixed edges")
 start = time.time()
 result = my_sim.run()
 end = time.time()
@@ -50,7 +51,7 @@ print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
 fig, ax = plt.subplots(figsize=(3, 3))
 ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
 
-contour_opts = {'levels': np.linspace(-9, 9, 10), 'cmap':'RdBu', 'lw': 2}
+contour_opts = {"levels": np.linspace(-9, 9, 10), "cmap":"RdBu", "lw": 2}
 
 cax = ax.contour(x_coord, x_coord, result[0, ...], **contour_opts)
 
