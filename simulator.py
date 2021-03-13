@@ -651,7 +651,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             self.current_amplitudes = temp
         # Add the freshly calculated time step at the end of the time evolution matrix.
         self.amplitudes_time_evolution = np.vstack(
-            [self.amplitudes_time_evolution, np.array([self.current_amplitudes])])
+            (self.amplitudes_time_evolution, np.array([self.current_amplitudes])))
         # Increase the time step counter by one.
         self.time_step += 1
 
