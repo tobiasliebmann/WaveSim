@@ -471,11 +471,9 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         :param boundary_condition: Boundary condition for the wave simulation. It can be cyclical, fixed edges or
         loose edges.
         """
-        print("Calling the base initializer.")
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitudes, initial_velocities)
         # todo: I think the code after this call is not executed. At the moment I don't know why.
-        print("Called the initializer of the abstract base class. I am now calling the initializer of the 2D sim.")
         # Courant number of the problem.
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Set the boundary condition
@@ -500,8 +498,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         """
         if isinstance(new_boundary_condition, str):
             if new_boundary_condition in self.allowed_boundary_conditions:
-                # For debugging.
-                print("Boundary condition set.")
                 self._boundary_condition = new_boundary_condition
             else:
                 raise ValueError("The boundary condition has to be: cyclical, fixed edges or loose edges.")
