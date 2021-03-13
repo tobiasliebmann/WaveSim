@@ -466,9 +466,14 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         :param number_of_time_steps: Number of time steps after which the simulation terminates.
         :param initial_amplitudes: Amplitudes corresponding to the first initial condition.
         :param initial_velocities: Velocities of the amplitudes corresponding to the second initial condition.
+        :param boundary_condition: Boundary condition for the wave simulation. It can be cyclical, fixed edges or
+        loose edges.
         """
+        print("Calling the base innitializer.")
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitudes, initial_velocities)
+        # todo: I think the code after this call is not executed. At the moment I don't know why.
+        print("Called the initializer of the abstract base class. I am now calling the initializer of the 2D sim.")
         # Courant number of the problem.
         # todo: Update this attribute, so that is compatible for a 2D scheme. It is probably just the same as in a 1D
         #  scheme.
@@ -478,6 +483,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Creates the time step matrix which is multiplied by the state matrix on the right.
         self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
         # boundary condition, should be one of the the options in the allowed_boundary_conditions attribute.
+        # For debugging.
+        print("Now setting the boundary condition.")
         self.boundary_condition = boundary_condition
 
     @property
@@ -494,6 +501,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         """
         if isinstance(new_boundary_condition, str):
             if new_boundary_condition in self.allowed_boundary_conditions:
+                # For debugging.
+                print("Boundary condition set.")
                 self._boundary_condition = new_boundary_condition
             else:
                 raise ValueError("The boundary condition has to be: cyclical, fixed edges or loose edges.")
@@ -509,6 +518,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         if isinstance(new_number_of_grid_points, tuple):
             if len(new_number_of_grid_points) == 2:
                 if all(isinstance(n, int) for n in new_number_of_grid_points):
+                    # For debugging.
+                    print("Set number of grid points.")
                     self._number_of_grid_points = new_number_of_grid_points
                 else:
                     raise ValueError("The number of grid point must be greater than zero.")
