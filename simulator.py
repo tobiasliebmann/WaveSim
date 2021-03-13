@@ -470,7 +470,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitudes, initial_velocities)
         # Courant number of the problem.
-        # todo: Update this attribute.
+        # todo: Update this attribute, so that is compatible for a 2D scheme. It is probably just the same as in a 1D
+        #  scheme.
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Creates the time step matrix which is multiplied by the state matrix on the left.
         self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[0])
@@ -480,7 +481,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         self.boundary_condition = boundary_condition
 
     @property
-    def boundary_condition(self):
+    def boundary_condition(self) -> str:
         return self._boundary_condition
 
     @boundary_condition.setter
@@ -609,12 +610,12 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         temp[rearrange_array, rearrange_array + 1] = 1
         temp = 2 * (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp \
                + self.courant_number * temp.T
-        # Set these elements to zero, so that the boundary conditions are fulfilled.
         if self.boundary_condition == "cyclical":
-            # I don't know if this is correct at the moment. It seems to be correct.
+            # Set the off diagonal edges to fulfill he cyclical boundary conditions.
             temp[self.number_of_grid_points[0] - 1, 0] = self.courant_number
             temp[0, self.number_of_grid_points[1] - 1] = self.courant_number
         elif self.boundary_condition == "fixed edges":
+            # Set these elements to zero, so that the boundary conditions are fulfilled
             temp[0, 0] = 0.
             temp[0, 1] = 0.
             temp[1, 0] = 0.
@@ -638,7 +639,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             self.former_amplitudes = self.current_amplitudes
             # The first is given by this equation.
             self.current_amplitudes = (1 / 2) * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
-                                                 np.dot(self.current_amplitudes, self.time_step_matrix_right)) +\
+                                                 np.dot(self.current_amplitudes, self.time_step_matrix_right)) + \
                                       self.delta_t * self.initial_velocities
         # Not the first time step.
         else:
