@@ -11,7 +11,7 @@ dt = 0.0002
 # speed of sound.
 c = 10
 # Number of grid points.
-n = 500
+n = 100
 # Number of grid points in x- and y-direction
 dim = (n, n)
 # Number of time steps.
@@ -26,7 +26,7 @@ x_mat, y_mat = np.meshgrid(x_coord, x_coord, sparse=True)
 
 # Initial amplitudes.
 a0 = np.exp(-((x_mat - 0.5) ** 2 + (y_mat - 0.5) ** 2) / (2 * 0.2 ** 2))
-
+print(a0.shape)
 # a0 = np.cos(x_coord)
 # a0[0] = 0.
 # a0[-1] = 0.
@@ -41,44 +41,44 @@ v0 = np.zeros(dim)
 # run the simulation.
 my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "fixed edges")
 start = time.time()
+my_sim.update()
+print("shape of the current amplitudes is:", my_sim.current_amplitudes.shape)
+print("Shape of the time evoluation matrix is:", my_sim.amplitudes_time_evolution.shape)
 result = my_sim.run()
 end = time.time()
-print("Executing the simulation takes:", "%0.04f" % (end - start), "ms")
+print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
+
+print(result.shape)
+print(result[0, ...].shape)
 
 # my_sim.save_data()
 
 # Here begins the visualization part.
-fig = plt.figure()
-ax = plt.axes(xlim=(0, (n - 1) * dx), ylim=(-1.5, 1.5))
-line, = ax.plot([], [], lw=2)
+fig, ax = plt.subplots(figsize=(3, 3))
+ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
 
-ax.set_xlabel("position")
-ax.set_ylabel("amplitude")
+# contour_opts = {'levels': np.linspace(-9, 9, 10), 'cmap':'RdBu', 'lw': 2}
+
+cax = ax.contour(x_coord, x_coord, result[0, ...])
+
+ax.set_xlabel("x")
+ax.set_ylabel("y")
 ax.grid(True)
-ax.set_title("1D wave equation simulation")
-
-x = np.linspace(0, dx * n, n)
+ax.set_title("2D wave equation simulation")
 
 
-# initialization function: plot the background of each frame
-def init():
-    line.set_data([], [])
-    return line,
-
-
-# animation function.  This is called sequentially
 def animate(i):
-    y = result[i]
-    line.set_data(x, y)
-    return line,
+    ax.collections = []
+    ax.contour(x_coord, x_coord, result[i, ...])
 
 
 # call the animator.  blit=True means only re-draw the parts that have changed.
 
-anim = animation.FuncAnimation(fig, animate, init_func=init, frames=t, interval=50, blit=True, repeat=True)
+anim = animation.FuncAnimation(fig, animate, frames=t-1, interval=50)
 
 # anim.save("wave_animation.gif", fps=30)
 
 # print("Image was saved.")
 
+plt.draw()
 plt.show()
