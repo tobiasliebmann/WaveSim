@@ -325,6 +325,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Creates the time step matrix.
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
+        print("Finished with the initializer.")
 
     @property
     def number_of_grid_points(self) -> int:
@@ -449,6 +450,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
 
 
 class Numeric2DWaveSimulator(NumericWaveSimulator):
+
     allowed_boundary_conditions = {"cyclical", "fixed edges", "loose edges"}
 
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: tuple,
@@ -469,23 +471,20 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         :param boundary_condition: Boundary condition for the wave simulation. It can be cyclical, fixed edges or
         loose edges.
         """
-        print("Calling the base innitializer.")
+        print("Calling the base initializer.")
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitudes, initial_velocities)
         # todo: I think the code after this call is not executed. At the moment I don't know why.
         print("Called the initializer of the abstract base class. I am now calling the initializer of the 2D sim.")
         # Courant number of the problem.
-        # todo: Update this attribute, so that is compatible for a 2D scheme. It is probably just the same as in a 1D
-        #  scheme.
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
+        # Set the boundary condition
+        self.boundary_condition = boundary_condition
         # Creates the time step matrix which is multiplied by the state matrix on the left.
         self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[0])
         # Creates the time step matrix which is multiplied by the state matrix on the right.
         self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
         # boundary condition, should be one of the the options in the allowed_boundary_conditions attribute.
-        # For debugging.
-        print("Now setting the boundary condition.")
-        self.boundary_condition = boundary_condition
 
     @property
     def boundary_condition(self) -> str:
@@ -518,8 +517,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         if isinstance(new_number_of_grid_points, tuple):
             if len(new_number_of_grid_points) == 2:
                 if all(isinstance(n, int) for n in new_number_of_grid_points):
-                    # For debugging.
-                    print("Set number of grid points.")
                     self._number_of_grid_points = new_number_of_grid_points
                 else:
                     raise ValueError("The number of grid point must be greater than zero.")
@@ -528,7 +525,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             raise TypeError("The number of grid points must be of type int or tuple.")
 
-    def boundary_condition_check(self, matrix: np.ndarray) -> bool:
+    def check_boundary_condition(self, matrix: np.ndarray) -> bool:
         """
         Checks if a given matrix fulfills the current boundary condition. This means for cyclical boundary conditions
         the first an last elements of the grid must be linked, for fixed edges there must be a ring of zeros surrounding
@@ -543,7 +540,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             return matrix[0, number_of_columns] > threshold_value and matrix[number_of_rows, 0] > threshold_value
         # Fixed edges.
         elif self.boundary_condition == "fixed edges":
-            def row_check(array: np.ndarray) -> bool:
+            def check_row(array: np.ndarray) -> bool:
                 """
                 Checks if all the entries in an array are smaller than the thresh hold value.
                 :param array: A numpy array of float or int.
@@ -551,8 +548,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                 """
                 return all(n <= threshold_value for n in array)
 
-            return row_check(matrix[0]) and row_check(matrix[number_of_rows - 1]) and row_check(matrix[0].T) and \
-                   row_check(matrix[number_of_columns - 1].T)
+            return check_row(matrix[0]) and check_row(matrix[number_of_rows - 1]) and check_row(matrix[0].T) and \
+                   check_row(matrix[number_of_columns - 1].T)
         # Loose edges.
         else:
             # Since the loose edges does not have any boundary conditions can be anything.
@@ -570,11 +567,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             # Check if the length of the initial conditions coincides with the number of grid points.
             if new_initial_amplitudes.shape == self.number_of_grid_points:
                 # Check if the initial amplitudes respect the boundary conditions.
-                # todo: I might remove this later.
-                if self.boundary_condition_check(new_initial_amplitudes):
-                    self._initial_amplitudes = new_initial_amplitudes
-                else:
-                    raise ValueError("The initial condition has to respect the boundary condition.")
+                self._initial_amplitudes = new_initial_amplitudes
             else:
                 raise ValueError("The number of grid points and the length of the initial amplitudes must "
                                  "coincide.")
@@ -593,11 +586,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             # Check initial velocities and the number of grid points coincide.
             if new_initial_velocities.shape == self.number_of_grid_points:
                 # Check if the initial velocity fort the first and last grid point are zero.
-                # todo: I might remove this later.
-                if self.boundary_condition_check(new_initial_velocities):
-                    self._initial_velocities = new_initial_velocities
-                else:
-                    raise ValueError("The velocities of the initial amplitudes must respect the boundary values.")
+                self._initial_velocities = new_initial_velocities
             else:
                 raise ValueError("The number of grid points and the length of the new initial velocities must coincide."
                                  )

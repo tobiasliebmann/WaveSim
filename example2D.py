@@ -39,7 +39,7 @@ v0 = np.zeros(dim)
 # print(v0)
 
 # run the simulation.
-my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "cyclical")
+my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "fixed edges")
 start = time.time()
 result = my_sim.run()
 end = time.time()
