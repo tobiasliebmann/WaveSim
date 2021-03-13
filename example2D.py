@@ -7,18 +7,18 @@ import matplotlib.animation as animation
 import time
 
 # Spacing of the time steps.
-dt = 0.1
+dt = .01
 # speed of sound.
 c = 1
 # Number of grid points.
-n = 200
+n = 100
 # Number of grid points in x- and y-direction
 dim = (n, n)
 # Number of time steps.
-t = 100
+t = 200
 # Grid spacing.
 # dx = 1 / (n - 1)
-dx = 0.1
+dx = .1
 
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
@@ -26,7 +26,7 @@ x_coord = np.arange(0., n * dx, dx)
 x_mat, y_mat = np.meshgrid(x_coord, x_coord, sparse=True)
 
 # Initial amplitudes.
-a0 = np.exp(-((x_mat - n * dx / 2) ** 2 + (y_mat - n * dx / 2) ** 2) / (2 * 0.2 ** 2))
+a0 = np.exp(-((x_mat - n * dx / 2) ** 2 + (y_mat - n * dx / 2) ** 2) / (2 * 1. ** 2))
 # a0 = np.cos(x_coord)
 # a0[0] = 0.
 # a0[-1] = 0.
@@ -51,7 +51,7 @@ print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
 fig, ax = plt.subplots(figsize=(3, 3))
 ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
 
-contour_opts = {"levels": np.linspace(-9, 9, 10), "cmap":"RdBu", "lw": 2}
+contour_opts = {"levels": np.linspace(-9, 9, 10), "cmap": "RdBu", "lw": 2}
 
 cax = ax.contour(x_coord, x_coord, result[0, ...], **contour_opts)
 

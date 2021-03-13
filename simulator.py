@@ -604,7 +604,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
-        temp = 2 * (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp \
+        # todo: Check if the formula for the wave propagation is correct.
+        temp = (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp \
                + self.courant_number * temp.T
         if self.boundary_condition == "cyclical":
             # Set the off diagonal edges to fulfill he cyclical boundary conditions.
