@@ -7,7 +7,7 @@ import matplotlib.animation as animation
 import time
 
 # Spacing of the time steps.
-dt = 0.0002
+dt = 0.1
 # speed of sound.
 c = 1
 # Number of grid points.
