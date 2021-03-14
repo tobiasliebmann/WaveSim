@@ -3,6 +3,7 @@ import simulator as sim
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+from matplotlib import cm
 
 import time
 
@@ -61,15 +62,16 @@ result = my_sim.run()
 end = time.time()
 print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
 
-fig, ax = plt.subplots(figsize=(5, 5))
-ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+ax.set(xlim=(0., (n - 1) * dx), ylim=(0., (n - 1) * dx))
 
-# contour_opts = {"levels": np.linspace(-9, 9, 10), "cmap": "RdBu", "lw": 2}
+surf = ax.plot_surface(x_mat, y_mat, a0, linewidth=0, antialiased=False)
 
-cax = ax.contour(x_coord, x_coord, a0)
+plt.draw()
+plt.show()
 
-# plt.draw()
-# plt.show()
+exit()
 
 ax.set_xlabel("x")
 ax.set_ylabel("y")

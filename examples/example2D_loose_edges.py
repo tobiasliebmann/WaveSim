@@ -29,7 +29,7 @@ x_mat, y_mat = np.meshgrid(x_coord, y_coord, sparse=True)
 # Initial amplitudes.
 def a0_func(x, y, center_x, center_y, width):
     """
-
+    todo: Add docu.
     :param x:
     :param y:
     :param center_x:
