@@ -9,14 +9,14 @@ import time
 # Spacing of the time steps.
 dt = 1
 # speed of sound.
-c = 1/np.sqrt(2)
+c = 1 / np.sqrt(2)
 # Number of grid points.
 n = 100
 m = 100
 # Number of grid points in x- and y-direction
 dim = (m, n)
 # Number of time steps.
-t = 100
+t = 200
 # Grid spacing.
 dx = 1
 
@@ -40,26 +40,11 @@ def a0_func(x, y, center_x, center_y, width):
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
 
-a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 10.)
-
-
-# fig = plt.figure()
-# ax = fig.gca(projection='3d')
-# ax.set(xlim=(0., (n - 1) * dx), ylim=(0., (n - 1) * dx))
-
-# surf = ax.plot_surface(x_mat, y_mat, a0, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-
-# a0 = np.exp(-((x_mat - (dx * m)/2) ** 2 + (y_mat - (dx * n)/2) ** 2) / (2 * 2. ** 2))
-# a0 = np.cos(x_coord)
-# a0[0] = 0.
-# a0[-1] = 0.
+# Initial amplitudes.
+a0 = a0_func(x_mat, y_mat, (dx * m) / 2., (dx * n) / 2., 10.)
 
 # Initial velocities of the amplitudes.
 v0 = np.zeros(dim)
-# v0 = np.cos(x_coord)
-# v0[0] = 0.
-# v0[-1] = 0.
-# print(v0)
 
 # run the simulation.
 my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "fixed edges")
@@ -76,13 +61,18 @@ plot = ax.plot_surface(x_mat, y_mat, a0, color='0.75', rstride=1, cstride=1)
 def update_plot(frame_number):
     global plot
     plot.remove()
+    ax.set_xlabel("x")
+    ax.set_ylabel("y")
+    ax.set_zlabel("z")
     plot = ax.plot_surface(x_mat, y_mat, result[frame_number, ...], cmap="magma")
 
 
 ax.set_zlim(np.min(result), np.max(result))
-ani = animation.FuncAnimation(fig, update_plot, t-1, interval=100)
-
-
+ani = animation.FuncAnimation(fig, update_plot, t - 1, interval=100)
+print("Starting to save the animation.")
+fn = "wave_sim2D_surface3"
+ani.save(fn + ".gif", writer="imagemagick", fps=30)
+print("Saved the animation.")
 
 plt.draw()
 plt.show()
