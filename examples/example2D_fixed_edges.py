@@ -3,7 +3,6 @@ import simulator as sim
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from matplotlib import cm
 
 import time
 
@@ -17,13 +16,13 @@ m = 100
 # Number of grid points in x- and y-direction
 dim = (m, n)
 # Number of time steps.
-t = 300
+t = 100
 # Grid spacing.
 dx = 1
 
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
-y_coord = np.zeros(n * dx)
+y_coord = np.arange(0., n * dx, dx)
 x_mat, y_mat = np.meshgrid(x_coord, y_coord, sparse=True)
 
 
@@ -41,7 +40,14 @@ def a0_func(x, y, center_x, center_y, width):
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
 
-a0 = a0_func(x_mat, y_mat, (dx * m)/3., 0., 2.)
+a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 10.)
+
+
+# fig = plt.figure()
+# ax = fig.gca(projection='3d')
+# ax.set(xlim=(0., (n - 1) * dx), ylim=(0., (n - 1) * dx))
+
+# surf = ax.plot_surface(x_mat, y_mat, a0, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
 # a0 = np.exp(-((x_mat - (dx * m)/2) ** 2 + (y_mat - (dx * n)/2) ** 2) / (2 * 2. ** 2))
 # a0 = np.cos(x_coord)
@@ -63,35 +69,20 @@ end = time.time()
 print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
 
 fig = plt.figure()
-ax = fig.gca(projection='3d')
-ax.set(xlim=(0., (n - 1) * dx), ylim=(0., (n - 1) * dx))
-
-surf = ax.plot_surface(x_mat, y_mat, a0, linewidth=0, antialiased=False)
-
-plt.draw()
-plt.show()
-
-exit()
-
-ax.set_xlabel("x")
-ax.set_ylabel("y")
-ax.grid(True)
-ax.set_title("2D wave equation simulation")
+ax = fig.add_subplot(111, projection='3d')
+plot = ax.plot_surface(x_mat, y_mat, a0, color='0.75', rstride=1, cstride=1)
 
 
-def animate(i):
-    ax.collections = []
-    ax.contour(x_coord, x_coord, result[i, ...])
-    ax.set_title("Frame:"+str(i))
+def update_plot(frame_number):
+    global plot
+    plot.remove()
+    plot = ax.plot_surface(x_mat, y_mat, result[frame_number, ...], cmap="magma")
 
 
-# call the animator.  blit=True means only re-draw the parts that have changed.
+ax.set_zlim(np.min(result), np.max(result))
+ani = animation.FuncAnimation(fig, update_plot, t-1, interval=100)
 
-anim = animation.FuncAnimation(fig, animate, frames=t-1, interval=50)
 
-# anim.save("wave_animation_2D.gif", fps=30)
-
-# print("Image was saved.")
 
 plt.draw()
 plt.show()
