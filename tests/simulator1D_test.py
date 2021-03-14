@@ -1,8 +1,7 @@
 import unittest as ut
 
 import numpy as np
-
-from .. import simulator as sim
+import simulator as sim
 
 
 class Sim1DTest(ut.TestCase):
