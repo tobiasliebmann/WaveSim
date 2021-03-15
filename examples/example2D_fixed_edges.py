@@ -16,7 +16,7 @@ m = 100
 # Number of grid points in x- and y-direction
 dim = (m, n)
 # Number of time steps.
-t = 200
+t = 100
 # Grid spacing.
 dx = 1
 
@@ -53,7 +53,7 @@ result = my_sim.run()
 end = time.time()
 print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
 
-fig = plt.figure()
+fig = plt.figure(figsize=(5, 5))
 ax = fig.add_subplot(111, projection='3d')
 plot = ax.plot_surface(x_mat, y_mat, a0, color='0.75', rstride=1, cstride=1)
 
@@ -70,7 +70,7 @@ def update_plot(frame_number):
 ax.set_zlim(np.min(result), np.max(result))
 ani = animation.FuncAnimation(fig, update_plot, t - 1, interval=100)
 print("Starting to save the animation.")
-fn = "wave_sim2D_surface3"
+fn = "wave_sim2D_surface4"
 ani.save(fn + ".gif", writer="imagemagick", fps=30)
 print("Saved the animation.")
 
