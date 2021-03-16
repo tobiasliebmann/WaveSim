@@ -18,10 +18,10 @@ class TestCase2DSim(ut.TestCase):
     - Updating the simulation.
     """
 
-    # todo: Implement this.
+    # Initial amplitudes
     init_amps = np.full((10, 10), 1.)
 
-    # todo: implement this.
+    # Initial velocities.
     init_vel = np.zeros((10, 10))
 
     my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, (10, 10), 10, init_amps, init_vel, "cyclical")
