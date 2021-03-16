@@ -7,7 +7,7 @@ import matplotlib.animation as animation
 import time
 
 # Spacing of the time steps.
-dt = 1
+dt = float(1)
 # speed of sound.
 c = 1/np.sqrt(2)
 # Number of grid points.
@@ -18,11 +18,11 @@ dim = (m, n)
 # Number of time steps.
 t = 300
 # Grid spacing.
-dx = 1
+dx = float(1)
 
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
-y_coord = np.zeros(n * dx)
+y_coord = np.zeros(n)
 x_mat, y_mat = np.meshgrid(x_coord, y_coord, sparse=True)
 
 
@@ -59,7 +59,7 @@ my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "cyclical")
 start = time.time()
 result = my_sim.run()
 end = time.time()
-print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
+print(f"Executing the simulation takes {round(end-start, 2)} s.")
 
 fig, ax = plt.subplots(figsize=(5, 5))
 ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
@@ -80,7 +80,7 @@ ax.set_title("2D wave equation simulation")
 def animate(i):
     ax.collections = []
     ax.contourf(x_coord, x_coord, result[i, ...])
-    ax.set_title("Frame:"+str(i))
+    ax.set_title("time:"+str(round(float(i*dt), 2)))
 
 
 # call the animator.  blit=True means only re-draw the parts that have changed.

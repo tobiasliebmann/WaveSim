@@ -161,7 +161,7 @@ class NumericWaveSimulator(ABC):
             else:
                 raise ValueError("The number of time steps must be greater than zero.")
         else:
-            raise TypeError("The number of grid points must be of type int.")
+            raise TypeError("The number of time steps must be of type int.")
 
     def save_data(self, link_to_file: str = None) -> None:
         """

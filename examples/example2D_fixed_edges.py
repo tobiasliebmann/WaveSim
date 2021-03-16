@@ -51,7 +51,7 @@ my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "fixed edges")
 start = time.time()
 result = my_sim.run()
 end = time.time()
-print("Executing the simulation takes:", "%0.04f" % (end - start), "s")
+print(f"Executing the simulation takes {round(end-start, 2)} s.")
 
 fig = plt.figure(figsize=(5, 5))
 ax = fig.add_subplot(111, projection='3d')
