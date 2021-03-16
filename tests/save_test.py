@@ -1,4 +1,4 @@
-import simulator1D as sim1D
+import simulator as sim
 
 import numpy as np
 
@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 
-my_sim = sim1D.Numeric1DWaveSimulator.init_from_file("wave_sim_1D2021-03-03 10:42:38.npy")
+my_sim = sim.Numeric1DWaveSimulator.init_from_file("test_file.npy")
 my_sim.run()
 # Here begins the visualization part.
 fig = plt.figure()

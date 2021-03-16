@@ -51,8 +51,6 @@ class NumericWaveSimulator(ABC):
         if isinstance(link_to_file, str):
             # Load the data.
             loaded_data = np.load(link_to_file, allow_pickle=True)
-            # print(loaded_data)
-            print(loaded_data[-1])
             # Save the time evolution matrix for later use.
             temp = loaded_data[-1]
             # Delete the time evolution matrix since it is not needed in the initializer.
@@ -325,7 +323,6 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Creates the time step matrix.
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
-        print("Finished with the initializer.")
 
     @property
     def number_of_grid_points(self) -> int:
