@@ -12,7 +12,7 @@ class Sim1DTest(ut.TestCase):
     initial_velocities = np.array([0, 1, 1, 1, 1, 0])
 
     # Initialize simulator
-    my_sim = sim.Numeric1DWaveSimulator(1, 1, 0.5, 6, 6, initial_positions, initial_velocities)
+    my_sim = sim.Numeric1DWaveSimulator(1., 1., np.sqrt(0.7), 6, 6, initial_positions, initial_velocities)
 
     def test_create_time_step_matrix(self):
         """

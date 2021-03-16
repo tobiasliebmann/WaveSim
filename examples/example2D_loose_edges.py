@@ -40,6 +40,7 @@ def a0_func(x: np.ndarray, y: np.ndarray, center_x: float, center_y: float, widt
     """
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
+
 a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 2.)
 
 # a0 = np.exp(-((x_mat - (dx * m)/2) ** 2 + (y_mat - (dx * n)/2) ** 2) / (2 * 2. ** 2))

@@ -22,7 +22,6 @@ x_coord = np.arange(0., n * dx, dx)
 
 # Initial amplitudes.
 a0 = np.exp(-(x_coord - 0.5) ** 2 / (2 * 0.01 ** 2))
-print(a0.shape)
 # a0 = np.cos(x_coord)
 a0[0] = 0.
 a0[-1] = 0.
