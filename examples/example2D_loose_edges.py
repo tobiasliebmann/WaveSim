@@ -27,18 +27,18 @@ x_mat, y_mat = np.meshgrid(x_coord, y_coord, sparse=True)
 
 
 # Initial amplitudes.
-def a0_func(x, y, center_x, center_y, width):
+# Initial amplitudes.
+def a0_func(x: np.ndarray, y: np.ndarray, center_x: float, center_y: float, width: float) -> np.ndarray:
     """
-    todo: Add docu.
-    :param x:
-    :param y:
-    :param center_x:
-    :param center_y:
-    :param width:
-    :return:
+    Function returning the initial amplitudes for the wave equation. This is Gaussian bell curve in 2D.
+    :param x: x-coordinate values at which the bell curve is examined.
+    :param y: x-coordinate values at which the bell curve is examined.
+    :param center_x: center x-coordinate of the bell curve.
+    :param center_y: center y-coordinate of the bell curve.
+    :param width: Width of the bell curve.
+    :return: Returns a 2D numpy array respresenting the values of the bell curve at the specified x- and y-coordinates.
     """
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
-
 
 a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 2.)
 
