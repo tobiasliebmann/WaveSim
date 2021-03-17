@@ -11,7 +11,6 @@ class TestCase2DSim(ut.TestCase):
     The tests include the methods:
     - Setter for boundary conditions.
     - Setter for the number of grid points.
-    - Checking the boundary condition.
     - Setter for initial amplitude.
     - Setter for initial velocity.
     - Creating the time step matrix.
@@ -28,7 +27,9 @@ class TestCase2DSim(ut.TestCase):
 
     def test_boundary_condition(self):
         """
-        todo: Add documentation.
+        Tests if the the setter method for the boundary condition of the 2D wave simulator correctly raises errors and
+        if the getter function returns the correct values.
+        :return: None.
         """
         self.assertEqual(self.my_sim.boundary_condition, "cyclical")
 
@@ -37,6 +38,30 @@ class TestCase2DSim(ut.TestCase):
 
         with self.assertRaises(ValueError):
             self.my_sim.boundary_condition = "Hello"
+
+    def test_number_of_grid_points(self):
+        """
+        Tests the getter and setter methods for the number of grid points attribute. It is tested if the correct errors
+        are raised if the wrong type is entered and if the getter returns the correct value.
+        :return: None.
+        """
+        self.assertEqual((10, 10), self.my_sim.number_of_grid_points)
+
+        with self.assertRaises(TypeError):
+            self.my_sim.number_of_grid_points = 9.
+
+        with self.assertRaises(ValueError):
+            self.my_sim.number_of_grid_points = (10, 10, 10)
+
+        with self.assertRaises(ValueError):
+            self.my_sim.number_of_grid_points = ("Hello", 1.)
+
+    def test_initial_amplitudes(self):
+        """
+
+        :return: None.
+        """
+
 
 
 if __name__ == '__main__':
