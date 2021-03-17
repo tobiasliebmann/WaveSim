@@ -61,7 +61,32 @@ class TestCase2DSim(ut.TestCase):
 
         :return: None.
         """
+        np.testing.assert_almost_equal(self.init_amps, self.my_sim.initial_amplitudes)
 
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_amplitudes = "String"
+
+        with self.assertRaises(ValueError):
+            self.my_sim.initial_amplitudes = np.array([[3., 4.], [2., 3.]])
+
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_amplitudes = np.full((10, 10), "String")
+
+    def test_initial_velocities(self):
+        """
+
+        :return: None.
+        """
+        np.testing.assert_almost_equal(self.init_vel, self.my_sim.initial_velocities)
+
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_velocities = "String"
+
+        with self.assertRaises(ValueError):
+            self.my_sim.initial_velocities = np.array([[3., 4.], [2., 3.]])
+
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_velocities = np.full((10, 10), "String")
 
 
 if __name__ == '__main__':

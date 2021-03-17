@@ -559,8 +559,11 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         if isinstance(new_initial_amplitudes, np.ndarray):
             # Check if the length of the initial conditions coincides with the number of grid points.
             if new_initial_amplitudes.shape == self.number_of_grid_points:
-                # Check if the initial amplitudes respect the boundary conditions.
-                self._initial_amplitudes = new_initial_amplitudes
+                if new_initial_amplitudes.dtype == "float64" or new_initial_amplitudes.dtype == "int64":
+                    self._initial_amplitudes = new_initial_amplitudes
+                else:
+                    raise TypeError("The numpy array containing the initial velocities must have the dtype float64 or"
+                                    "int64.")
             else:
                 raise ValueError("The number of grid points and the length of the initial amplitudes must "
                                  "coincide.")
@@ -578,8 +581,12 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         if isinstance(new_initial_velocities, np.ndarray):
             # Check initial velocities and the number of grid points coincide.
             if new_initial_velocities.shape == self.number_of_grid_points:
-                # Check if the initial velocity fort the first and last grid point are zero.
-                self._initial_velocities = new_initial_velocities
+                # Check the data type of the numpy array initial velocities.
+                if new_initial_velocities.dtype == "float64" or new_initial_velocities == "int64":
+                    self._initial_velocities = new_initial_velocities
+                else:
+                    raise TypeError("The numpy array containing the initial velocities must have the dtype float64 or"
+                                    "int64.")
             else:
                 raise ValueError("The number of grid points and the length of the new initial velocities must coincide."
                                  )
@@ -594,14 +601,11 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
-    # todo: I was here last time.
-    # todo: Update this method for the different boundary conditions. Maybe don't make this a static method.
     def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
-        # todo: Check if the formula for the wave propagation is correct.
         temp = (1 - 2 * self.courant_number) * np.identity(dim) + self.courant_number * temp \
                + self.courant_number * temp.T
         if self.boundary_condition == "cyclical":
