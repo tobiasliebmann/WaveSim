@@ -86,7 +86,7 @@ class TestCase2DSim(ut.TestCase):
             self.my_sim.initial_velocities = np.array([[3., 4.], [2., 3.]])
 
         with self.assertRaises(TypeError):
-            self.my_sim.initial_velocities = np.full((10, 10), "String")
+            self.my_sim.initial_velocities = np.full((10, 10), "Hello")
 
 
 if __name__ == '__main__':

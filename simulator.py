@@ -582,7 +582,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             # Check initial velocities and the number of grid points coincide.
             if new_initial_velocities.shape == self.number_of_grid_points:
                 # Check the data type of the numpy array initial velocities.
-                if new_initial_velocities.dtype == "float64" or new_initial_velocities == "int64":
+                if new_initial_velocities.dtype == "float64" or new_initial_velocities.dtype == "int64":
                     self._initial_velocities = new_initial_velocities
                 else:
                     raise TypeError("The numpy array containing the initial velocities must have the dtype float64 or"
