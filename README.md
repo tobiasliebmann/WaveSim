@@ -1,4 +1,4 @@
-# Wave equation simulator
+# Wave equation simulator 1D
 
 The Python code in this repository solves a 1D wave equation on a grid. 
 In the future it will be updated for 2D wave equations. The topics which
@@ -191,6 +191,27 @@ resulted in the wave shown below.
 <p align="center">
 <img src=/images/wave_animation.gif>
 </p>
+
+# Wave equation simulator 2D
+Deriving the discretized wave equation in 2D involves exactly the same procedure as
+its 1D counterpart. Because of this only the resulting equation which describes the
+transition of a grid point at the j-th position in the i-th row from the k-th to the 
+k+1-th time step is stated
+<br>
+<br>
+<p align="center">
+<img src=/images/wave_equation2D.jpg>
+</p>
+Note that the grid spacings in x- and y-direction are the same. Otherwise there would be
+two different courant numbers. For the first time step the initial conditions are now
+2D and the following time step is given by the equation
+<br>
+<br>
+<p align="center">
+<img src=/images/wave_equation2D_first_step.jpg>
+</p>
+Both of these equations can be interpreted as matrix equations where the amplitudes on
+the grid are represented by the entries of a matrix 
 
 ## Benchmark
 Coming soon.
