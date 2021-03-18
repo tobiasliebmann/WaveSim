@@ -218,6 +218,7 @@ from the k-th to the k+1-th time step is given by
 <p align="center">
 <img src=/images/wave_equation2D_matrix_equation.jpg>
 </p>
+F and G are matrices given by the initial conditions evaluated on the grid points. 
 Both matrices in the above equations have the structure as the matrix in the 1D case. The
 only differences to the 1D case are their dimensions. If the matrix U<sub>k</sub> has the
 dimension i x j, T<sub>L</sub> has dimension i x i and T<sub>R</sub> has dimension j x j.
