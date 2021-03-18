@@ -610,8 +610,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                + self.courant_number * temp.T
         if self.boundary_condition == "cyclical":
             # Set the off diagonal edges to fulfill he cyclical boundary conditions.
-            temp[self.number_of_grid_points[0] - 1, 0] = self.courant_number
-            temp[0, self.number_of_grid_points[1] - 1] = self.courant_number
+            temp[dim - 1, 0] = self.courant_number
+            temp[0, dim - 1] = self.courant_number
         elif self.boundary_condition == "fixed edges":
             # Set these elements to zero, so that the boundary conditions are fulfilled
             temp[0, 0] = 0.

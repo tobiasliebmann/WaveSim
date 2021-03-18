@@ -30,7 +30,8 @@ class TestCase2DSim(ut.TestCase):
         # Initial velocities.
         self.init_vel = np.zeros(self.dim)
 
-        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, self.dim, 10, self.init_amps, self.init_vel, "cyclical")
+        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, self.dim, 10, self.init_amps, self.init_vel, "loose edges"
+                                                 )
 
     def tearDown(self) -> None:
         """
@@ -39,13 +40,20 @@ class TestCase2DSim(ut.TestCase):
         """
         pass
 
+    def test_courant_number(self):
+        """
+
+        :return:
+        """
+        np.testing.assert_almost_equal(self.my_sim.courant_number, 0.25)
+
     def test_boundary_condition(self):
         """
         Tests if the the setter method for the boundary condition of the 2D wave simulator correctly raises errors and
         if the getter function returns the correct values.
         :return: None.
         """
-        self.assertEqual(self.my_sim.boundary_condition, "cyclical")
+        self.assertEqual(self.my_sim.boundary_condition, "loose edges")
 
         with self.assertRaises(TypeError):
             self.my_sim.boundary_condition = 5.
@@ -84,7 +92,7 @@ class TestCase2DSim(ut.TestCase):
             self.my_sim.initial_amplitudes = np.array([[3., 4.], [2., 3.]])
 
         with self.assertRaises(TypeError):
-            self.my_sim.initial_amplitudes = np.full((10, 10), "String")
+            self.my_sim.initial_amplitudes = np.full(self.dim, "String")
 
     def test_initial_velocities(self):
         """
@@ -100,9 +108,96 @@ class TestCase2DSim(ut.TestCase):
             self.my_sim.initial_velocities = np.array([[3., 4.], [2., 3.]])
 
         with self.assertRaises(TypeError):
-            self.my_sim.initial_velocities = np.full((10, 10), "Hello")
+            self.my_sim.initial_velocities = np.full(self.dim, "Hello")
 
     def test_create_time_step_matrix(self):
+        """
+        Tests if the time step matrices are created correctly.
+        :return:
+        """
+        # Tests if the left matrix is implemented correctly for the boundary condition of loose edges.
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left,
+                                       np.array([[0.5, 0.25, 0., 0., 0., 0., 0., 0.],
+                                                 [0.25, 0.5, 0.25, 0., 0., 0., 0., 0.],
+                                                 [0., 0.25, 0.5, 0.25, 0., 0., 0., 0.],
+                                                 [0., 0., 0.25, 0.5, 0.25, 0., 0., 0.],
+                                                 [0., 0., 0., 0.25, 0.5, 0.25, 0., 0.],
+                                                 [0., 0., 0., 0., 0.25, 0.5, 0.25, 0.],
+                                                 [0., 0., 0., 0., 0., 0.25, 0.5, 0.25],
+                                                 [0., 0., 0., 0., 0., 0., 0.25, 0.5]]))
+
+        # Tests if the right matrix was created correctly for the boundary condition of loose edges.
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_right,
+                                       np.array([[0.5, 0.25, 0., 0., 0., 0., 0., 0., 0., 0.],
+                                                 [0.25, 0.5, 0.25, 0., 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0.25, 0.5, 0.25, 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0., 0.25, 0.5, 0.25, 0., 0., 0., 0., 0.],
+                                                 [0., 0., 0., 0.25, 0.5, 0.25, 0., 0., 0., 0.],
+                                                 [0., 0., 0., 0., 0.25, 0.5, 0.25, 0., 0., 0.],
+                                                 [0., 0., 0., 0., 0., 0.25, 0.5, 0.25, 0., 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0.25, 0.5, 0.25, 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0., 0.25, 0.5, 0.25],
+                                                 [0., 0., 0., 0., 0., 0., 0., 0., 0.25, 0.5]]))
+
+        # Define a new simulator with cyclical boundary conditions.
+        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, self.dim, 10, self.init_amps, self.init_vel, "cyclical")
+
+        # Tests if the left matrix is implemented correctly for a cyclical boundary condition.
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left,
+                                       np.array([[0.5, 0.25, 0., 0., 0., 0., 0., 0.25],
+                                                 [0.25, 0.5, 0.25, 0., 0., 0., 0., 0.],
+                                                 [0., 0.25, 0.5, 0.25, 0., 0., 0., 0.],
+                                                 [0., 0., 0.25, 0.5, 0.25, 0., 0., 0.],
+                                                 [0., 0., 0., 0.25, 0.5, 0.25, 0., 0.],
+                                                 [0., 0., 0., 0., 0.25, 0.5, 0.25, 0.],
+                                                 [0., 0., 0., 0., 0., 0.25, 0.5, 0.25],
+                                                 [0.25, 0., 0., 0., 0., 0., 0.25, 0.5]]))
+
+        # Tests if the right matrix was created correctly for a cyclical boundary condition.
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_right,
+                                       np.array([[0.5, 0.25, 0., 0., 0., 0., 0., 0., 0., 0.25],
+                                                 [0.25, 0.5, 0.25, 0., 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0.25, 0.5, 0.25, 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0., 0.25, 0.5, 0.25, 0., 0., 0., 0., 0.],
+                                                 [0., 0., 0., 0.25, 0.5, 0.25, 0., 0., 0., 0.],
+                                                 [0., 0., 0., 0., 0.25, 0.5, 0.25, 0., 0., 0.],
+                                                 [0., 0., 0., 0., 0., 0.25, 0.5, 0.25, 0., 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0.25, 0.5, 0.25, 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0., 0.25, 0.5, 0.25],
+                                                 [0.25, 0., 0., 0., 0., 0., 0., 0., 0.25, 0.5]]))
+
+        # Create a new simulator object with fixed edges as boundary condition.
+        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, self.dim, 10, self.init_amps, self.init_vel, "fixed edges"
+                                                 )
+        # Tests if the left matrix is implemented correctly with the boundary condition of fixed edges.
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left,
+                                       np.array([[0., 0., 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0.5, 0.25, 0., 0., 0., 0., 0.],
+                                                 [0., 0.25, 0.5, 0.25, 0., 0., 0., 0.],
+                                                 [0., 0., 0.25, 0.5, 0.25, 0., 0., 0.],
+                                                 [0., 0., 0., 0.25, 0.5, 0.25, 0., 0.],
+                                                 [0., 0., 0., 0., 0.25, 0.5, 0.25, 0.],
+                                                 [0., 0., 0., 0., 0., 0.25, 0.5, 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0., 0.]]))
+
+        # Tests if the right matrix was created correctly with the boundary condition of fixed edges.
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_right,
+                                       np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0.5, 0.25, 0., 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0.25, 0.5, 0.25, 0., 0., 0., 0., 0., 0.],
+                                                 [0., 0., 0.25, 0.5, 0.25, 0., 0., 0., 0., 0.],
+                                                 [0., 0., 0., 0.25, 0.5, 0.25, 0., 0., 0., 0.],
+                                                 [0., 0., 0., 0., 0.25, 0.5, 0.25, 0., 0., 0.],
+                                                 [0., 0., 0., 0., 0., 0.25, 0.5, 0.25, 0., 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0.25, 0.5, 0.25, 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0., 0.25, 0.5, 0.],
+                                                 [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]]))
+
+    def test_update(self):
+        """
+
+        :return:
+        """
         pass
 
 
