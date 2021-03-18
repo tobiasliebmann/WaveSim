@@ -211,7 +211,13 @@ two different courant numbers. For the first time step the initial conditions ar
 <img src=/images/wave_equation2D-first_step.jpg>
 </p>
 Both of these equations can be interpreted as matrix equations where the amplitudes on
-the grid are represented by the entries of a matrix 
+the grid are represented by the entries of a matrix U. The equation allowing a transition
+from the k-th to the k+1-th time step is given by
+<br>
+<br>
+<p align="center">
+<img src=/images/wave_equation2D_matrix_equation.jpg>
+</p>
 
 ## Benchmark
 Coming soon.
