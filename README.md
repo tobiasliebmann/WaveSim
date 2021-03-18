@@ -225,7 +225,7 @@ Their individual structures are given by
 <br>
 <br>
 <p align="center">
-<img src=/images/time_step_matrix_2D.jpg.jpg>
+<img src=/images/time_step_matrix_2D.jpg>
 </p>
 
 ## Boundary conditions
