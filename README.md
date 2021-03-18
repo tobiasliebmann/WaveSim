@@ -245,7 +245,6 @@ and the initial conditions
 <img src=/images/wave_sim_2D_init_cond.jpg>
 </p>
 resulted in the wave shown below.
-<br>
 <p align="center">
 <img src=/images/wave_sim2D_surface_opt.gif>
 </p>
