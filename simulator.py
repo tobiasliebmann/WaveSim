@@ -650,9 +650,15 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
 
     # todo: Make this method more efficient.
     def update(self) -> None:
+        number_of_rows = self.number_of_grid_points[0]
+        temp1 = np.roll(self.current_amplitudes, number_of_rows)
+        temp2 = np.roll(self.current_amplitudes, -number_of_rows)
+        zeros = np.zeros(number_of_rows)
+        temp1[0] = zeros
+        temp2[number_of_rows - 1] = zeros
         # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
-        temp = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
-               np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
+        temp = (1. - 2. * self.courant_number) * self.current_amplitudes + self.courant_number * (temp1 + temp2)\
+               - self.former_amplitudes
         # Set the former and current amplitude accordingly.
         self.former_amplitudes = self.current_amplitudes
         self.current_amplitudes = temp
