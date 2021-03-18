@@ -17,13 +17,27 @@ class TestCase2DSim(ut.TestCase):
     - Updating the simulation.
     """
 
-    # Initial amplitudes
-    init_amps = np.full((10, 10), 1.)
+    def setUp(self) -> None:
+        """
+        Is evaluated before each test function call.
+        :return: None
+        """
+        self.dim = (8, 10)
 
-    # Initial velocities.
-    init_vel = np.zeros((10, 10))
+        # Initial amplitudes
+        self.init_amps = np.full(self.dim, 1.)
 
-    my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, (10, 10), 10, init_amps, init_vel, "cyclical")
+        # Initial velocities.
+        self.init_vel = np.zeros(self.dim)
+
+        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, self.dim, 10, self.init_amps, self.init_vel, "cyclical")
+
+    def tearDown(self) -> None:
+        """
+        is evaluated after each test function call.
+        :return: None
+        """
+        pass
 
     def test_boundary_condition(self):
         """
@@ -45,7 +59,7 @@ class TestCase2DSim(ut.TestCase):
         are raised if the wrong type is entered and if the getter returns the correct value.
         :return: None.
         """
-        self.assertEqual((10, 10), self.my_sim.number_of_grid_points)
+        np.testing.assert_almost_equal(self.dim, self.my_sim.number_of_grid_points)
 
         with self.assertRaises(TypeError):
             self.my_sim.number_of_grid_points = 9.
@@ -87,6 +101,9 @@ class TestCase2DSim(ut.TestCase):
 
         with self.assertRaises(TypeError):
             self.my_sim.initial_velocities = np.full((10, 10), "Hello")
+
+    def test_create_time_step_matrix(self):
+        pass
 
 
 if __name__ == '__main__':
