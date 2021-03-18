@@ -22,16 +22,17 @@ class TestCase2DSim(ut.TestCase):
         Is evaluated before each test function call.
         :return: None
         """
+        # Dimension of the grid used in the simulation.
         self.dim = (8, 10)
 
-        # Initial amplitudes
+        # Initial amplitudes.
         self.init_amps = np.full(self.dim, 1.)
 
         # Initial velocities.
         self.init_vel = np.zeros(self.dim)
 
-        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., .5, self.dim, 10, self.init_amps, self.init_vel, "loose edges"
-                                                 )
+        # Initialize the simulator object.
+        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., .5, self.dim, 10, self.init_amps, self.init_vel, "loose edges")
 
     def tearDown(self) -> None:
         """
@@ -42,7 +43,7 @@ class TestCase2DSim(ut.TestCase):
 
     def test_courant_number(self):
         """
-
+        Tests if the courant number is calculated correctly by the initializer.
         :return:
         """
         np.testing.assert_almost_equal(self.my_sim.courant_number, 0.25)
@@ -80,7 +81,8 @@ class TestCase2DSim(ut.TestCase):
 
     def test_initial_amplitudes(self):
         """
-
+        Tests the getter and setter methods for the initial amplitudes. It is tested if the getter returns the right
+        value and if exceptions are thrown when incorrect types are entered.
         :return: None.
         """
         np.testing.assert_almost_equal(self.init_amps, self.my_sim.initial_amplitudes)
@@ -96,7 +98,8 @@ class TestCase2DSim(ut.TestCase):
 
     def test_initial_velocities(self):
         """
-
+        Tests the getter and setter methods for the initial velocities. It is tested if the getter returns the right
+        value and if exceptions are thrown when incorrect types are entered.
         :return: None.
         """
         np.testing.assert_almost_equal(self.init_vel, self.my_sim.initial_velocities)
@@ -112,8 +115,9 @@ class TestCase2DSim(ut.TestCase):
 
     def test_create_time_step_matrix(self):
         """
-        Tests if the time step matrices are created correctly.
-        :return:
+        Tests if the time step matrices are created correctly. Teh time step matrices are tested for all three boundary
+        conditions.
+        :return: None
         """
         # Tests if the left matrix is implemented correctly for the boundary condition of loose edges.
         np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left,
@@ -195,8 +199,9 @@ class TestCase2DSim(ut.TestCase):
 
     def test_update(self):
         """
-
-        :return:
+        Tests the update method which is applied to get from one time step to another. The update method is tested two
+        times to see if the update equation on the first and the following steps are correct.
+        :return: None
         """
         # Update the simulator for the first time.
         self.my_sim.update()
