@@ -229,10 +229,29 @@ Their individual structures are given by
 </p>
 
 ## Boundary conditions
+todo: Write about the boundary conditions.
 
+## Results
+A simulation using the values
+<br>
+<br>
+<p align="center">
+<img src=/images/wave_sim_parameters_2D.jpg>
+</p>
+and the initial conditions
+<br>
+<br>
+<p align="center">
+<img src=/images/wave_sim_2D_init_cond.jpg>
+</p>
+resulted in the wave shown below.
+<br>
+<p align="center">
+<img src=/images/wave_sim2D_surface_opt.gif>
+</p>
 
-## Benchmark
+# Benchmark
 Coming soon.
 
-## Sources
+# Sources
 Coming soon.
