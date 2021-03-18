@@ -219,11 +219,16 @@ from the k-th to the k+1-th time step is given by
 <img src=/images/wave_equation2D_matrix_equation.jpg>
 </p>
 Both matrices in the above equations have the structure as the matrix in the 1D case. The
-only difference to the 1D case are their dimensions. If the matrix U<sub>k</sub> has the
+only differences to the 1D case are their dimensions. If the matrix U<sub>k</sub> has the
 dimension i x j, T<sub>L</sub> has dimension i x i and T<sub>R</sub> has dimension j x j.
+Their individual structures are given by
+<br>
+<br>
+<p align="center">
+<img src=/images/time_step_matrix_2D.jpg.jpg>
+</p>
 
 ## Boundary conditions
-
 
 
 ## Benchmark
