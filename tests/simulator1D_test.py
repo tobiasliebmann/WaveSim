@@ -16,7 +16,6 @@ class Sim1DTest(ut.TestCase):
 
     def test_create_time_step_matrix(self):
         """
-        todo: Update this method. I changed how the method to create the time step matrix works.
         Tests if the time_step_matrix is created correctly. It should have a frame of zeros and only the diagonals and
         off-diagonals should be filled with numbers.
         :return: None

@@ -30,7 +30,7 @@ class TestCase2DSim(ut.TestCase):
         # Initial velocities.
         self.init_vel = np.zeros(self.dim)
 
-        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., 0.5, self.dim, 10, self.init_amps, self.init_vel, "loose edges"
+        self.my_sim = sim.Numeric2DWaveSimulator(1., 1., .5, self.dim, 10, self.init_amps, self.init_vel, "loose edges"
                                                  )
 
     def tearDown(self) -> None:
@@ -198,7 +198,29 @@ class TestCase2DSim(ut.TestCase):
 
         :return:
         """
-        pass
+        # Update the simulator for the first time.
+        self.my_sim.update()
+        np.testing.assert_almost_equal(self.my_sim.current_amplitudes, np.array(
+            [[0.75, 0.875, 0.875, 0.875, 0.875, 0.875, 0.875, 0.875, 0.875, 0.75],
+             [0.875, 1., 1., 1., 1., 1., 1., 1., 1., 0.875],
+             [0.875, 1., 1., 1., 1., 1., 1., 1., 1., 0.875],
+             [0.875, 1., 1., 1., 1., 1., 1., 1., 1., 0.875],
+             [0.875, 1., 1., 1., 1., 1., 1., 1., 1., 0.875],
+             [0.875, 1., 1., 1., 1., 1., 1., 1., 1., 0.875],
+             [0.875, 1., 1., 1., 1., 1., 1., 1., 1., 0.875],
+             [0.75, 0.875, 0.875, 0.875, 0.875, 0.875, 0.875, 0.875, 0.875, 0.75]]))
+
+        # Update the simulator another time to check the update equation not only for the first step.
+        self.my_sim.update()
+        np.testing.assert_almost_equal(self.my_sim.current_amplitudes, np.array(
+            [[0.1875, 0.53125, 0.5625, 0.5625, 0.5625, 0.5625, 0.5625, 0.5625, 0.53125, 0.1875],
+             [0.53125, 0.9375, 0.96875, 0.96875, 0.96875, 0.96875, 0.96875, 0.96875, 0.9375, 0.53125],
+             [0.5625, 0.96875, 1., 1., 1., 1., 1., 1., 0.96875, 0.5625],
+             [0.5625, 0.96875, 1., 1., 1., 1., 1., 1., 0.96875, 0.5625],
+             [0.5625, 0.96875, 1., 1., 1., 1., 1., 1., 0.96875, 0.5625],
+             [0.5625, 0.96875, 1., 1., 1., 1., 1., 1., 0.96875, 0.5625],
+             [0.53125, 0.9375, 0.96875, 0.96875, 0.96875, 0.96875, 0.96875, 0.96875, 0.9375, 0.53125],
+             [0.1875, 0.53125, 0.5625, 0.5625, 0.5625, 0.5625, 0.5625, 0.5625, 0.53125, 0.1875]]))
 
 
 if __name__ == '__main__':

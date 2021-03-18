@@ -625,6 +625,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             pass
         return temp
 
+    # todo: Make this method more efficient.
     def update(self) -> None:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != self.initial_amplitudes.shape:
@@ -653,6 +654,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Increase the time step counter by one.
         self.time_step += 1
 
+    # todo: Make this method more efficient.
     def run(self) -> np.ndarray:
         self.stability_test()
         while self.time_step <= self.number_of_time_steps:
