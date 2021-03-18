@@ -35,7 +35,7 @@ def a0_func(x: np.ndarray, y: np.ndarray, center_x: float, center_y: float, widt
     :param center_x: center x-coordinate of the bell curve.
     :param center_y: center y-coordinate of the bell curve.
     :param width: Width of the bell curve.
-    :return: Returns a 2D numpy array respresenting the values of the bell curve at the specified x- and y-coordinates.
+    :return: Returns a 2D numpy array representing the values of the bell curve at the specified x- and y-coordinates.
     """
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
@@ -68,7 +68,7 @@ def update_plot(frame_number):
 
 
 ax.set_zlim(np.min(result), np.max(result))
-ani = animation.FuncAnimation(fig, update_plot, t - 1, interval=100)
+ani = animation.FuncAnimation(fig, update_plot, t - 1, interval=10)
 print("Starting to save the animation.")
 fn = "wave_sim2D_surface4"
 # ani.save(fn + ".gif", writer="imagemagick", fps=30)
