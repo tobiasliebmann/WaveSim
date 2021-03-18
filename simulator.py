@@ -4,6 +4,8 @@ import datetime as dt
 
 from abc import ABC, abstractmethod
 
+import numba as nb
+
 
 class NumericWaveSimulator(ABC):
     # Counter for the time steps taken int he algorithm.
@@ -447,7 +449,6 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
 
 
 class Numeric2DWaveSimulator(NumericWaveSimulator):
-
     allowed_boundary_conditions = {"cyclical", "fixed edges", "loose edges"}
 
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: tuple,
@@ -625,38 +626,47 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             pass
         return temp
 
+    @nb.jit(nopython=True, paralell=True)
+    def calculate_matrix_products(self):
+        pass
+
+    def stack_current_amplitude(self) -> None:
+        """
+
+        :return: None
+        """
+        # Add the freshly calculated time step at the end of the time evolution matrix.
+        self.amplitudes_time_evolution = np.vstack(
+            (self.amplitudes_time_evolution, np.array([self.current_amplitudes])))
+
+    def update_first_time(self) -> None:
+        # Save the initial amplitudes as the former amplitudes.
+        self.former_amplitudes = self.current_amplitudes
+        # The first is given by this equation.
+        self.current_amplitudes = 0.5 * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
+                                         np.dot(self.current_amplitudes, self.time_step_matrix_right)) + \
+                                  self.delta_t * self.initial_velocities
+        self.stack_current_amplitude()
+
     # todo: Make this method more efficient.
     def update(self) -> None:
+        # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
+        temp = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
+               np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
+        # Set the former and current amplitude accordingly.
+        self.former_amplitudes = self.current_amplitudes
+        self.current_amplitudes = temp
+        self.stack_current_amplitude()
+
+    # todo: Make this method more efficient.
+    def run(self) -> np.ndarray:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != self.initial_amplitudes.shape:
             raise ValueError("The shape of the grid and the initial amplitudes must coincide.")
         elif self.number_of_grid_points != self.initial_velocities.shape:
             raise ValueError("The shape of the grid points and the initial velocities must coincide.")
-        # First time step.
-        if self.time_step == 0:
-            # Save the initial amplitudes as the former amplitudes.
-            self.former_amplitudes = self.current_amplitudes
-            # The first is given by this equation.
-            self.current_amplitudes = (1 / 2) * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
-                                                 np.dot(self.current_amplitudes, self.time_step_matrix_right)) + \
-                                      self.delta_t * self.initial_velocities
-        # Not the first time step.
-        else:
-            # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
-            temp = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
-                   np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
-            # Set the former and current amplitude accordingly.
-            self.former_amplitudes = self.current_amplitudes
-            self.current_amplitudes = temp
-        # Add the freshly calculated time step at the end of the time evolution matrix.
-        self.amplitudes_time_evolution = np.vstack(
-            (self.amplitudes_time_evolution, np.array([self.current_amplitudes])))
-        # Increase the time step counter by one.
-        self.time_step += 1
-
-    # todo: Make this method more efficient.
-    def run(self) -> np.ndarray:
         self.stability_test()
-        while self.time_step <= self.number_of_time_steps:
+        self.update_first_time()
+        for _ in range(self.number_of_time_steps - 2):
             self.update()
         return self.amplitudes_time_evolution
