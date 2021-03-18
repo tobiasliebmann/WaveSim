@@ -208,7 +208,7 @@ two different courant numbers. For the first time step the initial conditions ar
 <br>
 <br>
 <p align="center">
-<img src=/images/wave_equation2D_first_step.jpg>
+<img src=/images/wave_equation2D-first_step.jpg>
 </p>
 Both of these equations can be interpreted as matrix equations where the amplitudes on
 the grid are represented by the entries of a matrix 
