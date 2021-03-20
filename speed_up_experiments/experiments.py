@@ -25,12 +25,12 @@ jited_normal_dim_data = np.array([])
 jited_opt_dim_data = np.array([])
 
 
-def create_matrix(dimension):
+def create_matrix(matrix_dimension):
     """
 
     :return:
     """
-    matrix = (1 - 2 * num) * np.identity(dimension)
+    matrix = (1 - 2 * num) * np.identity(matrix_dimension)
     np.fill_diagonal(matrix[1:], num)
     np.fill_diagonal(matrix[:, 1:], num)
     return matrix
@@ -68,25 +68,28 @@ def opt_mat_mul(mat_dim, matrix):
 # print(opt_mat_mul() - mat_mul())
 
 
-def run_mat_mul(number_of_calls):
+def run_mat_mul(matrix1, matrix2, number_of_calls):
     """
 
+    :param matrix1:
+    :param matrix2:
     :param number_of_calls:
     :return:
     """
     for _ in range(number_of_calls):
-        mat_mul(multiply_matrix, state_matrix)
+        mat_mul(matrix1, matrix2)
 
 
-def run_opt_mat_mul(mat_dim, number_of_calls):
+def run_opt_mat_mul(matrix, mat_dim, number_of_calls):
     """
 
+    :param matrix:
     :param mat_dim:
     :param number_of_calls:
     :return:
     """
     for _ in range(number_of_calls):
-        opt_mat_mul(mat_dim, state_matrix)
+        opt_mat_mul(mat_dim, matrix)
 
 
 @nb.jit(nopython=True)
@@ -139,12 +142,12 @@ for times in times_called:
     jited_normal_time_data = np.append(jited_normal_time_data, end2 - start2)
 
     start3 = time.time()
-    run_mat_mul(times)
+    run_mat_mul(multiply_matrix, state_matrix, times)
     end3 = time.time()
     normal_time_data = np.append(normal_time_data, end3 - start3)
 
     start4 = time.time()
-    run_opt_mat_mul(dim, times)
+    run_opt_mat_mul(state_matrix, dim, times)
     end4 = time.time()
     opt_time_data = np.append(opt_time_data, end4 - start4)
 
@@ -164,12 +167,12 @@ for dimension in dimensions:
     jited_normal_dim_data = np.append(jited_normal_dim_data, end2 - start2)
 
     start3 = time.time()
-    run_mat_mul(calls)
+    run_mat_mul(multiply_matrix, state_matrix, calls)
     end3 = time.time()
     normal_dim_data = np.append(normal_dim_data, end3 - start3)
 
     start4 = time.time()
-    run_opt_mat_mul(dimension, calls)
+    run_opt_mat_mul(state_matrix, dimension, calls)
     end4 = time.time()
     opt_dim_data = np.append(opt_dim_data, end4 - start4)
 
