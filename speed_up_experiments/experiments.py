@@ -46,21 +46,22 @@ def mat_mul(matrix1, matrix2):
     return np.dot(matrix1, matrix2) + np.dot(matrix1, matrix2)
 
 
-def opt_mat_mul(matrix):
+def opt_mat_mul(mat_dim, matrix):
     """
 
+    :param mat_dim:
     :param matrix:
     :return:
     """
-    temp1 = np.roll(matrix, dim)
-    temp2 = np.roll(matrix, -dim)
-    temp3 = np.roll(matrix.T, dim)
-    temp4 = np.roll(matrix.T, -dim)
-    zeros = np.zeros(dim)
+    temp1 = np.roll(matrix, mat_dim)
+    temp2 = np.roll(matrix, -mat_dim)
+    temp3 = np.roll(matrix.T, mat_dim)
+    temp4 = np.roll(matrix.T, -mat_dim)
+    zeros = np.zeros(mat_dim)
     temp1[0] = zeros
-    temp2[dim - 1] = zeros
+    temp2[mat_dim - 1] = zeros
     temp3[0] = zeros
-    temp4[dim - 1] = zeros
+    temp4[mat_dim - 1] = zeros
     return (2. - 4. * num) * matrix + num * (temp1 + temp2 + temp3.T + temp4.T)
 
 
@@ -77,14 +78,15 @@ def run_mat_mul(number_of_calls):
         mat_mul(multiply_matrix, state_matrix)
 
 
-def run_opt_mat_mul(number_of_calls):
+def run_opt_mat_mul(mat_dim, number_of_calls):
     """
 
+    :param mat_dim:
     :param number_of_calls:
     :return:
     """
     for _ in range(number_of_calls):
-        opt_mat_mul(state_matrix)
+        opt_mat_mul(mat_dim, state_matrix)
 
 
 @nb.jit(nopython=True)
@@ -101,23 +103,24 @@ def run_jited_mat_mul(matrix1, matrix2, number_of_calls):
 
 
 @nb.jit(nopython=True)
-def run_jited_opt_mat_mul(matrix, number_of_calls):
+def run_jited_opt_mat_mul(matrix, mat_dim, number_of_calls):
     """
 
+    :param mat_dim:
     :param matrix:
     :param number_of_calls:
     :return:
     """
     for _ in range(number_of_calls):
-        temp1 = np.roll(matrix, dim)
-        temp2 = np.roll(matrix, -dim)
-        temp3 = np.roll(matrix.T, dim)
-        temp4 = np.roll(matrix.T, -dim)
-        zeros = np.zeros(dim)
+        temp1 = np.roll(matrix, mat_dim)
+        temp2 = np.roll(matrix, -mat_dim)
+        temp3 = np.roll(matrix.T, mat_dim)
+        temp4 = np.roll(matrix.T, -mat_dim)
+        zeros = np.zeros(mat_dim)
         temp1[0] = zeros
-        temp2[dim - 1] = zeros
+        temp2[mat_dim - 1] = zeros
         temp3[0] = zeros
-        temp4[dim - 1] = zeros
+        temp4[mat_dim - 1] = zeros
         return (2. - 4. * num) * matrix + num * (temp1 + temp2 + temp3.T + temp4.T)
 
 
@@ -126,7 +129,7 @@ state_matrix = np.random.rand(dim, dim)
 
 for times in times_called:
     start1 = time.time()
-    run_jited_opt_mat_mul(state_matrix, times)
+    run_jited_opt_mat_mul(state_matrix, dim, times)
     end1 = time.time()
     jited_opt_time_data = np.append(jited_opt_time_data, end1 - start1)
 
@@ -141,7 +144,7 @@ for times in times_called:
     normal_time_data = np.append(normal_time_data, end3 - start3)
 
     start4 = time.time()
-    run_opt_mat_mul(times)
+    run_opt_mat_mul(dim, times)
     end4 = time.time()
     opt_time_data = np.append(opt_time_data, end4 - start4)
 
@@ -151,7 +154,7 @@ for dimension in dimensions:
     state_matrix = np.random.rand(dimension, dimension)
 
     start1 = time.time()
-    run_jited_opt_mat_mul(state_matrix, calls)
+    run_jited_opt_mat_mul(state_matrix, dimension, calls)
     end1 = time.time()
     jited_opt_dim_data = np.append(jited_opt_dim_data, end1 - start1)
 
@@ -166,36 +169,34 @@ for dimension in dimensions:
     normal_dim_data = np.append(normal_dim_data, end3 - start3)
 
     start4 = time.time()
-    run_opt_mat_mul(calls)
+    run_opt_mat_mul(dimension, calls)
     end4 = time.time()
     opt_dim_data = np.append(opt_dim_data, end4 - start4)
 
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10., 4.8))
 
-ax.plot(times_called, normal_time_data, marker="s")
-ax.plot(times_called, opt_time_data, marker="o")
-ax.plot(times_called, jited_normal_time_data, marker="d")
-ax.plot(times_called, jited_opt_time_data, marker="*")
+ax1.plot(times_called, normal_time_data, marker="s")
+ax1.plot(times_called, opt_time_data, marker="o")
+ax1.plot(times_called, jited_normal_time_data, marker="d")
+ax1.plot(times_called, jited_opt_time_data, marker="*")
 
-ax.set_ylabel("execution time (s)")
-ax.set_xlabel("times called")
-ax.set_yscale("log")
-ax.set_title(f"Matrix multiplication execution times for matrix dimension {dim}x{dim}.")
-ax.legend(["Normal", "Optimized", "Jited and normal", "Jited and optimized"], loc="upper left", bbox_to_anchor=(0.075, .995))
+ax1.set_ylabel("execution time (s)")
+ax1.set_xlabel("times called")
+ax1.set_yscale("log")
+ax1.set_title(f"Fixed matrix dimensions: {dim}x{dim}")
+ax1.legend(["Normal", "Optimized", "Jited and normal", "Jited and optimized"], loc="upper left", bbox_to_anchor=(0.075, .995))
 
-plt.grid(True)
+ax2.plot(dimensions, normal_dim_data, marker="s")
+ax2.plot(dimensions, opt_dim_data, marker="o")
+ax2.plot(dimensions, jited_normal_dim_data, marker="d")
+ax2.plot(dimensions, jited_opt_dim_data, marker="*")
+
+ax2.set_xlabel("matrix dimensions")
+ax2.set_yscale("log")
+ax2.set_title(f"Fixed number of calls: {calls}")
+
+ax1.grid(True)
+ax2.grid(True)
+plt.tight_layout()
 plt.draw()
 plt.show()
-
-# print(f"Function call needed {ti.timeit(mat_mul)} ms.")
-# print(f"Optimized function call needed {ti.timeit(opt_mat_mul)} ms.")
-# print(f"Parameters: matrix dimension = {dim}x{dim}, function calls = {calls}.")
-# print(f"For the first time the jited standard multiplication takes {np.round(end1 - start1, 4)} s.")
-# print(f"For the first time the jited optimized multiplication takes {np.round(end2 - start2, 4)} s.")
-# print(f"For the second time the jited standard multiplication takes {np.round(end3 - start3, 4)} s.")
-# print(f"For the second time the jited optimized multiplication takes {np.round(end4 - start4, 4)} s.")
-# print(f"The standard multiplication takes {np.round(end5 - start5, 2)} s.")
-# print(f"The optimized multiplication takes {np.round(end6 - start6, 2)} s.")
-
-
