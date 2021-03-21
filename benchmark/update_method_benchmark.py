@@ -4,11 +4,10 @@ import numba as nb
 
 import time as tm
 
-
 # Spacing of the time steps.
 dt = 1
 # speed of sound.
-c = 1/np.sqrt(2)
+c = 1 / np.sqrt(2)
 # Number of grid points.
 n = 300
 m = n
@@ -19,7 +18,7 @@ t = 100
 # Grid spacing.
 dx = 1
 
-num = (c * dt / dx)**2
+num = (c * dt / dx) ** 2
 
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
@@ -42,7 +41,7 @@ def a0_func(x: np.ndarray, y: np.ndarray, center_x: float, center_y: float, widt
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
 
-a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 2.)
+a0 = a0_func(x_mat, y_mat, (dx * m) / 2., (dx * n) / 2., 2.)
 
 v0 = np.zeros(dim)
 
@@ -69,44 +68,44 @@ right_matrix = left_matrix
 @nb.jit(nopython=True)
 def jit_cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
                 init_vel: np.ndarray):
-        """
+    """
 
-        :return:
-        """
-        time_evo_stack = init_amp
-        # The first is given by this equation.
-        former_amp = init_amp
-        curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + deltat * init_vel
+    :return:
+    """
+    time_evo_stack = init_amp
+    # The first is given by this equation.
+    former_amp = init_amp
+    curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + deltat * init_vel
+    time_evo_stack = np.append(time_evo_stack, curr_amp)
+
+    for _ in range(nots - 2):
+        temp = curr_amp
+        curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
+        former_amp = temp
         time_evo_stack = np.append(time_evo_stack, curr_amp)
 
-        for _ in range(nots - 2):
-            temp = curr_amp
-            curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
-            former_amp = temp
-            time_evo_stack = np.append(time_evo_stack, curr_amp)
-
-        return time_evo_stack
+    return time_evo_stack
 
 
 def cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
-                init_vel: np.ndarray):
-        """
+            init_vel: np.ndarray):
+    """
 
-        :return:
-        """
-        time_evo_stack = init_amp
-        # The first is given by this equation.
-        former_amp = init_amp
-        curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + deltat * init_vel
+    :return:
+    """
+    time_evo_stack = init_amp
+    # The first is given by this equation.
+    former_amp = init_amp
+    curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + deltat * init_vel
+    time_evo_stack = np.append(time_evo_stack, curr_amp)
+
+    for _ in range(nots - 2):
+        temp = curr_amp
+        curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
+        former_amp = temp
         time_evo_stack = np.append(time_evo_stack, curr_amp)
 
-        for _ in range(nots - 2):
-            temp = curr_amp
-            curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
-            former_amp = temp
-            time_evo_stack = np.append(time_evo_stack, curr_amp)
-
-        return time_evo_stack
+    return time_evo_stack
 
 
 jit_cal_amp(t, dt, left_matrix, right_matrix, a0, v0)
@@ -119,5 +118,5 @@ start2 = tm.time()
 jit_cal_amp(t, dt, left_matrix, right_matrix, a0, v0)
 end2 = tm.time()
 
-print(f"The jited function call took {end1 - start1} s.")
-print(f"The normal function call took {end2 - start2} s.")
+print(f"The jited function call took {end2 - start2} s.")
+print(f"The normal function call took {end1 - start1} s.")
