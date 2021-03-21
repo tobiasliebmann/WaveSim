@@ -4,7 +4,7 @@ import datetime as dt
 
 from abc import ABC, abstractmethod
 
-import numba as nb
+from scipy import sparse as sp
 
 
 class NumericWaveSimulator(ABC):
@@ -602,7 +602,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
-    def create_time_step_matrix(self, dim: int) -> np.ndarray:
+    def create_time_step_matrix(self, dim: int) -> sp.csr_matrix:
         # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
@@ -624,11 +624,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Boundary condition of fixed edges. The matrix remains the same.
         else:
             pass
-        return temp
-
-    @nb.jit(nopython=True, paralell=True)
-    def calculate_matrix_products(self):
-        pass
+        # Return a sparse matrix.
+        return sp.csr_matrix(temp)
 
     def stack_current_amplitude(self) -> None:
         """
@@ -643,25 +640,17 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Save the initial amplitudes as the former amplitudes.
         self.former_amplitudes = self.current_amplitudes
         # The first is given by this equation.
-        self.current_amplitudes = 0.5 * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
-                                         np.dot(self.current_amplitudes, self.time_step_matrix_right)) + \
+        self.current_amplitudes = 0.5 * (self.time_step_matrix_left.dot(self.current_amplitudes) +
+                                         self.current_amplitudes @ self.time_step_matrix_right) +\
                                   self.delta_t * self.initial_velocities
         self.stack_current_amplitude()
 
     # todo: Make this method more efficient.
     def update(self) -> None:
-        number_of_rows = self.number_of_grid_points[0]
-        temp1 = np.roll(self.current_amplitudes, number_of_rows)
-        temp2 = np.roll(self.current_amplitudes, -number_of_rows)
-        zeros = np.zeros(number_of_rows)
-        temp1[0] = zeros
-        temp2[number_of_rows - 1] = zeros
-        # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
-        temp = (1. - 2. * self.courant_number) * self.current_amplitudes + self.courant_number * (temp1 + temp2)\
-               - self.former_amplitudes
-        # Set the former and current amplitude accordingly.
-        self.former_amplitudes = self.current_amplitudes
-        self.current_amplitudes = temp
+        temp = self.current_amplitudes
+        self.current_amplitudes = self.time_step_matrix_left.dot(self.current_amplitudes) + self.current_amplitudes @\
+                                  self.time_step_matrix_right - self.former_amplitudes
+        self.former_amplitudes = temp
         self.stack_current_amplitude()
 
     # todo: Make this method more efficient.
