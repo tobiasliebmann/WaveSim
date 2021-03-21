@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 
 from scipy import sparse as sp
 
+import numba as nb
+
 
 class NumericWaveSimulator(ABC):
     # Counter for the time steps taken int he algorithm.
@@ -625,7 +627,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             pass
         # Return a sparse matrix.
-        return sp.csr_matrix(temp)
+        return temp
 
     def stack_current_amplitude(self) -> None:
         """
@@ -637,18 +639,26 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             (self.amplitudes_time_evolution, np.array([self.current_amplitudes])))
 
     def update_first_time(self) -> None:
+        """
+
+        :return:
+        """
         # Save the initial amplitudes as the former amplitudes.
         self.former_amplitudes = self.current_amplitudes
         # The first is given by this equation.
         self.current_amplitudes = 0.5 * (self.time_step_matrix_left.dot(self.current_amplitudes) +
-                                         self.current_amplitudes @ self.time_step_matrix_right) +\
+                                         self.current_amplitudes @ self.time_step_matrix_right) + \
                                   self.delta_t * self.initial_velocities
         self.stack_current_amplitude()
 
     # todo: Make this method more efficient.
     def update(self) -> None:
+        """
+
+        :return:
+        """
         temp = self.current_amplitudes
-        self.current_amplitudes = self.time_step_matrix_left.dot(self.current_amplitudes) + self.current_amplitudes @\
+        self.current_amplitudes = self.time_step_matrix_left.dot(self.current_amplitudes) + self.current_amplitudes @ \
                                   self.time_step_matrix_right - self.former_amplitudes
         self.former_amplitudes = temp
         self.stack_current_amplitude()
@@ -664,4 +674,39 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         self.update_first_time()
         for _ in range(self.number_of_time_steps - 2):
             self.update()
+        return self.amplitudes_time_evolution
+
+    @staticmethod
+    @nb.njit
+    def jit_cal_amp(nots: int, dt: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
+                    init_vel: np.ndarray):
+        """
+
+        :return:
+        """
+        time_evo_stack = np.array([init_amp])
+        # The first is given by this equation.
+        former_amp = init_amp
+        curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + dt * init_vel
+        time_evo_stack = np.vstack(time_evo_stack, curr_amp)
+
+        for _ in range(nots - 2):
+            temp = curr_amp
+            curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
+            former_amp = temp
+            time_evo_stack = np.vstack(time_evo_stack, curr_amp)
+
+        return time_evo_stack
+
+    def run_jit(self) -> np.ndarray:
+        if self.number_of_grid_points != self.initial_amplitudes.shape:
+            raise ValueError("The shape of the grid and the initial amplitudes must coincide.")
+        elif self.number_of_grid_points != self.initial_velocities.shape:
+            raise ValueError("The shape of the grid points and the initial velocities must coincide.")
+        self.stability_test()
+        self.amplitudes_time_evolution = self.jit_cal_amp(self.number_of_time_steps, self.delta_t,
+                                                          self.time_step_matrix_left,
+                                                          self.time_step_matrix_right,
+                                                          self.initial_amplitudes,
+                                                          self.initial_velocities)
         return self.amplitudes_time_evolution

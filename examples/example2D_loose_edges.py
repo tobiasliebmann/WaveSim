@@ -58,7 +58,7 @@ v0 = np.zeros(dim)
 # run the simulation.
 my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "loose edges")
 start = time.time()
-result = my_sim.run()
+result = my_sim.run_jit()
 end = time.time()
 print(f"Executing the simulation takes {round(end-start, 2)} s.")
 
