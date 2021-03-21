@@ -9,7 +9,7 @@ dt = 1
 # speed of sound.
 c = 1 / np.sqrt(2)
 # Number of grid points.
-n = 300
+n = 100
 m = n
 # Number of grid points in x- and y-direction
 dim = (m, n)
@@ -65,7 +65,7 @@ left_matrix = create_matrix(num, n)
 right_matrix = left_matrix
 
 
-@nb.jit(nopython=True)
+@nb.jit(nopython=True, nogil=True, parallel=True)
 def jit_cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
                 init_vel: np.ndarray):
     """
