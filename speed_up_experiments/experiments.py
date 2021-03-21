@@ -3,6 +3,7 @@ import random as rd
 import matplotlib.pyplot as plt
 import time
 import numba as nb
+from scipy import sparse as sp
 
 
 def create_matrix(number: float, matrix_dimension: int) -> np.ndarray:
@@ -52,6 +53,18 @@ def opt_mat_mul(number: float, matrix_dimension: int, matrix: np.ndarray) -> np.
 
 
 # print(opt_mat_mul() - mat_mul())
+
+
+def run_sparse_mat_mul(matrix1: sp.csr_matrix, matrix2: np.ndarray, number_of_calls: int):
+    """
+
+    :param number_of_calls:
+    :param matrix1:
+    :param matrix2:
+    :return:
+    """
+    for _ in range(number_of_calls):
+        matrix1.dot(matrix2)
 
 
 def run_mat_mul(matrix1: np.ndarray, matrix2: np.ndarray, number_of_calls: int):
@@ -123,17 +136,20 @@ normal_time_data = np.array([])
 opt_time_data = np.array([])
 jited_normal_time_data = np.array([])
 jited_opt_time_data = np.array([])
+sparse_time_data = np.array([])
 
 # Arrays saving the data for runs differing in dimension but with a fixing the times a function is called.
 normal_dim_data = np.array([])
 opt_dim_data = np.array([])
 jited_normal_dim_data = np.array([])
 jited_opt_dim_data = np.array([])
+sparse_dim_data = np.array([])
 
 # Create a random number and two matrices accordingly.
 num = rd.random()
 multiply_matrix = create_matrix(num, dim)
 state_matrix = np.random.rand(dim, dim)
+sparse_matrix = sp.csr_matrix(multiply_matrix)
 
 # Run the following loops for the benchmark.
 # The code could probably be a lot cleaner please don't hate me for this.
@@ -158,10 +174,16 @@ for times in times_called:
     end4 = time.time()
     opt_time_data = np.append(opt_time_data, end4 - start4)
 
+    start5 = time.time()
+    run_sparse_mat_mul(sparse_matrix, state_matrix, times)
+    end5 = time.time()
+    sparse_time_data = np.append(sparse_time_data, end5 - start5)
+
 for dimension in dimensions:
 
     multiply_matrix = create_matrix(num, dimension)
     state_matrix = np.random.rand(dimension, dimension)
+    sparse_matrix = sp.csr_matrix(multiply_matrix)
 
     start1 = time.time()
     run_jited_opt_mat_mul(state_matrix, dimension, num, calls)
@@ -183,6 +205,11 @@ for dimension in dimensions:
     end4 = time.time()
     opt_dim_data = np.append(opt_dim_data, end4 - start4)
 
+    start5 = time.time()
+    run_sparse_mat_mul(sparse_matrix, state_matrix, calls)
+    end5 = time.time()
+    sparse_dim_data = np.append(sparse_dim_data, end5 - start5)
+
 # --------------------
 # Plotting the results
 # --------------------
@@ -195,19 +222,21 @@ ax1.plot(times_called, normal_time_data, marker="s")
 ax1.plot(times_called, opt_time_data, marker="o")
 ax1.plot(times_called, jited_normal_time_data, marker="d")
 ax1.plot(times_called, jited_opt_time_data, marker="*")
+ax1.plot(times_called, sparse_time_data, marker=".")
 
 # Labels ad legends for the first plot
 ax1.set_ylabel("execution time (s)")
 ax1.set_xlabel("function calls")
 ax1.set_yscale("log")
 ax1.set_title(f"Fixed matrix dimensions: {dim}x{dim}")
-ax1.legend(["Normal", "Optimized", "Jited and normal", "Jited and optimized"], loc="upper left", bbox_to_anchor=(0.075, .995))
+ax1.legend(["Normal", "Optimized", "Jited and normal", "Jited and optimized", "sparse matrix"], loc="upper left", bbox_to_anchor=(0.075, .995))
 
 # Graphs for the second plot
 ax2.plot(dimensions, normal_dim_data, marker="s")
 ax2.plot(dimensions, opt_dim_data, marker="o")
 ax2.plot(dimensions, jited_normal_dim_data, marker="d")
 ax2.plot(dimensions, jited_opt_dim_data, marker="*")
+ax2.plot(dimensions, sparse_dim_data, marker=".")
 
 # Labels and legends for th second plot
 ax2.set_xlabel("matrix dimensions")
