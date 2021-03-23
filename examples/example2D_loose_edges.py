@@ -11,12 +11,12 @@ dt = 1
 # speed of sound.
 c = 1/np.sqrt(2)
 # Number of grid points.
-n = 100
-m = 100
+n = 200
+m = 200
 # Number of grid points in x- and y-direction
 dim = (m, n)
 # Number of time steps.
-t = 200
+t = 500
 # Grid spacing.
 dx = 1
 
