@@ -11,8 +11,8 @@ dt = 1
 # speed of sound.
 c = 1/np.sqrt(2)
 # Number of grid points.
-n = 200
-m = 200
+n = 100
+m = 100
 # Number of grid points in x- and y-direction
 dim = (m, n)
 # Number of time steps.
@@ -61,7 +61,6 @@ start = time.time()
 result = my_sim.run()
 end = time.time()
 print(f"Executing the simulation takes {round(end-start, 2)} s.")
-print(len(result))
 
 result = np.array(result)
 

@@ -6,8 +6,6 @@ from abc import ABC, abstractmethod
 
 from scipy import sparse as sp
 
-import numba as nb
-
 
 class NumericWaveSimulator(ABC):
     # Counter for the time steps taken int he algorithm.
@@ -604,7 +602,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
 
-    def create_time_step_matrix(self, dim: int) -> sp.csr_matrix:
+    def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
@@ -637,9 +635,12 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Save the initial amplitudes as the former amplitudes.
         self.former_amplitudes = self.current_amplitudes
         # The first is given by this equation.
-        self.current_amplitudes = 0.5 * (self.time_step_matrix_left.dot(self.current_amplitudes) +
-                                         self.current_amplitudes @ self.time_step_matrix_right) + \
+        self.current_amplitudes = 0.5 * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
+                                         np.dot(self.current_amplitudes, self.time_step_matrix_right)) + \
                                   self.delta_t * self.initial_velocities
+        # self.current_amplitudes = 0.5 * (self.time_step_matrix_left.dot(self.current_amplitudes) +
+        #                                 self.current_amplitudes @ self.time_step_matrix_right) + \
+        #                          self.delta_t * self.initial_velocities
         return self.current_amplitudes
 
     # todo: Make this method more efficient.
@@ -649,8 +650,10 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         :return:
         """
         temp = self.current_amplitudes
-        self.current_amplitudes = self.time_step_matrix_left.dot(self.current_amplitudes) + self.current_amplitudes @ \
-                                  self.time_step_matrix_right - self.former_amplitudes
+        self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) +\
+                                  np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
+        # self.current_amplitudes = self.time_step_matrix_left.dot(self.current_amplitudes) + self.current_amplitudes @ \
+        #                          self.time_step_matrix_right - self.former_amplitudes
         self.former_amplitudes = temp
         return self.current_amplitudes
 
