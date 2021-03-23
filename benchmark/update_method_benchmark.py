@@ -14,7 +14,7 @@ m = n
 # Number of grid points in x- and y-direction
 dim = (m, n)
 # Number of time steps.
-t = 100
+t = 500
 # Grid spacing.
 dx = 1
 
@@ -65,14 +65,14 @@ left_matrix = create_matrix(num, n)
 right_matrix = left_matrix
 
 
-@nb.jit(nopython=True, nogil=True, parallel=True)
+@nb.jit(nopython=True, parallel=True)
 def jit_cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
                 init_vel: np.ndarray):
     """
 
     :return:
     """
-    time_evo_stack = init_amp
+    time_evo_stack = []
     # The first is given by this equation.
     former_amp = init_amp
     curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + deltat * init_vel
@@ -82,9 +82,6 @@ def jit_cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.nd
         temp = curr_amp
         curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
         former_amp = temp
-        time_evo_stack = np.append(time_evo_stack, curr_amp)
-
-    return time_evo_stack
 
 
 def cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,

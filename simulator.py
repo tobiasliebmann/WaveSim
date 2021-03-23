@@ -683,7 +683,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
     #     curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + dt * init_vel
     #     time_evo_stack = np.vstack(time_evo_stack, curr_amp)
     #
-    #     for _ in range(nots - 2):
+    #     for _ in range(nots - 1):
     #         temp = curr_amp
     #         curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
     #         former_amp = temp
