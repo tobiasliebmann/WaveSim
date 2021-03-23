@@ -11,12 +11,12 @@ dt = 1
 # speed of sound.
 c = 1/np.sqrt(2)
 # Number of grid points.
-n = 100
-m = 100
+n = 200
+m = 200
 # Number of grid points in x- and y-direction
 dim = (m, n)
 # Number of time steps.
-t = 200
+t = 500
 # Grid spacing.
 dx = 1
 
@@ -58,9 +58,12 @@ v0 = np.zeros(dim)
 # run the simulation.
 my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "loose edges")
 start = time.time()
-result = my_sim.run_jit()
+result = my_sim.run()
 end = time.time()
 print(f"Executing the simulation takes {round(end-start, 2)} s.")
+print(len(result))
+
+result = np.array(result)
 
 fig, ax = plt.subplots(figsize=(5, 5))
 ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
