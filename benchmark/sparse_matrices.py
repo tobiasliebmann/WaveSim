@@ -24,7 +24,7 @@ def jit_mul(matrix1, matrix2):
     return np.dot(matrix1, matrix2)
 
 
-dim = 2000
+dim = 100
 
 state_matrix = np.random.rand(dim, dim)
 time_step_matrix = create_matrix(dim)
@@ -48,5 +48,5 @@ second_end_jit = tm.time()
 
 print(f"The numpy matrix multiplication took {end_normal - start_normal} s.")
 print(f"The sparse matrix multiplication took {end_sparse - start_sparse} s.")
-print(f"The jited sparse matrix multiplication took {first_end_jit - first_start_jit} s on the first call.")
-print(f"The jited sparse matrix multiplication took {second_end_jit - second_start_jit} s on the second call.")
+print(f"The jited matrix multiplication took {first_end_jit - first_start_jit} s on the first call.")
+print(f"The jited matrix multiplication took {second_end_jit - second_start_jit} s on the second call.")

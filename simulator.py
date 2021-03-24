@@ -1,10 +1,6 @@
 import numpy as np
-
 import datetime as dt
-
 from abc import ABC, abstractmethod
-
-from scipy import sparse as sp
 
 
 class NumericWaveSimulator(ABC):
@@ -563,7 +559,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                 if new_initial_amplitudes.dtype == "float64" or new_initial_amplitudes.dtype == "int64":
                     self._initial_amplitudes = new_initial_amplitudes
                 else:
-                    raise TypeError("The numpy array containing the initial velocities must have the dtype float64 or"
+                    raise TypeError("The numpy array containing the initial velocities must have the type float64 or"
                                     "int64.")
             else:
                 raise ValueError("The number of grid points and the length of the initial amplitudes must "
@@ -586,7 +582,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                 if new_initial_velocities.dtype == "float64" or new_initial_velocities.dtype == "int64":
                     self._initial_velocities = new_initial_velocities
                 else:
-                    raise TypeError("The numpy array containing the initial velocities must have the dtype float64 or"
+                    raise TypeError("The numpy array containing the initial velocities must have the type float64 or"
                                     "int64.")
             else:
                 raise ValueError("The number of grid points and the length of the new initial velocities must coincide."
@@ -643,7 +639,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         #                          self.delta_t * self.initial_velocities
         return self.current_amplitudes
 
-    # todo: Make this method more efficient.
     def update(self) -> np.ndarray:
         """
 
@@ -652,8 +647,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         temp = self.current_amplitudes
         self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) +\
                                   np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
-        # self.current_amplitudes = self.time_step_matrix_left.dot(self.current_amplitudes) + self.current_amplitudes @ \
-        #                          self.time_step_matrix_right - self.former_amplitudes
         self.former_amplitudes = temp
         return self.current_amplitudes
 
@@ -668,38 +661,3 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         self.amplitudes_time_evolution = [self.update_first_time()] +\
                                          [self.update() for _ in range(self.number_of_time_steps - 1)]
         return self.amplitudes_time_evolution
-
-    # @staticmethod
-    # @nb.njit
-    # def jit_cal_amp(nots: int, dt: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
-    #                 init_vel: np.ndarray):
-    #     """
-    #
-    #     :return:
-    #     """
-    #     time_evo_stack = np.array([init_amp])
-    #     # The first is given by this equation.
-    #     former_amp = init_amp
-    #     curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + dt * init_vel
-    #     time_evo_stack = np.vstack(time_evo_stack, curr_amp)
-    #
-    #     for _ in range(nots - 1):
-    #         temp = curr_amp
-    #         curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
-    #         former_amp = temp
-    #         time_evo_stack = np.vstack(time_evo_stack, curr_amp)
-    #
-    #     return time_evo_stack
-    #
-    # def run_jit(self) -> np.ndarray:
-    #     if self.number_of_grid_points != self.initial_amplitudes.shape:
-    #         raise ValueError("The shape of the grid and the initial amplitudes must coincide.")
-    #     elif self.number_of_grid_points != self.initial_velocities.shape:
-    #         raise ValueError("The shape of the grid points and the initial velocities must coincide.")
-    #     self.stability_test()
-    #     self.amplitudes_time_evolution = self.jit_cal_amp(self.number_of_time_steps, self.delta_t,
-    #                                                       self.time_step_matrix_left,
-    #                                                       self.time_step_matrix_right,
-    #                                                       self.initial_amplitudes,
-    #                                                       self.initial_velocities)
-    #     return self.amplitudes_time_evolution

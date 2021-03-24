@@ -1,13 +1,13 @@
 import numpy as np
 
-import numba as nb
+from scipy import sparse as sp
 
 import time as tm
 
 # Spacing of the time steps.
 dt = 1
 # speed of sound.
-c = 1 / np.sqrt(2)
+c = 1 / np.sqrt(3)
 # Number of grid points.
 n = 100
 m = n
@@ -64,56 +64,49 @@ def create_matrix(number: float, matrix_dimension: int) -> np.ndarray:
 left_matrix = create_matrix(num, n)
 right_matrix = left_matrix
 
-
-@nb.jit(nopython=True, parallel=True)
-def jit_cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
-                init_vel: np.ndarray):
-    """
-    todo: Rewrite this function so it reshapes the time_evo_stack to a 1D array and in the end reshapes it to a list of matrices.
-    :return:
-    """
-    time_evo_stack = []
-    # The first is given by this equation.
-    former_amp = init_amp
-    curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + deltat * init_vel
-    time_evo_stack = np.append(time_evo_stack, curr_amp)
-
-    for _ in range(nots - 2):
-        temp = curr_amp
-        curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
-        former_amp = temp
+left_matrix_sparse = sp.dia_matrix(left_matrix)
+right_matrix_sparse = sp.dia_matrix(right_matrix)
 
 
-def cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
-            init_vel: np.ndarray):
+def cal_amp_sparse(number_of_calls: int, left_mat: sp.dia_matrix, right_mat: sp.dia_matrix, init_amp: np.ndarray):
     """
 
     :return:
     """
-    time_evo_stack = init_amp
-    # The first is given by this equation.
-    former_amp = init_amp
-    curr_amp = 0.5 * (np.dot(left_mat, init_amp) + np.dot(init_amp, right_mat)) + deltat * init_vel
-    time_evo_stack = np.append(time_evo_stack, curr_amp)
-
-    for _ in range(nots - 2):
-        temp = curr_amp
-        curr_amp = np.dot(left_mat, curr_amp) + np.dot(curr_amp, right_mat) - former_amp
-        former_amp = temp
-        time_evo_stack = np.append(time_evo_stack, curr_amp)
-
-    return time_evo_stack
+    return [left_mat.dot(init_amp) - init_amp
+            for _ in range(number_of_calls)]
 
 
-jit_cal_amp(t, dt, left_matrix, right_matrix, a0, v0)
+def cal_amp(number_of_calls: int, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray):
+    """
+
+    :return:
+    """
+    return [np.dot(left_mat, init_amp) - init_amp
+            for _ in range(number_of_calls)]
+
 
 start1 = tm.time()
-cal_amp(t, dt, left_matrix, right_matrix, a0, v0)
+cal_amp(t, left_matrix, right_matrix, a0)
 end1 = tm.time()
 
+print(f"The repeated normal function call took {end1 - start1} s.")
+
 start2 = tm.time()
-jit_cal_amp(t, dt, left_matrix, right_matrix, a0, v0)
+cal_amp_sparse(t, left_matrix_sparse, right_matrix_sparse, a0)
 end2 = tm.time()
 
-print(f"The jited function call took {end2 - start2} s.")
-print(f"The normal function call took {end1 - start1} s.")
+print(f"The repeated function call using sparse matrices took {end2 - start2} s.")
+
+start3 = tm.time()
+mat = np.dot(left_matrix, a0)
+mat + mat.T
+end3 = tm.time()
+
+print(f"The function call using sparse matrices took {end3 - start3} s.")
+
+start4 = tm.time()
+np.dot(left_matrix, a0) + np.dot(a0, right_matrix)
+end4 = tm.time()
+
+print(f"The function using sparse matrices call took {end4 - start4} s.")

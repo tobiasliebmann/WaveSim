@@ -61,6 +61,8 @@ result = my_sim.run()
 end = time.time()
 print(f"Executing the simulation takes {round(end-start, 2)} s.")
 
+result = np.array(result)
+
 fig, ax = plt.subplots(figsize=(5, 5))
 ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
 
