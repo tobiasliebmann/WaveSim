@@ -550,22 +550,24 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return self._initial_amplitudes
 
     # todo: I would like to be able to enter a 2D function as initial condition.
-    @initial_amplitudes.setter
-    def initial_amplitudes(self, new_initial_amplitudes: np.ndarray) -> None:
+    # @initial_amplitudes.setter
+    # def initial_amplitudes(self, new_initial_amplitudes: np.ndarray) -> None:
         # Check if the initial amplitude is a numpy array.
-        if isinstance(new_initial_amplitudes, np.ndarray):
-            # Check if the length of the initial conditions coincides with the number of grid points.
-            if new_initial_amplitudes.shape == self.number_of_grid_points:
-                if new_initial_amplitudes.dtype == "float64" or new_initial_amplitudes.dtype == "int64":
-                    self._initial_amplitudes = new_initial_amplitudes
-                else:
-                    raise TypeError("The numpy array containing the initial velocities must have the type float64 or"
-                                    "int64.")
-            else:
-                raise ValueError("The number of grid points and the length of the initial amplitudes must "
-                                 "coincide.")
-        else:
-            raise TypeError("The initial amplitudes must be a numpy array.")
+    #    if isinstance(new_initial_amplitudes, np.ndarray):
+    #        # Check if the length of the initial conditions coincides with the number of grid points.
+    #        if new_initial_amplitudes.shape == self.number_of_grid_points:
+    #            if new_initial_amplitudes.dtype == "float64" or new_initial_amplitudes.dtype == "int64":
+    #                self._initial_amplitudes = new_initial_amplitudes
+    #            else:
+    #                raise TypeError("The numpy array containing the initial velocities must have the type float64 or"
+    #                                "int64.")
+    #        else:
+    #            raise ValueError("The number of grid points and the length of the initial amplitudes must "
+    #                             "coincide.")
+    #    else:
+    #        raise TypeError("The initial amplitudes must be a numpy array.")
+
+
 
     @property
     def initial_velocities(self) -> np.ndarray:
