@@ -665,8 +665,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         elif self.number_of_grid_points != self.initial_velocities.shape:
             raise ValueError("The shape of the grid points and the initial velocities must coincide.")
         self.stability_test()
-        temp = self.update_first_time()
-        self.amplitudes_time_evolution = [temp] + [self.update() for _ in range(self.number_of_time_steps - 1)]
+        self.amplitudes_time_evolution = [self.update_first_time()] +\
+                                         [self.update() for _ in range(self.number_of_time_steps - 1)]
         return self.amplitudes_time_evolution
 
     # @staticmethod

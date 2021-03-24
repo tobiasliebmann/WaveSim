@@ -69,7 +69,7 @@ right_matrix = left_matrix
 def jit_cal_amp(nots: int, deltat: float, left_mat: np.ndarray, right_mat: np.ndarray, init_amp: np.ndarray,
                 init_vel: np.ndarray):
     """
-
+    todo: Rewrite this function so it reshapes the time_evo_stack to a 1D array and in the end reshapes it to a list of matrices.
     :return:
     """
     time_evo_stack = []
