@@ -552,8 +552,9 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
 
     def calculate_grid_coordinates(self) -> tuple:
         """
-
-        :return:
+        This method returns the grid coordinates in x- and y-direction for the grid represented by the distance dx and
+        the dimension given by the number_of_grid_points attribute.
+        :return: A tuple of numpy arrays containing the grid coordinates in x- and y-direction.
         """
         x_dim = self.number_of_grid_points[0]
         y_dim = self.number_of_grid_points[1]
@@ -624,7 +625,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                 self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
         else:
             raise TypeError("delta_x must be of type float or int.")
-
 
     @property
     def boundary_condition(self) -> str:
@@ -822,9 +822,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         self.current_amplitudes = 0.5 * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
                                          np.dot(self.current_amplitudes, self.time_step_matrix_right)) + \
                                   self.delta_t * self.initial_velocities
-        # self.current_amplitudes = 0.5 * (self.time_step_matrix_left.dot(self.current_amplitudes) +
-        #                                 self.current_amplitudes @ self.time_step_matrix_right) + \
-        #                          self.delta_t * self.initial_velocities
         return self.current_amplitudes
 
     def update(self) -> np.ndarray:
@@ -840,15 +837,10 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
 
     # todo: Make this method more efficient.
     def run(self) -> list:
-        # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
-        # todo: Check if number_of_grid_points and the shape of the initial conditions coincide if they don't =>
-        #  evaluate them again on the new grid and set the time step matrices accordingly.
-        # todo: If the above case is present print a user warning.
-        # todo: Add check for time step matrices.
-        if self.number_of_grid_points != self.initial_amplitudes.shape:
-            raise ValueError("The shape of the grid and the initial amplitudes must coincide.")
-        elif self.number_of_grid_points != self.initial_velocities.shape:
-            raise ValueError("The shape of the grid points and the initial velocities must coincide.")
+        """
+        
+        :return:
+        """
         self.stability_test()
         self.amplitudes_time_evolution = [self.update_first_time()] + \
                                          [self.update() for _ in range(self.number_of_time_steps - 1)]
