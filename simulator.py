@@ -609,7 +609,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
 
     @property
     def speed_of_sound(self):
-        return self._delta_t
+        return self._speed_of_sound
 
     @speed_of_sound.setter
     def speed_of_sound(self, new_speed_of_sound):
