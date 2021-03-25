@@ -9,7 +9,7 @@ import time
 # Spacing of the time steps.
 dt = 1
 # speed of sound.
-c = 1/np.sqrt(2)
+c = 1/np.sqrt(3)
 # Number of grid points.
 n = 100
 m = 100
@@ -41,6 +41,17 @@ def a0_func(x: np.ndarray, y: np.ndarray, center_x: float, center_y: float, widt
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
 
+def amp_func(x, y):
+    global dx
+    global m
+    global n
+    return a0_func(x, y, (dx * m)/2., (dx * n)/2., 2.)
+
+
+def vel_func(x, y):
+    return 0.*x + 0.*y
+
+
 a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 2.)
 
 # a0 = np.exp(-((x_mat - (dx * m)/2) ** 2 + (y_mat - (dx * n)/2) ** 2) / (2 * 2. ** 2))
@@ -56,7 +67,7 @@ v0 = np.zeros(dim)
 # print(v0)
 
 # run the simulation.
-my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "loose edges")
+my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, amp_func, vel_func, "loose edges")
 start = time.time()
 result = my_sim.run()
 end = time.time()

@@ -4,6 +4,8 @@ from scipy import sparse as sp
 
 import time as tm
 
+import numba as nb
+
 # Spacing of the time steps.
 dt = 1
 # speed of sound.
@@ -85,6 +87,41 @@ def cal_amp(number_of_calls: int, left_mat: np.ndarray, right_mat: np.ndarray, i
     return [np.dot(left_mat, init_amp) - init_amp
             for _ in range(number_of_calls)]
 
+
+@nb.jit(nopython=True)
+def jitted_sim(dimension: tuple, delta_t:float, number_of_time_steps: int, matrix_l: np.ndarray, matrix_r: np.ndarray,
+               init_amps: np.ndarray, init_val:np.ndarray):
+    """
+
+    :param dimension:
+    :param number_of_time_steps:
+    :param delta_t:
+    :param matrix_r:
+    :param matrix_l:
+    :param init_amps:
+    :param init_val:
+    :return:
+    """
+    time_evo_stack = np.zeros(dimension, dtype="float64")
+    prev_amps = init_amps
+    curr_amps = 0.5 * (np.dot(matrix_l, init_amps) + np.dot(init_amps, matrix_r)) + delta_t * init_val
+    for i in range(number_of_time_steps):
+        temp = curr_amps
+        curr_amps = np.dot(matrix_l, curr_amps) + np.dot(curr_amps, matrix_r) - prev_amps
+        prev_amps = temp
+        time_evo_stack[i] = curr_amps
+    return time_evo_stack
+
+
+start_jit = tm.time()
+jitted_sim((t, m, n), dt, t, left_matrix, right_matrix, a0, v0)
+end_jit = tm.time()
+print(f"The first jitted execution took {end_jit - start_jit} s.")
+
+start_jit2 = tm.time()
+jitted_sim((t, m, n), dt, t, left_matrix, right_matrix, a0, v0)
+end_jit2 = tm.time()
+print(f"The second jitted execution took {end_jit2 - start_jit2} s.")
 
 start1 = tm.time()
 cal_amp(t, left_matrix, right_matrix, a0)

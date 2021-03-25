@@ -26,14 +26,14 @@ class NumericWaveSimulator(ABC):
         self.delta_t = delta_t
         # Speed of sound in the medium.
         self.speed_of_sound = speed_of_sound
-        # Initial condition for the amplitudes.
-        self.initial_amplitude_function = initial_amplitude_function
-        # Initial condition for the amplitude's velocities.
-        self.initial_velocities_function = initial_velocities_function
         # Number of grid points in the grid.
         self.number_of_grid_points = number_of_grid_points
         # Number of time steps after which the simulation will terminate.
         self.number_of_time_steps = number_of_time_steps
+        # Initial condition for the amplitudes.
+        self.initial_amplitude_function = initial_amplitude_function
+        # Initial condition for the amplitude's velocities.
+        self.initial_velocities_function = initial_velocities_function
         # Defines the first position as the entered initial position.
         self.current_amplitudes = self.initial_amplitudes
         # There are no former amplitudes at t = 0.
@@ -660,7 +660,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         if callable(new_initial_amplitude_function):
             self._initial_amplitude_function = new_initial_amplitude_function
             x_mat, y_mat = self.calculate_grid_coordinates()
-            self.initial_amplitudes = self.initial_amplitude_function(x_mat, y_mat)
+            self.initial_amplitudes = new_initial_amplitude_function(x_mat, y_mat)
         else:
             raise TypeError("The new function has to be a callable.")
 
@@ -673,7 +673,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         if callable(new_initial_velocities_function):
             self._initial_velocities_function = new_initial_velocities_function
             x_mat, y_mat = self.calculate_grid_coordinates()
-            self.initial_velocities = self.initial_velocities_function(x_mat, y_mat)
+            self.initial_velocities = self._initial_velocities_function(x_mat, y_mat)
         else:
             raise TypeError("The new function has to be a callable.")
 
@@ -835,10 +835,9 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         self.former_amplitudes = temp
         return self.current_amplitudes
 
-    # todo: Make this method more efficient.
     def run(self) -> list:
         """
-        
+
         :return:
         """
         self.stability_test()
