@@ -20,21 +20,17 @@ dx = 1 / (n - 1)
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
 
-# Initial amplitudes.
-a0 = np.exp(-(x_coord - 0.5) ** 2 / (2 * 0.01 ** 2))
-# a0 = np.cos(x_coord)
-a0[0] = 0.
-a0[-1] = 0.
 
-# Initial velocities of the amplitudes.
-v0 = np.zeros(n)
-# v0 = np.cos(x_coord)
-v0[0] = 0.
-v0[-1] = 0.
-# print(v0)
+def init_amp_func(x_array: np.ndarray) -> np.ndarray:
+    return np.exp(-(x_array - 0.5) ** 2 / (2 * 0.01 ** 2))
+
+
+def init_vel_func(x_array: np.ndarray) -> np.ndarray:
+    return 0. * x_array
+
 
 # run the simulation.
-my_sim = sim.Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
+my_sim = sim.Numeric1DWaveSimulator(dx, dt, c, n, t, init_amp_func, init_vel_func)
 start = time.time()
 result = my_sim.run()
 end = time.time()

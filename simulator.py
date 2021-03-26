@@ -1,12 +1,10 @@
 import numpy as np
 import datetime as dt
 from abc import ABC, abstractmethod
+from typing import List
 
 
 class NumericWaveSimulator(ABC):
-    # Counter for the time steps taken int he algorithm.
-    time_step = 0
-
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points,
                  number_of_time_steps: int, initial_amplitude_function: callable,
                  initial_velocities_function: callable) -> None:
@@ -301,7 +299,6 @@ class NumericWaveSimulator(ABC):
         """
         pass
 
-    # @staticmethod
     @abstractmethod
     def create_time_step_matrix(self, dim: int) -> np.ndarray:
         """
@@ -313,21 +310,29 @@ class NumericWaveSimulator(ABC):
         pass
 
     @abstractmethod
-    def update(self):
+    def update_first_time(self) -> np.ndarray:
         """
-        Updates the amplitudes to the next time step and sets the current and former state accordingly. The counter for
-        the time steps is then increased by one.
-        :return: None
+        The first time step is given by the initial conditions and is given by this method.
+        :return: Returns the current amplitudes after the first time step.
         """
         pass
 
     @abstractmethod
-    def run(self) -> np.ndarray:
+    def update(self) -> np.ndarray:
+        """
+        Updates the amplitudes to the next time step and sets the current and former state accordingly. The counter for
+        the time steps is then increased by one.
+        :return: Current amplitudes.
+        """
+        pass
+
+    @abstractmethod
+    def run(self) -> List[np.ndarray]:
         """
         Checks the stability of the scheme and then runs the simulation using the according formula. This is done
         updating the simulation until the number of time steps is reached at which point the method will return the
         result of the simulation.
-        :return: The result of the simulation. Each row in the matrix corresponds to the amplitudes in one time step.
+        :return: The result of the simulation. Each row in the list corresponds to the amplitudes in one time step.
         """
         pass
 
@@ -340,7 +345,8 @@ class NumericWaveSimulator(ABC):
 class Numeric1DWaveSimulator(NumericWaveSimulator):
 
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: int,
-                 number_of_time_steps: int, initial_amplitudes: np.ndarray, initial_velocities: np.ndarray) -> None:
+                 number_of_time_steps: int, initial_amplitude_function: callable,
+                 initial_velocities_function: callable) -> None:
         """
         Initializer for the 1D wave equation simulator. After the variables are passed the initializer calculates the
         courant number and the sets the current amplitudes to the initial amplitudes. Further, the time step matrix
@@ -351,15 +357,23 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
         :param number_of_grid_points: Number of grid points used in the simulation
         :param number_of_time_steps: Number of time steps after which the simulation terminates.
-        :param initial_amplitudes: Amplitudes corresponding to the first initial condition.
-        :param initial_velocities: Velocities of the amplitudes corresponding to the second initial condition.
+        :param initial_amplitude_function: Amplitudes corresponding to the first initial condition.
+        :param initial_velocities_function: Velocities of the amplitudes corresponding to the second initial condition.
         """
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
-                         initial_amplitudes, initial_velocities)
+                         initial_amplitude_function, initial_velocities_function)
         # Courant number of the problem.
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Creates the time step matrix.
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
+
+    def calculate_grid_coordinates(self) -> np.ndarray:
+        """
+        This method returns the grid coordinates in x- and y-direction for the grid represented by the distance dx and
+        the dimension given by the number_of_grid_points attribute.
+        :return: A tuple of numpy arrays containing the grid coordinates in x- and y-direction.
+        """
+        return np.arange(0., self.number_of_grid_points * self.delta_x, self.delta_x)
 
     @property
     def number_of_grid_points(self) -> int:
@@ -383,6 +397,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def initial_amplitude_function(self, new_initial_amplitude_function: callable) -> None:
         if callable(new_initial_amplitude_function):
             self._initial_amplitude_function = new_initial_amplitude_function
+            self.initial_amplitudes = new_initial_amplitude_function(self.calculate_grid_coordinates())
         else:
             raise TypeError("The new function has to be a callable.")
 
@@ -394,6 +409,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def initial_velocities_function(self, new_initial_velocities_function: callable) -> None:
         if callable(new_initial_velocities_function):
             self._initial_velocities_function = new_initial_velocities_function
+            self.initial_velocities = new_initial_velocities_function(self.calculate_grid_coordinates())
         else:
             raise TypeError("The new function has to be a callable.")
 
@@ -468,35 +484,30 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         temp[dim - 1, dim - 2] = 0
         return temp
 
-    def update(self) -> None:
+    def update_first_time(self) -> np.ndarray:
+        # The first is given by this equation.
+        self.current_amplitudes = 0.5 * np.dot(self.time_step_matrix, self.initial_amplitudes) + self.delta_t * \
+                                  self.initial_velocities
+        self.former_amplitudes = self.initial_amplitudes
+        return self.current_amplitudes
+
+    def update(self) -> np.ndarray:
+        temp = self.current_amplitudes
+        # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
+        self.current_amplitudes = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
+        # Set the former and current amplitude accordingly.
+        self.former_amplitudes = temp
+        return self.current_amplitudes
+
+    def run(self) -> List[np.ndarray]:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != len(self.initial_amplitudes):
             raise ValueError("The number of grid points and the length of the initial amplitudes must coincide.")
         elif self.number_of_grid_points != len(self.initial_velocities):
             raise ValueError("The number of grid points and the length of the initial velocities must coincide.")
-        # First time step.
-        if self.time_step == 0:
-            self.former_amplitudes = self.current_amplitudes
-            # The first is given by this equation.
-            self.current_amplitudes = np.dot((1 / 2) * self.time_step_matrix,
-                                             self.current_amplitudes) + self.delta_t * self.initial_velocities
-        # Not the first time step.
-        else:
-            # Save the next time step as a temporary value. The next time step is calculated via a linear equation.
-            temp = np.dot(self.time_step_matrix, self.current_amplitudes) - self.former_amplitudes
-            # Set the former and current amplitude accordingly.
-            self.former_amplitudes = self.current_amplitudes
-            self.current_amplitudes = temp
-        # Add the freshly calculated time step at the end of the time evolution matrix.
-        self.amplitudes_time_evolution = np.vstack(
-            [self.amplitudes_time_evolution, np.array([self.current_amplitudes])])
-        # Increase the time step counter by one.
-        self.time_step += 1
-
-    def run(self) -> np.ndarray:
         self.stability_test()
-        while self.time_step <= self.number_of_time_steps:
-            self.update()
+        self.amplitudes_time_evolution = [self.update_first_time()] + [self.update() for _ in
+                                                                       range(self.number_of_time_steps - 1)]
         return self.amplitudes_time_evolution
 
 
