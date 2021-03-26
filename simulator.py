@@ -508,9 +508,18 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def run(self) -> List[np.ndarray]:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != len(self.initial_amplitudes):
-            self.initial_amplitudes = self.initial_amplitude_function(self.number_of_grid_points)
-        elif self.number_of_grid_points != len(self.initial_velocities):
-            self.initial_velocities = self.initial_velocities_function(self.number_of_grid_points)
+            temp = self.initial_amplitude_function(self.calculate_grid_coordinates())
+            temp[0] = 0.
+            temp[-1] = 0.
+            self.initial_amplitudes = temp
+        if self.number_of_grid_points != len(self.initial_velocities):
+            temp = self.initial_velocities_function(self.calculate_grid_coordinates())
+            temp[0] = 0.
+            temp[-1] = 0.
+            self.initial_velocities = temp
+        if self.number_of_grid_points != self.time_step_matrix.shape[0] and self.number_of_grid_points != \
+                self.time_step_matrix.shape[1]:
+            self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
         # Test if the scheme is stable.
         self.stability_test()
         # Use list comprehension to construct the time_evolution of the amplitudes.
@@ -799,10 +808,10 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
 
     def update_first_time(self) -> np.ndarray:
         # Save the initial amplitudes as the former amplitudes.
-        self.former_amplitudes = self.current_amplitudes
+        self.former_amplitudes = self.initial_amplitudes
         # The first is given by this equation.
-        self.current_amplitudes = 0.5 * (np.dot(self.time_step_matrix_left, self.current_amplitudes) +
-                                         np.dot(self.current_amplitudes, self.time_step_matrix_right)) + \
+        self.current_amplitudes = 0.5 * (np.dot(self.time_step_matrix_left, self.initial_amplitudes) +
+                                         np.dot(self.initial_amplitudes, self.time_step_matrix_right)) + \
                                   self.delta_t * self.initial_velocities
         return self.current_amplitudes
 
