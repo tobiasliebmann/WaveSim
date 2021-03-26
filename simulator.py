@@ -502,10 +502,12 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def run(self) -> List[np.ndarray]:
         # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
         if self.number_of_grid_points != len(self.initial_amplitudes):
-            raise ValueError("The number of grid points and the length of the initial amplitudes must coincide.")
+            self.initial_amplitudes = self.initial_amplitude_function(self.number_of_grid_points)
         elif self.number_of_grid_points != len(self.initial_velocities):
-            raise ValueError("The number of grid points and the length of the initial velocities must coincide.")
+            self.initial_velocities = self.initial_velocities_function(self.number_of_grid_points)
+        # Test if the scheme is stable.
         self.stability_test()
+        # Use list comprehension to construct the time_evolution of the amplitudes.
         self.amplitudes_time_evolution = [self.update_first_time()] + [self.update() for _ in
                                                                        range(self.number_of_time_steps - 1)]
         return self.amplitudes_time_evolution
@@ -539,10 +541,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         :param boundary_condition: Boundary condition for the wave simulation. It can be cyclical, fixed edges or
         loose edges.
         """
-        # Initialize the amplitudes. These will be overwritten by initializer of the parent class.
-        # self.initial_amplitudes = None
-        # Initialize the velocities. These will be overwritten by initializer of the parent class.
-        # self.initial_velocities = None
         # Call the initializer of the parent class
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitude_function, initial_velocities_function)
