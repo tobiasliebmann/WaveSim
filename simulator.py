@@ -565,8 +565,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         the dimension given by the number_of_grid_points attribute.
         :return: A tuple of numpy arrays containing the grid coordinates in x- and y-direction.
         """
-        x_dim = self.number_of_grid_points[0]
-        y_dim = self.number_of_grid_points[1]
+        x_dim = self.number_of_grid_points[1]
+        y_dim = self.number_of_grid_points[0]
         x_coord = np.arange(0., x_dim * self.delta_x, self.delta_x)
         y_coord = np.arange(0., y_dim * self.delta_x, self.delta_x)
         x_mat, y_mat = np.meshgrid(x_coord, y_coord, sparse=True)
@@ -654,7 +654,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                 else:
                     self._boundary_condition = new_boundary_condition
                     self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[0])
-                    self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[1])
+                    self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
             else:
                 raise ValueError("The boundary condition has to be: cyclical, fixed edges or loose edges.")
         else:
@@ -731,7 +731,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                                     "int64.")
             else:
                 raise ValueError("The number of grid points and the length of the initial amplitudes must "
-                                 "coincide.")
+                                 f"coincide. The given shapes are {new_initial_amplitudes.shape} and "
+                                 f"{self.number_of_grid_points}")
         else:
             raise TypeError("The initial amplitudes must be a numpy array.")
 

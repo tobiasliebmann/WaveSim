@@ -12,9 +12,9 @@ dt = 1
 c = 1/np.sqrt(2)
 # Number of grid points.
 n = 100
-m = 100
+m = 150
 # Number of grid points in x- and y-direction
-dim = (m, n)
+dim = (n, m)
 # Number of time steps.
 t = 500
 # Grid spacing.
@@ -52,7 +52,7 @@ def vel_func(x, y):
     return 0.*x + 0.*y
 
 
-a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 2.)
+a0 = a0_func(x_mat, y_mat, (dx * n)/2., (dx * m)/2., 2.)
 
 # a0 = np.exp(-((x_mat - (dx * m)/2) ** 2 + (y_mat - (dx * n)/2) ** 2) / (2 * 2. ** 2))
 # a0 = np.cos(x_coord)
@@ -75,12 +75,14 @@ print(f"Executing the simulation takes {round(end-start, 2)} s.")
 
 result = np.array(result)
 
+print(result.shape)
+
 fig, ax = plt.subplots(figsize=(5, 5))
-ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
+ax.set(xlim=(0, (m - 1) * dx), ylim=(0, (n - 1) * dx))
 
 # contour_opts = {"levels": np.linspace(-9, 9, 10), "cmap": "RdBu", "lw": 2}
 
-cax = ax.contour(x_coord, x_coord, a0)
+cax = ax.contour(x_coord, y_coord, a0)
 
 # plt.draw()
 # plt.show()
@@ -93,7 +95,7 @@ ax.set_title("2D wave equation simulation")
 
 def animate(i):
     ax.collections = []
-    ax.contour(x_coord, x_coord, result[i, ...])
+    ax.contour(y_coord, x_coord, result[i, ...])
     ax.set_title("Frame:"+str(i))
 
 
