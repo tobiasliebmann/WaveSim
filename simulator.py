@@ -397,7 +397,10 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def initial_amplitude_function(self, new_initial_amplitude_function: callable) -> None:
         if callable(new_initial_amplitude_function):
             self._initial_amplitude_function = new_initial_amplitude_function
-            self.initial_amplitudes = new_initial_amplitude_function(self.calculate_grid_coordinates())
+            temp = new_initial_amplitude_function(self.calculate_grid_coordinates())
+            temp[0] = 0.
+            temp[-1] = 0.
+            self.initial_amplitudes = temp
         else:
             raise TypeError("The new function has to be a callable.")
 
@@ -409,7 +412,10 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def initial_velocities_function(self, new_initial_velocities_function: callable) -> None:
         if callable(new_initial_velocities_function):
             self._initial_velocities_function = new_initial_velocities_function
-            self.initial_velocities = new_initial_velocities_function(self.calculate_grid_coordinates())
+            temp = new_initial_velocities_function(self.calculate_grid_coordinates())
+            temp[0] = 0.
+            temp[-1] = 0.
+            self.initial_velocities = temp
         else:
             raise TypeError("The new function has to be a callable.")
 

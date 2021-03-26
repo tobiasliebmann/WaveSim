@@ -1,15 +1,14 @@
 import unittest as ut
-
 import numpy as np
 import simulator as sim
 
 
 # Initial amplitudes.
 def init_amps_func(x, y):
-    return x * y
+    return 1. + 0. * x + 0. * y
 
 
-# Initial velocities.
+# Initial velocity of the amplitudes.
 def init_vel_func(x, y):
     return 0. * x + 0. * y
 

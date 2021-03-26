@@ -1,18 +1,34 @@
 import unittest as ut
-
 import numpy as np
 import simulator as sim
 
 
+# Initial amplitudes.
+def init_amps_func(x):
+    return + 0. * x
+
+
+# Initial velocity of the amplitudes.
+def init_vel_func(x):
+    return 1. + 0. * x
+
+
 class Sim1DTest(ut.TestCase):
 
-    # Define the initial conditions
-    initial_positions = np.array([0, 0, 0, 0, 0, 0])
+    def setUp(self) -> None:
+        """
+        Is evaluated before each test function call.
+        :return: None
+        """
+        # Initialize the simulator object.
+        self.my_sim = sim.Numeric1DWaveSimulator(1., 1., np.sqrt(0.7), 10, 6, init_amps_func, init_vel_func)
 
-    initial_velocities = np.array([0, 1, 1, 1, 1, 0])
-
-    # Initialize simulator
-    my_sim = sim.Numeric1DWaveSimulator(1., 1., np.sqrt(0.7), 6, 6, initial_positions, initial_velocities)
+    def tearDown(self) -> None:
+        """
+        is evaluated after each test function call.
+        :return: None
+        """
+        pass
 
     def test_create_time_step_matrix(self):
         """
@@ -31,11 +47,9 @@ class Sim1DTest(ut.TestCase):
                                    [0., 0., 0., 0., 0., 0., 0.7, 0.6, 0.7, 0.],
                                    [0., 0., 0., 0., 0., 0., 0., 0.7, 0.6, 0.],
                                    [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
-        # Construct time step matrix.
-        constructed_matrix = self.my_sim.create_time_step_matrix(10)
         # Use a numpy test here since I couldn't find a fitting test in the unittest package. The method
         # assert_almost_equal is used since we are dealing with floats.
-        np.testing.assert_almost_equal(constructed_matrix, compare_matrix)
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix, compare_matrix)
 
     def test_delta_x(self):
         """
@@ -182,58 +196,12 @@ class Sim1DTest(ut.TestCase):
         correctness of the method for the first and any following time steps.
         :return: None
         """
-        # Reset the simulator with new values.
-        self.my_sim = sim.Numeric1DWaveSimulator(1., 1., 1., 5, 1, np.array([0, 0, 1, 0, 0]),
-                                                 np.array([0, 0, 0, 0, 0]))
-        # Update the simulator manually.
-        self.my_sim.update()
         # Test if the update formula is correct by calling the current_amplitudes attribute of the simulator.
-        np.testing.assert_almost_equal(self.my_sim.amplitudes_time_evolution[-1], np.array([0, 0.5, 0, 0.5, 0]))
+        np.testing.assert_almost_equal(self.my_sim.update_first_time(), np.array([0., 1., 1., 1., 1., 1., 1., 1., 1.,
+                                                                                  0.]))
 
-        # Update the simulator manually.
-        self.my_sim.update()
         # Test update formula.
-        np.testing.assert_almost_equal(self.my_sim.amplitudes_time_evolution[-1], np.array([0, 0., 0., 0., 0.]))
-
-    def test_update_error(self):
-        """
-        Tests if an error is raised when the number of grid points and the length of the initial amplitudes or
-        velocities don't coincide.
-        :return:
-        """
-        # Define simulator object
-        self.my_sim = sim.Numeric1DWaveSimulator(1., 1., 1., 5, 1, np.array([0, 0, 1, 0, 0]),
-                                                 np.array([0, 0, 0, 0, 0]))
-        self.my_sim.number_of_grid_points = 10
-        # Test for error.
-        with self.assertRaises(ValueError):
-            self.my_sim.update()
-
-    def test_save_load_errors(self):
-        """
-        This tests only tests the errors of the save and load methods.
-        :return: None
-        """
-        with self.assertRaises(ValueError):
-            sim.Numeric1DWaveSimulator.init_from_file(12)
-        with self.assertRaises(ValueError):
-            self.my_sim.save_data(23.)
-
-    def test_load_save_data(self):
-        """
-        Tests if the data is saved and loaded correctly. Thereby the current configuration of the simulator is saved to
-        a file, read out again and then compared.
-        :return: None
-        """
-        test_sim1 = sim.Numeric1DWaveSimulator(1, 1, 0.5, 6, 6, self.initial_positions, self.initial_velocities)
-        test_sim1.save_data(link_to_file="test_file.npy")
-        test_sim2 = sim.Numeric1DWaveSimulator.init_from_file("test_file.npy")
-        self.assertAlmostEqual(test_sim1.delta_x, test_sim2.delta_x)
-        self.assertAlmostEqual(test_sim1.delta_t, test_sim2.delta_t)
-        self.assertAlmostEqual(test_sim1.number_of_grid_points, test_sim2.number_of_grid_points)
-        self.assertAlmostEqual(test_sim1.number_of_time_steps, test_sim2.number_of_time_steps)
-        np.testing.assert_almost_equal(test_sim1.initial_amplitudes, test_sim2.initial_amplitudes)
-        np.testing.assert_almost_equal(test_sim1.initial_velocities, test_sim2.initial_velocities)
+        np.testing.assert_almost_equal(self.my_sim.update(), np.array([0., 1.3, 2., 2., 2., 2., 2., 2., 1.3, 0.]))
 
 
 if __name__ == "__main__":
