@@ -705,36 +705,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             raise TypeError("The number of grid points must be of type int or tuple.")
 
-    def check_boundary_condition(self, matrix: np.ndarray) -> bool:
-        """
-        Checks if a given matrix fulfills the current boundary condition. This means for cyclical boundary conditions
-        the first an last elements of the grid must be linked, for fixed edges there must be a ring of zeros surrounding
-        the matrix and for loose edges the diagonals and off-diagonals are completely populated.
-        :return: If the matrix fulfills the conditions return True, else False.
-        """
-        # Remember: The first entry of np.array.shape is the number of rows and the second is number of columns.
-        number_of_rows, number_of_columns = matrix.shape
-        threshold_value = 10 ** (-10)
-        # Cyclical boundary condition.
-        if self.boundary_condition == "cyclical":
-            return matrix[0, number_of_columns] > threshold_value and matrix[number_of_rows, 0] > threshold_value
-        # Fixed edges.
-        elif self.boundary_condition == "fixed edges":
-            def check_row(array: np.ndarray) -> bool:
-                """
-                Checks if all the entries in an array are smaller than the thresh hold value.
-                :param array: A numpy array of float or int.
-                :return: Ture if the described condition is fulfilled, else False.
-                """
-                return all(n <= threshold_value for n in array)
-
-            return check_row(matrix[0]) and check_row(matrix[number_of_rows - 1]) and check_row(matrix[0].T) and \
-                   check_row(matrix[number_of_columns - 1].T)
-        # Loose edges.
-        else:
-            # Since the loose edges does not have any boundary conditions can be anything.
-            return True
-
     @property
     def initial_amplitudes(self) -> np.ndarray:
         return self._initial_amplitudes
