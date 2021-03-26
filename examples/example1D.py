@@ -36,7 +36,7 @@ result = my_sim.run()
 end = time.time()
 print(f"Executing the simulation takes {round(end-start, 3)} s.")
 
-# my_sim.save_data()
+my_sim.save_data("example_data.npy")
 
 # Here begins the visualization part.
 fig = plt.figure()

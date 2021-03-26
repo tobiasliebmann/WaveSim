@@ -53,7 +53,7 @@ class NumericWaveSimulator(ABC):
             # Save the time evolution matrix for later use.
             temp = loaded_data[-1]
             # Delete the time evolution matrix since it is not needed in the initializer.
-            loaded_data = np.delete(loaded_data, -1)
+            del loaded_data[-1]
             # Make new instance of the class using the loaded data.
             new_obj = cls(*loaded_data)
             # Set the time evolution matrix.
@@ -175,8 +175,8 @@ class NumericWaveSimulator(ABC):
                                 self.speed_of_sound,
                                 self.number_of_grid_points,
                                 self.number_of_time_steps,
-                                self.initial_amplitudes,
-                                self.initial_velocities,
+                                self.initial_amplitude_function,
+                                self.initial_velocities_function,
                                 self.amplitudes_time_evolution], dtype=object)
         # Check if a link was provided
         if link_to_file is not None:
@@ -791,10 +791,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return temp
 
     def update_first_time(self) -> np.ndarray:
-        """
-
-        :return:
-        """
         # Save the initial amplitudes as the former amplitudes.
         self.former_amplitudes = self.current_amplitudes
         # The first is given by this equation.
@@ -804,21 +800,13 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return self.current_amplitudes
 
     def update(self) -> np.ndarray:
-        """
-
-        :return:
-        """
         temp = self.current_amplitudes
         self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
                                   np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
         self.former_amplitudes = temp
         return self.current_amplitudes
 
-    def run(self) -> list:
-        """
-
-        :return:
-        """
+    def run(self) -> List[np.ndarray]:
         self.stability_test()
         self.amplitudes_time_evolution = [self.update_first_time()] + \
                                          [self.update() for _ in range(self.number_of_time_steps - 1)]
