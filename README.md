@@ -251,7 +251,14 @@ resulted in the wave shown below.
 </p>
 
 # Benchmark
-Coming soon.
+This is a bench mark for different number of time steps and different dimensions of
+the problem for random initial amplitudes. The initial velocity of the amplitudes
+are set to zero resulting in the following bench mark.
+<br>
+<br>
+<p align="center">
+<img src=/images/simulation_benchmark.jpeg>
+</p>
 
 # Sources
 Coming soon.

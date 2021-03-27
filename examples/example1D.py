@@ -7,22 +7,24 @@ import matplotlib.animation as animation
 import time
 
 # Spacing of the time steps.
-dt = 0.0002
+dt = 1.
 # speed of sound.
-c = 10
+c = 1/np.sqrt(2)
 # Number of grid points.
-n = 500
+n = 100
 # Number of time steps.
-t = 100
+t = 1000
 # Grid spacing.
-dx = 1 / (n - 1)
+dx = 1.
 
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
 
 
 def init_amp_func(x_array: np.ndarray) -> np.ndarray:
-    return np.exp(-(x_array - 0.5) ** 2 / (2 * 0.01 ** 2))
+    global n
+    global dx
+    return np.exp(-(x_array - (n * dx)/2) ** 2 / (2 * 10. ** 2))
 
 
 def init_vel_func(x_array: np.ndarray) -> np.ndarray:
