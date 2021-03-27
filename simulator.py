@@ -6,8 +6,6 @@ from typing import List
 
 class NumericWaveSimulator(ABC):
 
-    coutner = 0
-
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points,
                  number_of_time_steps: int, initial_amplitude_function: callable,
                  initial_velocities_function: callable) -> None:
@@ -537,7 +535,10 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
 
 
 class Numeric2DWaveSimulator(NumericWaveSimulator):
+
     allowed_boundary_conditions = {"cyclical", "fixed edges", "loose edges"}
+
+    allowed_answers = {"Y", "N"}
 
     constructor_call_flag = True
 
@@ -778,13 +779,22 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             raise TypeError("The new initial velocities must be a numpy array.")
 
-    # todo: Look up how to implement this in a 2D scheme.
+    # todo: Add an input here to ask the user if they want to continue if the scheme may be unstable.
     def stability_test(self) -> None:
-        if not 0 <= self.courant_number <= 1:
+        if not 0 <= self.courant_number <= 0.5:
             print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
-                                                                                                  "between 0  and 1.")
+                                                                                                  "between 0  and 0.5.")
+            answer = input("Are you sure that you want to continue? (Y/N)")
+
+            while answer not in self.allowed_answers:
+                answer = input("Please answer with Y or N.")
+
+            if answer == "Y":
+                pass
+            elif answer == "N":
+                exit()
         else:
-            print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
+            print(f"Scheme is stable. The Courant number is {self.courant_number} .")
 
     def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
@@ -821,7 +831,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return self.current_amplitudes
 
     def update(self) -> np.ndarray:
-        # self.counter += 1
         temp = self.current_amplitudes
         self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
                                   np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
@@ -829,11 +838,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return self.current_amplitudes
 
     def run(self) -> List[np.ndarray]:
-        # self.counter = 0
         self.stability_test()
-        # print(self.number_of_time_steps)
         self.amplitudes_time_evolution = [self.update_first_time()] + \
                                          [self.update() for _ in range(self.number_of_time_steps - 1)]
-        # print(self.counter)
-        # self.counter = 0
         return self.amplitudes_time_evolution

@@ -9,7 +9,7 @@ import time
 # Spacing of the time steps.
 dt = 1.
 # speed of sound.
-c = 1 / np.sqrt(2)
+c = 1 / np.sqrt(1)
 # Number of grid points.
 n = 100
 m = 100
