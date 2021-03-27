@@ -577,7 +577,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         self.initial_amplitude_function = initial_amplitude_function
         # Set the second initial condition.
         self.initial_velocities_function = initial_velocities_function
-
+        # Set the constructor flag to False.
         self.constructor_call_flag = False
 
     def calculate_grid_coordinates(self) -> tuple:
@@ -779,7 +779,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             raise TypeError("The new initial velocities must be a numpy array.")
 
-    # todo: Add an input here to ask the user if they want to continue if the scheme may be unstable.
     def stability_test(self) -> None:
         if not 0 <= self.courant_number <= 0.5:
             print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
