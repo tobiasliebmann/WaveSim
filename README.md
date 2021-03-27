@@ -259,6 +259,11 @@ are set to zero resulting in the following bench mark.
 <p align="center">
 <img src=/images/simulation_benchmark.jpeg>
 </p>
+It appears that the 2D simulation is rather slow. If I have time I will maybe speed
+it up in the future using Cython or something like this.
 
 # Sources
-Coming soon.
+- [Numpy](https://github.com/numpy/numpy)
+- [Matplotlib](https://matplotlib.org/)
+- [Discretization of the wave equation and stability analysis](https://www.uni-muenster.de/Physik.TP/archive/fileadmin/lehre/NumMethoden/WS1011/script1011Wave.pdf), accessed: 21.02.21, 22:45 MEZ
+- 
