@@ -265,5 +265,5 @@ it up in the future using Cython or something like this.
 # Sources
 - [Numpy](https://github.com/numpy/numpy)
 - [Matplotlib](https://matplotlib.org/)
-- [Discretization of the wave equation and stability analysis](https://www.uni-muenster.de/Physik.TP/archive/fileadmin/lehre/NumMethoden/WS1011/script1011Wave.pdf), accessed: 21.02.21, 22:45 MEZ
-- 
+- [Discretization of the 1D wave equation and stability analysis](https://www.uni-muenster.de/Physik.TP/archive/fileadmin/lehre/NumMethoden/WS1011/script1011Wave.pdf), accessed: 21.02.21, 22:45 MEZ
+- [Stability analysis of the 2D wave equation](https://ocw.mit.edu/courses/mathematics/18-336-numerical-methods-for-partial-differential-equations-spring-2009/lecture-notes/MIT18_336S09_lec14.pdf), accessed: 27.03.21, 16:43 MEZ
