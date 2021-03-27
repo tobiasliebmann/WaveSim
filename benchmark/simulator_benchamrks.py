@@ -36,6 +36,8 @@ def init_vel_2d(x: np.ndarray, y: np.ndarray) -> np.ndarray:
 my_sim1D = sm.Numeric1DWaveSimulator(dx, dt, c, dim_1D_start, t_start, init_amp_1d, init_vel_1d)
 my_sim2d = sm.Numeric2DWaveSimulator(dx, dt, c, dim_2D_start, t_start, init_amp_2d, init_vel_2d, "fixed edges")
 
+print(my_sim2d.initial_amplitudes)
+
 
 def time_dim(sim: sm.NumericWaveSimulator, new_dim):
     sim.number_of_grid_points = new_dim
@@ -76,17 +78,17 @@ ax1.plot(dims_1D, dim_time_data_2d, marker="o")
 # Labels ad legends for the first plot
 ax1.set_ylabel("execution time (s)")
 ax1.set_xlabel("function calls")
-ax1.set_yscale("log")
-ax1.set_title(f"Fixed matrix dimensions: {dim_1D_start}x{dim_1D_start}")
-ax1.legend(["1D", "2D"], loc="upper left", bbox_to_anchor=(0.075, .995))
+# ax1.set_yscale("log")
+ax1.set_title(f"Fixed dimension: {dim_1D_start}")
+ax1.legend(["1D", "2D"], loc="upper left", bbox_to_anchor=(0.0, 1.01))
 
 # Graphs for the second plot
 ax2.plot(call_times, calls_time_data_1d, marker="s")
-ax2.plot(call_times, calls_time_data_1d, marker="o")
+ax2.plot(call_times, calls_time_data_2d, marker="o")
 
 # Labels and legends for th second plot
-ax2.set_xlabel("matrix dimensions")
-ax2.set_yscale("log")
+ax2.set_xlabel("dimension")
+# ax2.set_yscale("log")
 ax2.set_title(f"Fixed number of calls: {t_start}")
 
 # Show everything

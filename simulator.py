@@ -5,6 +5,9 @@ from typing import List
 
 
 class NumericWaveSimulator(ABC):
+
+    coutner = 0
+
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points,
                  number_of_time_steps: int, initial_amplitude_function: callable,
                  initial_velocities_function: callable) -> None:
@@ -559,6 +562,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Call the initializer of the parent class
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitude_function, initial_velocities_function)
+        # todo: Remove this later. This is for debugging.
+        # self.counter = 0
         # Courant number of the problem.
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Set the boundary condition.
@@ -816,6 +821,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return self.current_amplitudes
 
     def update(self) -> np.ndarray:
+        # self.counter += 1
         temp = self.current_amplitudes
         self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
                                   np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
@@ -823,7 +829,11 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return self.current_amplitudes
 
     def run(self) -> List[np.ndarray]:
+        # self.counter = 0
         self.stability_test()
+        # print(self.number_of_time_steps)
         self.amplitudes_time_evolution = [self.update_first_time()] + \
                                          [self.update() for _ in range(self.number_of_time_steps - 1)]
+        # print(self.counter)
+        # self.counter = 0
         return self.amplitudes_time_evolution

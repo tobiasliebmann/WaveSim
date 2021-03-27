@@ -16,7 +16,7 @@ m = 150
 # Number of grid points in x- and y-direction
 dim = (n, m)
 # Number of time steps.
-t = 500
+t = 1000
 # Grid spacing.
 dx = 1
 
