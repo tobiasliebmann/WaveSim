@@ -402,7 +402,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
                 else:
                     self._delta_x = float(new_delta_x)
                     self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
-                    self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points)
+                    self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
             else:
                 raise ValueError("The distance between the grid points must be greater than zero.")
         else:
@@ -423,7 +423,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
                 else:
                     self._delta_t = float(new_delta_t)
                     self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
-                    self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points)
+                    self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
             else:
                 raise ValueError("The distance between the grid points must be greater than zero.")
         else:
@@ -443,7 +443,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
             else:
                 self._speed_of_sound = float(new_speed_of_sound)
                 self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
-                self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points)
+                self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
         else:
             raise TypeError("delta_x must be of type float or int.")
 

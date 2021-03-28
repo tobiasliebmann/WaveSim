@@ -5,7 +5,7 @@ import simulator as sim
 
 # Initial amplitudes.
 def init_amps_func(x):
-    return + 0. * x
+    return 0. * x
 
 
 # Initial velocity of the amplitudes.
@@ -54,7 +54,8 @@ class Sim1DTest(ut.TestCase):
     def test_delta_x(self):
         """
         Tests if the setter function for delta_x raise the right errors when no int or floats are entered. Further, it
-        is also tested if ints are correctly casted as floats by the setter.
+        is also tested if ints are correctly casted as floats by the setter and if the time step matrix is changed
+        correctly when delta_x is changed.
         :return: None
         """
         # Tests if a TypeError is raised when wrong type is entered.
@@ -75,10 +76,33 @@ class Sim1DTest(ut.TestCase):
         self.my_sim.delta_x = 1
         self.assertTrue(isinstance(self.my_sim.delta_x, float))
 
+        # Test to see if the change in delta_x changes the time step matrix correctly.
+        self.my_sim.delta_x = np.sqrt(2.)
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix, np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+                                                                               [0., 1.3, 0.35, 0., 0., 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0.35, 1.3, 0.35, 0., 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0.35, 1.3, 0.35, 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0.35, 1.3, 0.35, 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0.35, 1.3, 0.35, 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0.35, 1.3, 0.35, 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0.35, 1.3, 0.35,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0., 0.35, 1.3,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                                                                                0.]]))
+
     def test_delta_t(self):
         """
         Tests if the setter function for delta_t raise the right errors when no int or floats are entered. Further, it
-        is also tested if ints are correctly casted as floats by the setter.
+        is also tested if ints are correctly casted as floats by the setter and if the time step matrix is changed
+        correctly when delta_t is changed.
         :return: None
         """
         # Tests if a TypeError is raised when wrong type is entered.
@@ -99,10 +123,33 @@ class Sim1DTest(ut.TestCase):
         self.my_sim.delta_t = 1
         self.assertTrue(isinstance(self.my_sim.delta_t, float))
 
+        # Test to see if the change in delta_t changes the time step matrix correctly.
+        self.my_sim.delta_t = 1 / np.sqrt(2.)
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix, np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+                                                                               [0., 1.3, 0.35, 0., 0., 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0.35, 1.3, 0.35, 0., 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0.35, 1.3, 0.35, 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0.35, 1.3, 0.35, 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0.35, 1.3, 0.35, 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0.35, 1.3, 0.35, 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0.35, 1.3, 0.35,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0., 0.35, 1.3,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                                                                                0.]]))
+
     def test_speed_of_sound(self):
         """
         Tests if the setter for the speed of sound raises a TypeError when something else than an int or float is
-        entered. Further it is tested if the entered ints are correctly casted to floats.
+        entered. Further it is tested if the entered ints are correctly casted to floats and if the time step matrix is
+        changed correctly when delta_t is changed.
         :return: None
         """
         with self.assertRaises(TypeError):
@@ -110,6 +157,28 @@ class Sim1DTest(ut.TestCase):
 
         self.speed_of_sound = 1
         self.assertTrue(isinstance(self.my_sim.speed_of_sound, float))
+
+        # Test to see if the change in delta_t changes the time step matrix correctly.
+        self.my_sim.speed_of_sound = 1.
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix, np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+                                                                               [0., 0., 1., 0., 0., 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 1., 0., 1., 0., 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 1., 0., 1., 0., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 1., 0., 1., 0., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 1., 0., 1., 0., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 1., 0., 1., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 1., 0., 1.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0., 1., 0.,
+                                                                                0.],
+                                                                               [0., 0., 0., 0., 0., 0., 0., 0., 0.,
+                                                                                0.]]))
 
     def test_number_of_grid_points(self):
         """
@@ -124,6 +193,20 @@ class Sim1DTest(ut.TestCase):
         # Test for ValueError.
         with self.assertRaises(ValueError):
             self.my_sim.number_of_grid_points = 0
+
+        # Test if the time step matrix, the initial amplitudes and the initial velocities are changed correctly when the
+        # number of grid points is changed.
+        self.my_sim.number_of_grid_points = 6
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix, np.array([[0., 0., 0., 0., 0., 0.],
+                                                                               [0., 0.6, 0.7, 0., 0., 0.],
+                                                                               [0., 0.7, 0.6, 0.7, 0., 0.],
+                                                                               [0., 0., 0.7, 0.6, 0.7, 0.],
+                                                                               [0., 0., 0., 0.7, 0.6, 0.],
+                                                                               [0., 0., 0., 0., 0., 0.]]))
+
+        np.testing.assert_almost_equal(self.my_sim.initial_amplitudes, np.array([0., 0., 0., 0., 0., 0.]))
+
+        np.testing.assert_almost_equal(self.my_sim.initial_velocities, np.array([0., 1., 1., 1., 1., 0.]))
 
     def test_number_of_time_steps(self):
         """
@@ -188,6 +271,27 @@ class Sim1DTest(ut.TestCase):
             # Test if an error is raised if the end points of the initial amplitudes are not zero.
             self.my_sim.number_of_grid_points = 5
             self.my_sim.initial_velocities = np.array([1, 1, 1, 1, 1])
+
+    def test_create_grid_coordinates(self):
+        """
+
+        :return:None
+        """
+        pass
+
+    def test_initial_velocities_function(self):
+        """
+
+        :return: None
+        """
+        pass
+
+    def test_initial_amplitude_function(self):
+        """
+
+        :return: None
+        """
+        pass
 
     def test_update(self):
         """
