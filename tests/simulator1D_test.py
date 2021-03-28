@@ -272,26 +272,41 @@ class Sim1DTest(ut.TestCase):
             self.my_sim.number_of_grid_points = 5
             self.my_sim.initial_velocities = np.array([1, 1, 1, 1, 1])
 
-    def test_create_grid_coordinates(self):
+    def test_calculate_grid_coordinates(self):
         """
-
+        Test if the method calculate_grid_coordinates calculates the coordinates correctly.
         :return:None
         """
-        pass
+        np.testing.assert_almost_equal(self.my_sim.calculate_grid_coordinates(), np.array([0., 1., 2., 3., 4., 5., 6.,
+                                                                                           7., 8., 9.]))
+        self.my_sim.delta_x = 0.1
+
+        np.testing.assert_almost_equal(self.my_sim.calculate_grid_coordinates(), np.array([0., .1, .2, .3, .4, .5, .6,
+                                                                                           .7, .8, .9]))
 
     def test_initial_velocities_function(self):
         """
 
         :return: None
         """
-        pass
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_amplitude_function = "Test string"
+
+        func = self.my_sim.initial_amplitude_function
+        self.assertEqual(func(0.), init_amps_func(0.))
+        self.assertEqual(func(1.), init_amps_func(1.))
 
     def test_initial_amplitude_function(self):
         """
 
         :return: None
         """
-        pass
+        with self.assertRaises(TypeError):
+            self.my_sim.initial_velocities_function = 1.
+
+        func = self.my_sim.initial_velocities_function
+        self.assertEqual(func(0.), init_vel_func(0.))
+        self.assertEqual(func(1.), init_vel_func(1.))
 
     def test_update(self):
         """
