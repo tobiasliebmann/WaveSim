@@ -286,7 +286,8 @@ class Sim1DTest(ut.TestCase):
 
     def test_initial_velocities_function(self):
         """
-
+        Tests if the function object saved as the initial_amplitude_function is saved correctly. It is also tested if
+        an error is produced if a wrong data type is entered.
         :return: None
         """
         with self.assertRaises(TypeError):
@@ -298,7 +299,8 @@ class Sim1DTest(ut.TestCase):
 
     def test_initial_amplitude_function(self):
         """
-
+        Tests if the function object saved as the initial_velocities_function is saved correctly. It is also tested if
+        an error is produced if a wrong data type is entered.
         :return: None
         """
         with self.assertRaises(TypeError):
