@@ -1,17 +1,16 @@
-# Wave equation simulator 1D
+# Wave equation simulator
+The Python code in this repository solves a 1D wave equation on a grid. Additionally, a 2D wave equation
+simulator was added. The topics which will be discussed are:
 
-The Python code in this repository solves a 1D wave equation on a grid. 
-In the future it will be updated for 2D wave equations. The topics which
-will be discussed are:
-
-- Discritization of the wave equation
+- Discritization of the wave equation in 1D and 2D
 - Choosing and implementation of a boundary condition
 - Implementation of initial conditions
 - Stability analysis
 - Results
-- Benchmark
+- Benchmark comparing 1D and 2D simulation
 - Sources
 
+# Wave equation simulator 1D
 
 ## Discretizing the wave equation
 
@@ -193,6 +192,9 @@ resulted in the wave shown below.
 </p>
 
 # Wave equation simulator 2D
+
+## Discretization of the 2D wave equation
+
 Deriving the discretized wave equation in 2D involves exactly the same procedure as
 its 1D counterpart. Because of this only the resulting equation which describes the
 transition of a grid point at the j-th position in the i-th row from the k-th to the 
@@ -230,7 +232,15 @@ Their individual structures are given by
 </p>
 
 ## Boundary conditions
-todo: Write about the boundary conditions.
+
+In the 2D simulation three different boundary conditions are implemented: fixed edges, loose edges and
+a cyclical boundary condition. These boundary conditions are implemented via the time step matrices:
+- Fixed edges: Todo: Add matrix
+- Loose edges: Todo: Add matrix
+- cyclical: Todo: Add matrix.
+
+## Stability analysis
+todo: Write about this stuff.
 
 ## Results
 A simulation using the values
