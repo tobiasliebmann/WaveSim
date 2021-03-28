@@ -622,7 +622,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitude_function, initial_velocities_function)
         # Courant number of the problem.
-        self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
+        self.courant_number = self.calculate_courant_number()
         # Set the boundary condition.
         # A boundary condition, should be one of the the options in the allowed_boundary_conditions attribute.
         self.boundary_condition = boundary_condition
@@ -635,6 +635,13 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         self.initial_velocities_function = initial_velocities_function
         # Set the constructor flag to False.
         self.constructor_call_flag = False
+
+    def calculate_courant_number(self) -> float:
+        """
+        Calculates the courant number.
+        :return: The courant number
+        """
+        return float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
 
     def calculate_grid_coordinates(self) -> tuple:
         """
@@ -663,7 +670,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                     self._delta_x = float(new_delta_x)
                 else:
                     self._delta_x = float(new_delta_x)
-                    self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+                    self.courant_number = self.calculate_courant_number()
                     self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[0])
                     self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
             else:
@@ -685,7 +692,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                     self._delta_t = float(new_delta_t)
                 else:
                     self._delta_t = float(new_delta_t)
-                    self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+                    self.courant_number = self.calculate_courant_number()
                     self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[0])
                     self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
             else:
@@ -706,7 +713,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
                 self._speed_of_sound = float(new_speed_of_sound)
             else:
                 self._speed_of_sound = float(new_speed_of_sound)
-                self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+                self.courant_number = self.calculate_courant_number()
                 self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points[0])
                 self.time_step_matrix_right = self.create_time_step_matrix(self.number_of_grid_points[1])
         else:

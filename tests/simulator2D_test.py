@@ -44,12 +44,173 @@ class TestCase2DSim(ut.TestCase):
         """
         pass
 
+    def test_delta_t(self):
+        """
+        Tests if the delta_t-setter raises errors correctly and if the time step matrices are changed correctly when
+        delta_t is changed.
+        :return: None.
+        """
+        with self.assertRaises(TypeError):
+            self.my_sim.delta_t = "test string"
+
+        with self.assertRaises(ValueError):
+            self.my_sim.delta_t = -2.
+
+        self.my_sim.delta_t = 2.
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left, np.array([[-1., 1., 0., 0., 0., 0., 0., 0.],
+                                                                                    [1, -1., 1, 0., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 1., -1., 1., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 1., -1., 1., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 1., -1., 1., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 1., -1., 1.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0., 1., -1.,
+                                                                                     1.],
+                                                                                    [0., 0., 0., 0., 0., 0., 1.,
+                                                                                     -1.]]))
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_right, np.array([[-1., 1., 0., 0., 0., 0., 0., 0.,
+                                                                                      0., 0.],
+                                                                                     [1, -1., 1, 0., 0., 0., 0., 0., 0.,
+                                                                                      0.],
+                                                                                     [0., 1., -1., 1., 0., 0., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 1., -1., 1., 0., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 1., -1., 1., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 0., 1., -1., 1.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 0., 0., 1., -1.,
+                                                                                      1., 0., 0.],
+                                                                                     [0., 0., 0., 0., 0., 0., 1.,
+                                                                                      -1., 1., 0.],
+                                                                                     [0., 0., 0., 0., 0., 0., 0.,
+                                                                                      1., -1., 1.],
+                                                                                     [0., 0., 0., 0., 0., 0., 0.,
+                                                                                      0., 1., -1.]]))
+
+    def test_delta_x(self):
+        """
+        Tests if the delta_x-setter raises errors correctly and if the time step matrices are changed correctly if
+        delta_x is changed.
+        :return: None.
+        """
+        with self.assertRaises(TypeError):
+            self.my_sim.delta_x = "test string"
+
+        with self.assertRaises(ValueError):
+            self.my_sim.delta_x = -1.
+
+        self.my_sim.delta_x = .5
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left, np.array([[-1., 1., 0., 0., 0., 0., 0., 0.],
+                                                                                    [1, -1., 1, 0., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 1., -1., 1., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 1., -1., 1., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 1., -1., 1., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 1., -1., 1.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0., 1., -1.,
+                                                                                     1.],
+                                                                                    [0., 0., 0., 0., 0., 0., 1.,
+                                                                                     -1.]]))
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_right, np.array([[-1., 1., 0., 0., 0., 0., 0., 0.,
+                                                                                      0., 0.],
+                                                                                     [1, -1., 1, 0., 0., 0., 0., 0., 0.,
+                                                                                      0.],
+                                                                                     [0., 1., -1., 1., 0., 0., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 1., -1., 1., 0., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 1., -1., 1., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 0., 1., -1., 1.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 0., 0., 1., -1.,
+                                                                                      1., 0., 0.],
+                                                                                     [0., 0., 0., 0., 0., 0., 1.,
+                                                                                      -1., 1., 0.],
+                                                                                     [0., 0., 0., 0., 0., 0., 0.,
+                                                                                      1., -1., 1.],
+                                                                                     [0., 0., 0., 0., 0., 0., 0.,
+                                                                                      0., 1., -1.]]))
+
+    def test_speed_of_sound(self):
+        """
+        Tests if the speed_of_sound-setter raises errors correctly and if the time step matrices are changed correctly
+        when speed_of_sound is changed.
+        :return: None.
+        """
+        with self.assertRaises(TypeError):
+            self.my_sim.speed_of_sound = "test string"
+
+        self.my_sim.speed_of_sound = 1.
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left, np.array([[-1., 1., 0., 0., 0., 0., 0., 0.],
+                                                                                    [1, -1., 1, 0., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 1., -1., 1., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 1., -1., 1., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 1., -1., 1., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 1., -1., 1.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0., 1., -1.,
+                                                                                     1.],
+                                                                                    [0., 0., 0., 0., 0., 0., 1.,
+                                                                                     -1.]]))
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_right, np.array([[-1., 1., 0., 0., 0., 0., 0., 0.,
+                                                                                      0., 0.],
+                                                                                     [1, -1., 1, 0., 0., 0., 0., 0., 0.,
+                                                                                      0.],
+                                                                                     [0., 1., -1., 1., 0., 0., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 1., -1., 1., 0., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 1., -1., 1., 0.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 0., 1., -1., 1.,
+                                                                                      0., 0., 0.],
+                                                                                     [0., 0., 0., 0., 0., 1., -1.,
+                                                                                      1., 0., 0.],
+                                                                                     [0., 0., 0., 0., 0., 0., 1.,
+                                                                                      -1., 1., 0.],
+                                                                                     [0., 0., 0., 0., 0., 0., 0.,
+                                                                                      1., -1., 1.],
+                                                                                     [0., 0., 0., 0., 0., 0., 0.,
+                                                                                      0., 1., -1.]]))
+
     def test_courant_number(self):
         """
         Tests if the courant number is calculated correctly by the initializer.
-        :return:
+        :return: None.
         """
         np.testing.assert_almost_equal(self.my_sim.courant_number, 0.25)
+
+    def test_calculate_couant_number(self):
+        """
+        Tests the method which calculates the courant number using the formula courant number = ((c * dt)/dx)^2.
+        :return: None
+        """
+        self.assertEqual(self.my_sim.calculate_courant_number(), 0.25)
+
+        self.my_sim.speed_of_sound = 1.
+
+        self.assertEqual(self.my_sim.calculate_courant_number(), 1.)
 
     def test_boundary_condition(self):
         """
@@ -64,6 +225,42 @@ class TestCase2DSim(ut.TestCase):
 
         with self.assertRaises(ValueError):
             self.my_sim.boundary_condition = "Hello"
+
+        self.my_sim.boundary_condition = "fixed edges"
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left, np.array([[0., 0., 0., 0., 0., 0., 0., 0.],
+                                                                                    [0., 0.5, 0.25, 0., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0.25, 0.5, 0.25, 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0.25, 0.5, 0.25, 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0.25, 0.5, 0.25, 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0.25, 0.5, 0.25,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0., 0.25, 0.5,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0., 0., 0., 0.]]))
+
+        self.my_sim.boundary_condition = "cyclical"
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left, np.array([[0.5, 0.25, 0., 0., 0., 0., 0.,
+                                                                                     0.25],
+                                                                                    [0.25, 0.5, 0.25, 0., 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0.25, 0.5, 0.25, 0., 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0.25, 0.5, 0.25, 0., 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0.25, 0.5, 0.25, 0.,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0.25, 0.5, 0.25,
+                                                                                     0.],
+                                                                                    [0., 0., 0., 0., 0., 0.25, 0.5,
+                                                                                     0.25],
+                                                                                    [0.25, 0., 0., 0., 0., 0., 0.25,
+                                                                                     0.5]]))
 
     def test_number_of_grid_points(self):
         """
@@ -81,6 +278,20 @@ class TestCase2DSim(ut.TestCase):
 
         with self.assertRaises(ValueError):
             self.my_sim.number_of_grid_points = ("Hello", 1.)
+
+        self.my_sim.number_of_grid_points = (5, 5)
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_left, np.array([[0.5, 0.25, 0., 0., 0.],
+                                                                                    [0.25, 0.5, 0.25, 0., 0.],
+                                                                                    [0., 0.25, 0.5, 0.25, 0.],
+                                                                                    [0., 0., 0.25, 0.5, 0.25],
+                                                                                    [0., 0., 0., 0.25, 0.5]]))
+
+        np.testing.assert_almost_equal(self.my_sim.time_step_matrix_right, np.array([[0.5, 0.25, 0., 0., 0.],
+                                                                                    [0.25, 0.5, 0.25, 0., 0.],
+                                                                                    [0., 0.25, 0.5, 0.25, 0.],
+                                                                                    [0., 0., 0.25, 0.5, 0.25],
+                                                                                    [0., 0., 0., 0.25, 0.5]]))
 
     def test_initial_amplitudes(self):
         """
