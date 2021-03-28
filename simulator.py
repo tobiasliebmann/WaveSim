@@ -376,7 +376,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Creates the time step matrix.
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
-        # Set this falg to False
+        # Set this flag to False
         self.constructor_call_flag = False
 
     def calculate_grid_coordinates(self) -> np.ndarray:
@@ -867,14 +867,20 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         return self.current_amplitudes
 
     def update(self) -> np.ndarray:
+        # Save the current amplitudes.
         temp = self.current_amplitudes
+        # Calculate the new current amplitudes.
         self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
             np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
+        # Set the former amplitudes to the now overriden current amplitudes.
         self.former_amplitudes = temp
+        # Return the current amplitudes
         return self.current_amplitudes
 
     def run(self) -> List[np.ndarray]:
+        # Check if the scheme is stable.
         self.stability_test(self.courant_number, 0., 0.5)
+        # Create a list of numpy arrays. Each array corresponding to a time step.
         self.amplitudes_time_evolution = [self.update_first_time()] + \
                                          [self.update() for _ in range(self.number_of_time_steps - 1)]
         return self.amplitudes_time_evolution
