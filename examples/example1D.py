@@ -17,9 +17,6 @@ t = 1000
 # Grid spacing.
 dx = 1.
 
-# Define the initial conditions
-x_coord = np.arange(0., n * dx, dx)
-
 
 def init_amp_func(x_array: np.ndarray) -> np.ndarray:
     global n
@@ -36,9 +33,9 @@ my_sim = sim.Numeric1DWaveSimulator(dx, dt, c, n, t, init_amp_func, init_vel_fun
 start = time.time()
 result = my_sim.run()
 end = time.time()
-print(f"Executing the simulation takes {round(end-start, 3)} s.")
+print(f"Executing the simulation takes {round(end-start, 4)} s.")
 
-my_sim.save_data("example_data.npy")
+# my_sim.save_data("example_data.npy")
 
 # Here begins the visualization part.
 fig = plt.figure()

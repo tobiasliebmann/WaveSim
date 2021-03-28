@@ -63,11 +63,13 @@ my_sim2d.number_of_grid_points = dim_2D_start
 calls_time_data_1d = [time_calls(my_sim1D, calls) for calls in call_times]
 calls_time_data_2d = [time_calls(my_sim2d, calls) for calls in call_times]
 
+
 # --------------------
 # Plotting the results
 # --------------------
 
-# Axes and fiure
+
+# Axes and figure
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10., 4.8))
 
 # Graphs for the first plot.
@@ -76,9 +78,9 @@ ax1.plot(dims_1D, dim_time_data_2d, marker="o")
 
 # Labels ad legends for the first plot
 ax1.set_ylabel("execution time (s)")
-ax1.set_xlabel("number of function calls")
+ax1.set_xlabel("dimension")
 ax1.set_yscale("log")
-ax1.set_title(f"Fixed dimension: {dim_1D_start}")
+ax1.set_title(f"Fixed number of function calls: {t_start}")
 ax1.legend(["1D", "2D"], loc="upper left", bbox_to_anchor=(0.0, 1.01))
 
 # Graphs for the second plot
@@ -86,9 +88,9 @@ ax2.plot(call_times, calls_time_data_1d, marker="s")
 ax2.plot(call_times, calls_time_data_2d, marker="o")
 
 # Labels and legends for th second plot
-ax2.set_xlabel("dimension")
+ax2.set_xlabel("number of function calls")
 ax2.set_yscale("log")
-ax2.set_title(f"Fixed number of calls: {t_start}")
+ax2.set_title(f"Fixed dimension: {dim_1D_start}")
 
 # Show everything
 ax1.grid(True)
@@ -96,4 +98,3 @@ ax2.grid(True)
 plt.tight_layout()
 plt.draw()
 plt.show()
-

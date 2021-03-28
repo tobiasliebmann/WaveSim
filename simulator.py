@@ -6,6 +6,12 @@ from typing import List
 
 class NumericWaveSimulator(ABC):
 
+    # Allowed answers for the stability check method.
+    allowed_answers = {"Y", "N"}
+
+    # Flag to indicate if a method was called by the constructor.
+    constructor_call_flag = True
+
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points,
                  number_of_time_steps: int, initial_amplitude_function: callable,
                  initial_velocities_function: callable) -> None:
@@ -64,80 +70,6 @@ class NumericWaveSimulator(ABC):
             raise ValueError("The provided link must be a string.")
 
     @property
-    def delta_x(self) -> float:
-        """
-        Getter method for the distance between the grid points
-        :return: The distance between the grid points.
-        """
-        return self._delta_x
-
-    @delta_x.setter
-    def delta_x(self, new_delta_x: float) -> None:
-        """
-        Setter method for the distance between the grid points delta_x. The function only takes floats and ints
-        which are greater than zero. The method will raise errors if this is not the case.
-        :param new_delta_x: New distance between grid points.
-        :return: None.
-        """
-        # Check if new grid spacing is an int or float.
-        if isinstance(new_delta_x, (float, int)):
-            if new_delta_x > 0:
-                # Cast the new grid spacing as a float.
-                self._delta_x = float(new_delta_x)
-            else:
-                raise ValueError("The distance between the grid points must be greater than zero.")
-        else:
-            raise TypeError("delta_x must be of type float or int.")
-
-    @property
-    def delta_t(self) -> float:
-        """
-        Getter method for the time steps in the simulation.
-        :return: Size of the time steps.
-        """
-        return self._delta_t
-
-    @delta_t.setter
-    def delta_t(self, new_delta_t: float) -> None:
-        """
-        Setter method for the time steps. The function only takes floats which are greater
-        than zero and will raise errors if this is not the case.
-        :param new_delta_t: size of the time steps in the simulation.
-        :return: -
-        """
-        # Check if the the new time delta is an int or float.
-        if isinstance(new_delta_t, (int, float)):
-            if new_delta_t > 0:
-                # Cast the new grid spacing as a float.
-                self._delta_t = float(new_delta_t)
-            else:
-                raise ValueError("The distance between the grid points must be greater than zero.")
-        else:
-            raise TypeError("delta_x must be of type float or int.")
-
-    @property
-    def speed_of_sound(self) -> float:
-        """
-        Getter method for the speed of sound used in the simulation.
-        :return: Speed of sound.
-        """
-        return self._speed_of_sound
-
-    @speed_of_sound.setter
-    def speed_of_sound(self, new_speed_of_sound: float) -> None:
-        """
-        Setter method for the speed of sound. The new speed of sound must be of type float or int.
-        If this is not the case, the program will raise an according error.
-        :return: -
-        """
-        # Check if speed of sound is an int or float.
-        if isinstance(new_speed_of_sound, (int, float)):
-            # Cast the new grid spacing as a float.
-            self._speed_of_sound = float(new_speed_of_sound)
-        else:
-            raise TypeError("The speed of sound must be of type int or float.")
-
-    @property
     def number_of_time_steps(self) -> int:
         """
         Getter method for the number of time steps used in the !D simulation.
@@ -160,6 +92,33 @@ class NumericWaveSimulator(ABC):
                 raise ValueError("The number of time steps must be greater than zero.")
         else:
             raise TypeError("The number of time steps must be of type int.")
+
+    def stability_test(self, courant_number: float, lower_bound: float, upper_bound: float) -> None:
+        """
+        Uses the condition by the Von Neumann stability analysis and informs the user if the scheme is stable or
+        unstable. If the courant number is not in the defined bounds the user will be asked if they want to continue.
+        :param courant_number: Courant number defined by the grid parameters.
+        :param lower_bound: Lower bound for the courant number.
+        :param upper_bound: Upper bound for the courant number.
+        :return: None
+        """
+        # Check if the courant is in the bounds.
+        if not lower_bound <= courant_number <= upper_bound:
+            # Print this message to the user
+            print(f"The scheme may be unstable since the Courant number is {courant_number}. It should be "
+                  f"between {lower_bound} and {upper_bound}.")
+            # Answer from the user.
+            answer = input("Are you sure that you want to continue? (Y/N)")
+
+            # If the answer is not Y or N, a while loop is entered until it is one of the two.
+            while answer not in self.allowed_answers:
+                answer = input("Please answer with Y or N.")
+
+            # If the user doesn't want to continue the program exits.
+            if answer == "N":
+                exit()
+        else:
+            print(f"Scheme is stable. The Courant number is {courant_number}.")
 
     def save_data(self, link_to_file: str = None) -> None:
         """
@@ -191,6 +150,65 @@ class NumericWaveSimulator(ABC):
             # If no link was provided save the file with the following name
             file_name = ("wave_sim_1D" + str(utc_time) + ".npy").replace(" ", "_")
             np.save(file_name, obj_to_save, allow_pickle=True)
+
+    @property
+    @abstractmethod
+    def delta_x(self) -> float:
+        """
+        Getter method for the distance between the grid points
+        :return: The distance between the grid points.
+        """
+        pass
+
+    @delta_x.setter
+    @abstractmethod
+    def delta_x(self, new_delta_x: float) -> None:
+        """
+        Setter method for the distance between the grid points delta_x. The function only takes floats and ints
+        which are greater than zero. The method will raise errors if this is not the case.
+        :param new_delta_x: New distance between grid points.
+        :return: None.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def delta_t(self) -> float:
+        """
+        Getter method for the time steps in the simulation.
+        :return: Size of the time steps.
+        """
+        pass
+
+    @delta_t.setter
+    @abstractmethod
+    def delta_t(self, new_delta_t: float) -> None:
+        """
+        Setter method for the time steps. The function only takes floats which are greater
+        than zero and will raise errors if this is not the case.
+        :param new_delta_t: size of the time steps in the simulation.
+        :return: -
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def speed_of_sound(self) -> float:
+        """
+        Getter method for the speed of sound used in the simulation.
+        :return: Speed of sound.
+        """
+        pass
+
+    @speed_of_sound.setter
+    @abstractmethod
+    def speed_of_sound(self, new_speed_of_sound: float) -> None:
+        """
+        Setter method for the speed of sound. The new speed of sound must be of type float or int.
+        If this is not the case, the program will raise an according error.
+        :return: -
+        """
+        pass
 
     @property
     @abstractmethod
@@ -292,15 +310,6 @@ class NumericWaveSimulator(ABC):
         pass
 
     @abstractmethod
-    def stability_test(self) -> None:
-        """
-        Checks if the entered values of the grid spacing, time spacing and speed of sound is between 0  and 1. If this
-        is not the case a warning message will be displayed.
-        :return: None
-        """
-        pass
-
-    @abstractmethod
     def create_time_step_matrix(self, dim: int) -> np.ndarray:
         """
         Returns the matrix connecting the time steps. This matrix is a quadratic matrix with dimension
@@ -367,6 +376,8 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Creates the time step matrix.
         self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
+        # Set this falg to False
+        self.constructor_call_flag = False
 
     def calculate_grid_coordinates(self) -> np.ndarray:
         """
@@ -377,6 +388,66 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         return np.arange(0., self.number_of_grid_points * self.delta_x, self.delta_x)
 
     @property
+    def delta_x(self):
+        return self._delta_x
+
+    @delta_x.setter
+    def delta_x(self, new_delta_x):
+        # Check if new grid spacing is an int or float.
+        if isinstance(new_delta_x, (float, int)):
+            if new_delta_x > 0:
+                if self.constructor_call_flag:
+                    # Cast the new grid spacing as a float.
+                    self._delta_x = float(new_delta_x)
+                else:
+                    self._delta_x = float(new_delta_x)
+                    self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+                    self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points)
+            else:
+                raise ValueError("The distance between the grid points must be greater than zero.")
+        else:
+            raise TypeError("delta_x must be of type float or int.")
+
+    @property
+    def delta_t(self):
+        return self._delta_t
+
+    @delta_t.setter
+    def delta_t(self, new_delta_t):
+        # Check if new grid spacing is an int or float.
+        if isinstance(new_delta_t, (float, int)):
+            if new_delta_t > 0:
+                if self.constructor_call_flag:
+                    # Cast the new grid spacing as a float.
+                    self._delta_t = float(new_delta_t)
+                else:
+                    self._delta_t = float(new_delta_t)
+                    self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+                    self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points)
+            else:
+                raise ValueError("The distance between the grid points must be greater than zero.")
+        else:
+            raise TypeError("delta_x must be of type float or int.")
+
+    @property
+    def speed_of_sound(self):
+        return self._speed_of_sound
+
+    @speed_of_sound.setter
+    def speed_of_sound(self, new_speed_of_sound):
+        # Check if new grid spacing is an int or float.
+        if isinstance(new_speed_of_sound, (float, int)):
+            if self.constructor_call_flag:
+                # Cast the new grid spacing as a float.
+                self._speed_of_sound = float(new_speed_of_sound)
+            else:
+                self._speed_of_sound = float(new_speed_of_sound)
+                self.courant_number = (self.delta_t * self.speed_of_sound / self.delta_x) ** 2
+                self.time_step_matrix_left = self.create_time_step_matrix(self.number_of_grid_points)
+        else:
+            raise TypeError("delta_x must be of type float or int.")
+
+    @property
     def number_of_grid_points(self) -> int:
         return self._number_of_grid_points
 
@@ -384,11 +455,24 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
     def number_of_grid_points(self, new_number_of_grid_points: int) -> None:
         if isinstance(new_number_of_grid_points, int):
             if new_number_of_grid_points > 0:
-                self._number_of_grid_points = new_number_of_grid_points
+                if self.constructor_call_flag:
+                    self._number_of_grid_points = new_number_of_grid_points
+                else:
+                    self._number_of_grid_points = new_number_of_grid_points
+                    # Creates the time step matrix which is multiplied by the state matrix on the left.
+                    self.time_step_matrix = self.create_time_step_matrix(new_number_of_grid_points)
+                    # Set the initial conditions.
+                    x_coord = self.calculate_grid_coordinates()
+                    temp = self.initial_amplitude_function(x_coord)
+                    temp[0], temp[-1] = 0., 0.
+                    self.initial_amplitudes = temp
+                    temp = self.initial_velocities_function(x_coord)
+                    temp[0], temp[-1] = 0., 0.
+                    self.initial_velocities = temp
             else:
-                raise ValueError("The number of grid point must be greater than zero.")
+                raise ValueError("The number of grid points must greater than zero.")
         else:
-            raise TypeError("The number of grid points must be of type int or tuple.")
+            raise TypeError("The number of grid points must be of type int.")
 
     @property
     def initial_amplitude_function(self) -> callable:
@@ -468,27 +552,20 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         else:
             raise TypeError("The new initial velocities must be a numpy array.")
 
-    def stability_test(self) -> None:
-        if not 0 <= self.courant_number <= 1:
-            print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
-                                                                                                  "between 0  and 1.")
-        else:
-            print("Scheme is stable. The Courant number is", str(self.courant_number) + ".")
-
     def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
         temp = 2 * (1 - self.courant_number) * np.identity(dim) + self.courant_number * temp + \
-               self.courant_number * temp.T
+            self.courant_number * temp.T
         # Set these elements to zero, so that the boundary conditions are fulfilled.
-        temp[0, 0] = 0
-        temp[0, 1] = 0
-        temp[1, 0] = 0
-        temp[dim - 2, dim - 1] = 0
-        temp[dim - 1, dim - 1] = 0
-        temp[dim - 1, dim - 2] = 0
+        temp[0, 0] = 0.
+        temp[0, 1] = 0.
+        temp[1, 0] = 0.
+        temp[dim - 2, dim - 1] = 0.
+        temp[dim - 1, dim - 1] = 0.
+        temp[dim - 1, dim - 2] = 0.
         return temp
 
     def update_first_time(self) -> np.ndarray:
@@ -507,22 +584,8 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         return self.current_amplitudes
 
     def run(self) -> List[np.ndarray]:
-        # Check if the length of the initial amplitudes and initial velocities coincide with the number grid points.
-        if self.number_of_grid_points != len(self.initial_amplitudes):
-            temp = self.initial_amplitude_function(self.calculate_grid_coordinates())
-            temp[0] = 0.
-            temp[-1] = 0.
-            self.initial_amplitudes = temp
-        if self.number_of_grid_points != len(self.initial_velocities):
-            temp = self.initial_velocities_function(self.calculate_grid_coordinates())
-            temp[0] = 0.
-            temp[-1] = 0.
-            self.initial_velocities = temp
-        if self.number_of_grid_points != self.time_step_matrix.shape[0] and self.number_of_grid_points != \
-                self.time_step_matrix.shape[1]:
-            self.time_step_matrix = self.create_time_step_matrix(self.number_of_grid_points)
         # Test if the scheme is stable.
-        self.stability_test()
+        self.stability_test(self.courant_number, 0., 1.)
         # Use list comprehension to construct the time_evolution of the amplitudes.
         self.amplitudes_time_evolution = [self.update_first_time()] + [self.update() for _ in
                                                                        range(self.number_of_time_steps - 1)]
@@ -535,12 +598,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
 
 
 class Numeric2DWaveSimulator(NumericWaveSimulator):
-
     allowed_boundary_conditions = {"cyclical", "fixed edges", "loose edges"}
-
-    allowed_answers = {"Y", "N"}
-
-    constructor_call_flag = True
 
     def __init__(self, delta_x: float, delta_t: float, speed_of_sound: float, number_of_grid_points: tuple,
                  number_of_time_steps: int, initial_amplitude_function: callable, initial_velocities_function: callable,
@@ -563,8 +621,6 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Call the initializer of the parent class
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
                          initial_amplitude_function, initial_velocities_function)
-        # todo: Remove this later. This is for debugging.
-        # self.counter = 0
         # Courant number of the problem.
         self.courant_number = float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
         # Set the boundary condition.
@@ -779,29 +835,13 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         else:
             raise TypeError("The new initial velocities must be a numpy array.")
 
-    def stability_test(self) -> None:
-        if not 0 <= self.courant_number <= 0.5:
-            print("The scheme may be unstable since the Courant number is ", self.courant_number, ". It should be "
-                                                                                                  "between 0  and 0.5.")
-            answer = input("Are you sure that you want to continue? (Y/N)")
-
-            while answer not in self.allowed_answers:
-                answer = input("Please answer with Y or N.")
-
-            if answer == "Y":
-                pass
-            elif answer == "N":
-                exit()
-        else:
-            print(f"Scheme is stable. The Courant number is {self.courant_number} .")
-
     def create_time_step_matrix(self, dim: int) -> np.ndarray:
         # Define a temporary matrix to fill the off diagonals.
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
         temp = (1 - 2 * self.courant_number) * np.identity(dim) + self.courant_number * temp \
-               + self.courant_number * temp.T
+            + self.courant_number * temp.T
         if self.boundary_condition == "cyclical":
             # Set the off diagonal edges to fulfill he cyclical boundary conditions.
             temp[dim - 1, 0] = self.courant_number
@@ -814,10 +854,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
             temp[dim - 2, dim - 1] = 0.
             temp[dim - 1, dim - 1] = 0.
             temp[dim - 1, dim - 2] = 0.
-        # Boundary condition of fixed edges. The matrix remains the same.
-        else:
-            pass
-        # Return a sparse matrix.
+        # Return a matrix.
         return temp
 
     def update_first_time(self) -> np.ndarray:
@@ -826,18 +863,18 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # The first is given by this equation.
         self.current_amplitudes = 0.5 * (np.dot(self.time_step_matrix_left, self.initial_amplitudes) +
                                          np.dot(self.initial_amplitudes, self.time_step_matrix_right)) + \
-                                  self.delta_t * self.initial_velocities
+            self.delta_t * self.initial_velocities
         return self.current_amplitudes
 
     def update(self) -> np.ndarray:
         temp = self.current_amplitudes
         self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
-                                  np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
+            np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
         self.former_amplitudes = temp
         return self.current_amplitudes
 
     def run(self) -> List[np.ndarray]:
-        self.stability_test()
+        self.stability_test(self.courant_number, 0., 0.5)
         self.amplitudes_time_evolution = [self.update_first_time()] + \
                                          [self.update() for _ in range(self.number_of_time_steps - 1)]
         return self.amplitudes_time_evolution
