@@ -57,6 +57,8 @@ fig = plt.figure(figsize=(5, 5))
 ax = fig.add_subplot(111, projection='3d')
 plot = ax.plot_surface(x_mat, y_mat, a0, color='0.75', rstride=1, cstride=1)
 
+result = np.array(result)
+
 
 def update_plot(frame_number):
     global plot

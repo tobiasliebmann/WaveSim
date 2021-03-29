@@ -7,18 +7,18 @@ import matplotlib.animation as animation
 import time
 
 # Spacing of the time steps.
-dt = 1
+dt = 1.
 # speed of sound.
-c = 1/np.sqrt(2)
+c = 1 / np.sqrt(1)
 # Number of grid points.
 n = 200
 m = 200
 # Number of grid points in x- and y-direction
-dim = (m, n)
+dim = (n, m)
 # Number of time steps.
 t = 500
 # Grid spacing.
-dx = 1
+dx = 1.
 
 # Define the initial conditions
 x_coord = np.arange(0., n * dx, dx)
@@ -41,37 +41,28 @@ def a0_func(x: np.ndarray, y: np.ndarray, center_x: float, center_y: float, widt
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
 
-a0 = a0_func(x_mat, y_mat, (dx * m)/2., (dx * n)/2., 2.)
+def amp_func(x, y):
+    global dx
+    global m
+    global n
+    return a0_func(x, y, (dx * m) / 2., (dx * n) / 2., 2.)
 
-# a0 = np.exp(-((x_mat - (dx * m)/2) ** 2 + (y_mat - (dx * n)/2) ** 2) / (2 * 2. ** 2))
-# a0 = np.cos(x_coord)
-# a0[0] = 0.
-# a0[-1] = 0.
 
-# Initial velocities of the amplitudes.
-v0 = np.zeros(dim)
-# v0 = np.cos(x_coord)
-# v0[0] = 0.
-# v0[-1] = 0.
-# print(v0)
+def vel_func(x, y):
+    return 0. * x + 0. * y
+
 
 # run the simulation.
-my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, a0, v0, "loose edges")
+my_sim = sim.Numeric2DWaveSimulator(dx, dt, c, dim, t, amp_func, vel_func, "loose edges")
 start = time.time()
 result = my_sim.run()
 end = time.time()
-print(f"Executing the simulation takes {round(end-start, 2)} s.")
+print(f"Executing the simulation takes {round(end - start, 2)} s.")
+
+result = np.array(result)
 
 fig, ax = plt.subplots(figsize=(5, 5))
-ax.set(xlim=(0, (n - 1) * dx), ylim=(0, (n - 1) * dx))
-
-# contour_opts = {"levels": np.linspace(-9, 9, 10), "cmap": "RdBu", "lw": 2}
-
-cax = ax.contour(x_coord, x_coord, a0)
-
-# plt.draw()
-# plt.show()
-
+ax.set(xlim=(0, (m - 1) * dx), ylim=(0, (n - 1) * dx))
 ax.set_xlabel("x")
 ax.set_ylabel("y")
 ax.grid(True)
@@ -80,13 +71,13 @@ ax.set_title("2D wave equation simulation")
 
 def animate(i):
     ax.collections = []
-    ax.contour(x_coord, x_coord, result[i, ...])
-    ax.set_title("Frame:"+str(i))
+    ax.contour(y_coord, x_coord, result[i, ...])
+    ax.set_title("Frame:" + str(i))
 
 
 # call the animator.  blit=True means only re-draw the parts that have changed.
 
-anim = animation.FuncAnimation(fig, animate, frames=t-1, interval=50)
+anim = animation.FuncAnimation(fig, animate, frames=t - 1, interval=50)
 
 # anim.save("wave_animation2D.gif", fps=30)
 

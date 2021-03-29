@@ -1,17 +1,16 @@
-# Wave equation simulator 1D
+# Wave equation simulator
+The Python code in this repository solves a 1D wave equation on a grid. Additionally, a 2D wave equation
+simulator was added. The topics which will be discussed are:
 
-The Python code in this repository solves a 1D wave equation on a grid. 
-In the future it will be updated for 2D wave equations. The topics which
-will be discussed are:
-
-- Discritization of the wave equation
+- Discretization of the wave equation in 1D and 2D
 - Choosing and implementation of a boundary condition
 - Implementation of initial conditions
 - Stability analysis
 - Results
-- Benchmark
+- Benchmark comparing 1D and 2D simulation
 - Sources
 
+# Wave equation simulator 1D
 
 ## Discretizing the wave equation
 
@@ -64,7 +63,7 @@ update matrix T, the j-th state and the (j-1)-th state
 <img src=/images/time_step_linear_equation.jpg>
 </p>
 The frame of zeros in the matrix T correspond to the boundary condition of
-fixed end points which was already quitely implemented without mentioning.
+fixed end points which was already quietly implemented without mentioning.
 Further only the diagonal and the off-diagonal elements of T are populated. 
 The discussion regarding the boundary condition will follow now.
 
@@ -101,7 +100,7 @@ This result can now be inserted in the basic update equation to calculate
 the first time step. However, doing this causes a problem since the it
 involves the amplitudes at time step -1 which are not defined at this
 point. But, the amplitudes at this time step can be calculated using the
-second initial condition. To do this the derivative is discritized via a
+second initial condition. To do this the derivative is discretized via a
 central finite difference
 <br>
 <br>
@@ -193,6 +192,9 @@ resulted in the wave shown below.
 </p>
 
 # Wave equation simulator 2D
+
+## Discretization of the 2D wave equation
+
 Deriving the discretized wave equation in 2D involves exactly the same procedure as
 its 1D counterpart. Because of this only the resulting equation which describes the
 transition of a grid point at the j-th position in the i-th row from the k-th to the 
@@ -230,7 +232,45 @@ Their individual structures are given by
 </p>
 
 ## Boundary conditions
-todo: Write about the boundary conditions.
+
+In the 2D simulation three different boundary conditions are implemented: fixed edges, loose edges and
+a cyclical boundary condition. These boundary conditions are implemented via the time step matrices:
+- Fixed edges:
+    <br>
+    <br>
+    <p align="center">
+    <img src=/images/fixed_edges_matrix_2D.jpg>
+    </p>
+- Loose edges:
+    <br>
+    <br>
+    <p align="center">
+    <img src=/images/time_step_matrix_2D.jpg>
+    </p>
+- cyclical:
+    <br>
+    <br>
+    <p align="center">
+    <img src=/images/cyclical_matrix_2D.jpg>
+    </p>
+
+## Stability analysis
+The calculation of the stability condition is largely the same as in 1D. The only
+difference is regarding the error at the l-th grid point in x, the m-th grid point in
+y-direction and the n-th time step, which is now given by a 2D Fourier series. Again it
+suffices to only observe one Fourier component
+<br>
+<br>
+<p align="center">
+<img src=/images/2D_stability_error.jpg>
+</p>
+Plugging this into the update equation and simplifying the result leads to the
+stability condition
+<br>
+<br>
+<p align="center">
+<img src=/images/courant_number_equation_2D.jpg>
+</p>
 
 ## Results
 A simulation using the values
@@ -251,7 +291,19 @@ resulted in the wave shown below.
 </p>
 
 # Benchmark
-Coming soon.
+This is a bench mark for different number of time steps and different dimensions of
+the problem for random initial amplitudes. The initial velocity of the amplitudes
+are set to zero resulting in the following bench mark.
+<br>
+<br>
+<p align="center">
+<img src=/images/simulation_benchmark.jpeg>
+</p>
+It appears that the 2D simulation is rather slow. If I have time I will maybe speed
+it up in the future using Cython or something like this.
 
 # Sources
-Coming soon.
+- [Numpy](https://github.com/numpy/numpy)
+- [Matplotlib](https://matplotlib.org/)
+- [Discretization of the 1D wave equation and stability analysis](https://www.uni-muenster.de/Physik.TP/archive/fileadmin/lehre/NumMethoden/WS1011/script1011Wave.pdf), accessed: 21.02.21, 22:45 MEZ
+- [Stability analysis of the 2D wave equation](https://ocw.mit.edu/courses/mathematics/18-336-numerical-methods-for-partial-differential-equations-spring-2009/lecture-notes/MIT18_336S09_lec14.pdf), accessed: 27.03.21, 16:43 MEZ

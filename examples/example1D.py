@@ -7,40 +7,35 @@ import matplotlib.animation as animation
 import time
 
 # Spacing of the time steps.
-dt = 0.0002
+dt = 1.
 # speed of sound.
-c = 10
+c = 1/np.sqrt(2)
 # Number of grid points.
-n = 500
+n = 100
 # Number of time steps.
-t = 100
+t = 1000
 # Grid spacing.
-dx = 1 / (n - 1)
+dx = 1.
 
-# Define the initial conditions
-x_coord = np.arange(0., n * dx, dx)
 
-# Initial amplitudes.
-a0 = np.exp(-(x_coord - 0.5) ** 2 / (2 * 0.01 ** 2))
-# a0 = np.cos(x_coord)
-a0[0] = 0.
-a0[-1] = 0.
+def init_amp_func(x_array: np.ndarray) -> np.ndarray:
+    global n
+    global dx
+    return np.exp(-(x_array - (n * dx)/2) ** 2 / (2 * 10. ** 2))
 
-# Initial velocities of the amplitudes.
-v0 = np.zeros(n)
-# v0 = np.cos(x_coord)
-v0[0] = 0.
-v0[-1] = 0.
-# print(v0)
+
+def init_vel_func(x_array: np.ndarray) -> np.ndarray:
+    return 0. * x_array
+
 
 # run the simulation.
-my_sim = sim.Numeric1DWaveSimulator(dx, dt, c, n, t, a0, v0)
+my_sim = sim.Numeric1DWaveSimulator(dx, dt, c, n, t, init_amp_func, init_vel_func)
 start = time.time()
 result = my_sim.run()
 end = time.time()
-print(f"Executing the simulation takes {round(end-start, 3)} s.")
+print(f"Executing the simulation takes {round(end-start, 4)} s.")
 
-# my_sim.save_data()
+# my_sim.save_data("example_data.npy")
 
 # Here begins the visualization part.
 fig = plt.figure()
