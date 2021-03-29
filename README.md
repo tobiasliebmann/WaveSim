@@ -247,7 +247,7 @@ a cyclical boundary condition. These boundary conditions are implemented via the
     <p align="center">
     <img src=/images/time_step_matrix_2D.jpg>
     </p>
-- cyclical:
+- Cyclical:
     <br>
     <br>
     <p align="center">
