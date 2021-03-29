@@ -235,9 +235,24 @@ Their individual structures are given by
 
 In the 2D simulation three different boundary conditions are implemented: fixed edges, loose edges and
 a cyclical boundary condition. These boundary conditions are implemented via the time step matrices:
-- Fixed edges: Todo: Add matrix
-- Loose edges: Todo: Add matrix
-- cyclical: Todo: Add matrix.
+- Fixed edges:
+    <br>
+    <br>
+    <p align="center">
+    <img src=/images/fixed_edges_matrix_2D.jpg>
+    </p>
+- Loose edges:
+    <br>
+    <br>
+    <p align="center">
+    <img src=/images/time_step_matrix_2D.jpg>
+    </p>
+- cyclical:
+    <br>
+    <br>
+    <p align="center">
+    <img src=/images/cyclical_matrix_2D.jpg>
+    </p>
 
 ## Stability analysis
 The calculation of the stability condition is largely the same as in 1D. The only
