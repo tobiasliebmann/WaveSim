@@ -17,6 +17,7 @@ class NumericWaveSimulator(ABC):
                  initial_velocities_function: callable) -> None:
         """
         Initializer for an abstract wave simulator object.
+
         :param delta_x: Distance between two neighbouring grid points.
         :param delta_t: Time difference between two time steps in the simulation.
         :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
@@ -50,9 +51,9 @@ class NumericWaveSimulator(ABC):
     def init_from_file(cls, link_to_file: str):
         """
         This method functions as a second constructor, which can be used to initialize a simulator via a file.
+
         :param link_to_file: This is the link to the file in which the data is stored. It should be a .npy file.
-        :return: Returns a Numeric1DWaveSimulator object with the variables that are declared in
-        the file.
+        :return: Returns a Numeric1DWaveSimulator object with the variables that are declared in the file.
         """
         if isinstance(link_to_file, str):
             # Load the data.
@@ -73,6 +74,7 @@ class NumericWaveSimulator(ABC):
     def number_of_time_steps(self) -> int:
         """
         Getter method for the number of time steps used in the !D simulation.
+
         :return: Number of time steps used in the simulation.
         """
         return self._number_of_time_steps
@@ -82,6 +84,7 @@ class NumericWaveSimulator(ABC):
         """
         Setter method for the number of time steps used in the 1D simulation. This number must be of type int and
         greater than zero. If this is not the case this method will raise an error.
+
         :param new_number_of_time_steps:
         :return: None
         """
@@ -97,6 +100,7 @@ class NumericWaveSimulator(ABC):
         """
         Uses the condition by the Von Neumann stability analysis and informs the user if the scheme is stable or
         unstable. If the courant number is not in the defined bounds the user will be asked if they want to continue.
+
         :param courant_number: Courant number defined by the grid parameters.
         :param lower_bound: Lower bound for the courant number.
         :param upper_bound: Upper bound for the courant number.
@@ -124,6 +128,7 @@ class NumericWaveSimulator(ABC):
         """
         This method saves the current attributes of a simulator object in a npy-file. If no link is provided in the form
         of a string, the method will create a file using the current date and time.
+
         :param link_to_file: Optional variable which is a link to a npy-file, where the data is saved.
         :return: None
         """
@@ -155,7 +160,8 @@ class NumericWaveSimulator(ABC):
     @abstractmethod
     def delta_x(self) -> float:
         """
-        Getter method for the distance between the grid points
+        Getter method for the distance between the grid points.
+
         :return: The distance between the grid points.
         """
         pass
@@ -166,6 +172,7 @@ class NumericWaveSimulator(ABC):
         """
         Setter method for the distance between the grid points delta_x. The function only takes floats and ints
         which are greater than zero. The method will raise errors if this is not the case.
+
         :param new_delta_x: New distance between grid points.
         :return: None.
         """
@@ -176,6 +183,7 @@ class NumericWaveSimulator(ABC):
     def delta_t(self) -> float:
         """
         Getter method for the time steps in the simulation.
+
         :return: Size of the time steps.
         """
         pass
@@ -186,6 +194,7 @@ class NumericWaveSimulator(ABC):
         """
         Setter method for the time steps. The function only takes floats which are greater
         than zero and will raise errors if this is not the case.
+
         :param new_delta_t: size of the time steps in the simulation.
         :return: -
         """
@@ -196,6 +205,7 @@ class NumericWaveSimulator(ABC):
     def speed_of_sound(self) -> float:
         """
         Getter method for the speed of sound used in the simulation.
+
         :return: Speed of sound.
         """
         pass
@@ -206,7 +216,8 @@ class NumericWaveSimulator(ABC):
         """
         Setter method for the speed of sound. The new speed of sound must be of type float or int.
         If this is not the case, the program will raise an according error.
-        :return: -
+
+        :return: None.
         """
         pass
 
@@ -216,6 +227,7 @@ class NumericWaveSimulator(ABC):
         """
         Getter method for the number of grid points in the simulation. Returns the number of grid points used in the
         simulation.
+
         :return: Number of grid points used in the 1D simulation.
         """
         pass
@@ -226,6 +238,7 @@ class NumericWaveSimulator(ABC):
         """
         Setter method for the number of grid points used in the 1D simulation. This number must be of type int and
         greater than zero. If this is not the case this method will raise an error.
+
         :param new_number_of_grid_points: Number of grid points in the simulation.
         :return: None
         """
@@ -236,6 +249,7 @@ class NumericWaveSimulator(ABC):
     def initial_amplitude_function(self) -> callable:
         """
         Getter method for the initial condition of the amplitude of the wave.
+
         :return: The initial condition for the amplitude.
         """
         pass
@@ -245,7 +259,8 @@ class NumericWaveSimulator(ABC):
     def initial_amplitude_function(self, new_initial_amplitude_function: callable) -> None:
         """
         Setter method for the initial condition of the amplitude of the wave.
-        :return: None
+
+        :return: None.
         """
         pass
 
@@ -254,6 +269,7 @@ class NumericWaveSimulator(ABC):
     def initial_velocities_function(self) -> callable:
         """
         Getter method for the initial condition of the amplitude of the wave.
+
         :return: The function describing the velocity of the amplitude of the wave.
         """
         pass
@@ -263,7 +279,8 @@ class NumericWaveSimulator(ABC):
     def initial_velocities_function(self, new_initial_velocities_function: callable) -> None:
         """
         Setter method for the initial condition of the amplitude of the wave.
-        :return:
+
+        :return: None.
         """
         pass
 
@@ -272,6 +289,7 @@ class NumericWaveSimulator(ABC):
     def initial_amplitudes(self) -> np.ndarray:
         """
         Getter method for the initial amplitudes of the grid points at t = 0.
+
         :return: The initial positions.
         """
         pass
@@ -283,8 +301,9 @@ class NumericWaveSimulator(ABC):
         The setter method for the initial positions at t = 0. The new initial positions must be a numpy array and its
         length has to coincide with the number of grid points. Further the boundary condition has to be fulfilled.
         The methods tests if these conditions are met and raises according errors.
+
         :param new_initial_amplitudes: New initial amplitudes for the initial condition.
-        :return: None
+        :return: None.
         """
         pass
 
@@ -292,7 +311,8 @@ class NumericWaveSimulator(ABC):
     @abstractmethod
     def initial_velocities(self) -> np.ndarray:
         """
-        Getter method for the initial positions of the grid points at t = 0.
+        Getter for the initial positions of the grid points at t = 0.
+
         :return: The initial positions.
         """
         pass
@@ -304,8 +324,9 @@ class NumericWaveSimulator(ABC):
         The setter method for the initial velocities at t = 0. The new initial velocities must be a numpy array and its
         length has to coincide with the number of grid points. The methods tests if these conditions are met and raises
         according errors.
+
         :param new_initial_velocities: New initial velocities.
-        :return: None
+        :return: None.
         """
         pass
 
@@ -315,6 +336,7 @@ class NumericWaveSimulator(ABC):
         Returns the matrix connecting the time steps. This matrix is a quadratic matrix with dimension
         dim x dim. The Matrix has only zeros in the first and last row and only diagonal and off diagonals are
         populated.
+
         :return: The matrix used to calculate the next time step.
         """
         pass
@@ -323,6 +345,7 @@ class NumericWaveSimulator(ABC):
     def update_first_time(self) -> np.ndarray:
         """
         The first time step is given by the initial conditions and is given by this method.
+
         :return: Returns the current amplitudes after the first time step.
         """
         pass
@@ -332,6 +355,7 @@ class NumericWaveSimulator(ABC):
         """
         Updates the amplitudes to the next time step and sets the current and former state accordingly. The counter for
         the time steps is then increased by one.
+
         :return: Current amplitudes.
         """
         pass
@@ -342,6 +366,7 @@ class NumericWaveSimulator(ABC):
         Checks the stability of the scheme and then runs the simulation using the according formula. This is done
         updating the simulation until the number of time steps is reached at which point the method will return the
         result of the simulation.
+
         :return: The result of the simulation. Each row in the list corresponds to the amplitudes in one time step.
         """
         pass
@@ -362,6 +387,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         courant number and the sets the current amplitudes to the initial amplitudes. Further, the time step matrix
         to transition from one time step to another is calculated. Lastly, the time evolution matrix, which saves the
         amplitudes for all the time steps, is initialized.
+
         :param delta_x: Distance between two neighbouring grid points.
         :param delta_t: Time difference between two time steps in the simulation.
         :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
@@ -383,6 +409,7 @@ class Numeric1DWaveSimulator(NumericWaveSimulator):
         """
         This method returns the grid coordinates in x- and y-direction for the grid represented by the distance dx and
         the dimension given by the number_of_grid_points attribute.
+
         :return: A tuple of numpy arrays containing the grid coordinates in x- and y-direction.
         """
         return np.arange(0., self.number_of_grid_points * self.delta_x, self.delta_x)
@@ -639,6 +666,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
     def calculate_courant_number(self) -> float:
         """
         Calculates the courant number.
+
         :return: The courant number
         """
         return float((self.delta_t * self.speed_of_sound / self.delta_x) ** 2)
@@ -647,6 +675,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         """
         This method returns the grid coordinates in x- and y-direction for the grid represented by the distance dx and
         the dimension given by the number_of_grid_points attribute.
+
         :return: A tuple of numpy arrays containing the grid coordinates in x- and y-direction.
         """
         x_dim = self.number_of_grid_points[1]
@@ -725,11 +754,11 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
 
     @boundary_condition.setter
     def boundary_condition(self, new_boundary_condition: str) -> None:
-        """
-        Setter method for the boundary condition. The boundary condition can either be cyclical, fixed edges or loose
+        """ Setter method for the boundary condition. The boundary condition can either be cyclical, fixed edges or loose
         edges.
+
         :param new_boundary_condition: New boundary condition.
-        :return: None
+        :return: None.
         """
         if isinstance(new_boundary_condition, str):
             if new_boundary_condition in self.allowed_boundary_conditions:
@@ -879,7 +908,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Calculate the new current amplitudes.
         self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
             np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
-        # Set the former amplitudes to the now overriden current amplitudes.
+        # Set the former amplitudes to the now overwritten current amplitudes.
         self.former_amplitudes = temp
         # Return the current amplitudes
         return self.current_amplitudes
