@@ -240,7 +240,22 @@ a cyclical boundary condition. These boundary conditions are implemented via the
 - cyclical: Todo: Add matrix.
 
 ## Stability analysis
-todo: Write about this stuff.
+The calculation of the stability condition is largely the same as in 1D. The only
+difference is regarding the error at the l-th grid point in x, the m-th grid point in
+y-direction and the n-th time step, which is now given by a 2D Fourier series. Again it
+suffices to only observe one Fourier component
+<br>
+<br>
+<p align="center">
+<img src=/images/2D_stability_error.jpg>
+</p>
+Plugging this into the update equation and simplifying the result leads to the
+stability condition
+<br>
+<br>
+<p align="center">
+<img src=/images/courant_number_equation_2D.jpg.jpg>
+</p>
 
 ## Results
 A simulation using the values
