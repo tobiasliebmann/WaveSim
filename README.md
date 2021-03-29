@@ -254,7 +254,7 @@ stability condition
 <br>
 <br>
 <p align="center">
-<img src=/images/courant_number_equation_2D.jpg.jpg>
+<img src=/images/courant_number_equation_2D.jpg>
 </p>
 
 ## Results
