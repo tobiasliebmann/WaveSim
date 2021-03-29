@@ -2,7 +2,7 @@
 The Python code in this repository solves a 1D wave equation on a grid. Additionally, a 2D wave equation
 simulator was added. The topics which will be discussed are:
 
-- Discritization of the wave equation in 1D and 2D
+- Discretization of the wave equation in 1D and 2D
 - Choosing and implementation of a boundary condition
 - Implementation of initial conditions
 - Stability analysis
@@ -63,7 +63,7 @@ update matrix T, the j-th state and the (j-1)-th state
 <img src=/images/time_step_linear_equation.jpg>
 </p>
 The frame of zeros in the matrix T correspond to the boundary condition of
-fixed end points which was already quitely implemented without mentioning.
+fixed end points which was already quietly implemented without mentioning.
 Further only the diagonal and the off-diagonal elements of T are populated. 
 The discussion regarding the boundary condition will follow now.
 
@@ -100,7 +100,7 @@ This result can now be inserted in the basic update equation to calculate
 the first time step. However, doing this causes a problem since the it
 involves the amplitudes at time step -1 which are not defined at this
 point. But, the amplitudes at this time step can be calculated using the
-second initial condition. To do this the derivative is discritized via a
+second initial condition. To do this the derivative is discretized via a
 central finite difference
 <br>
 <br>
