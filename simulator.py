@@ -2,6 +2,7 @@ import numpy as np
 import datetime as dt
 from abc import ABC, abstractmethod
 from typing import List
+import dill as dl
 
 
 class NumericWaveSimulator(ABC):
