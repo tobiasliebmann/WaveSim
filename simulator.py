@@ -6,7 +6,6 @@ import dill as dl
 
 
 class NumericWaveSimulator(ABC):
-
     # Allowed answers for the stability check method.
     allowed_answers = {"Y", "N"}
 
@@ -57,17 +56,18 @@ class NumericWaveSimulator(ABC):
         :return: Returns a Numeric1DWaveSimulator object with the variables that are declared in the file.
         """
         if isinstance(link_to_file, str):
-            # Load the data.
-            loaded_data = np.load(link_to_file, allow_pickle=True)
-            # Save the time evolution matrix for later use.
-            temp = loaded_data[-1]
-            # Delete the time evolution matrix since it is not needed in the initializer.
-            del loaded_data[-1]
-            # Make new instance of the class using the loaded data.
-            new_obj = cls(*loaded_data)
-            # Set the time evolution matrix.
-            new_obj.amplitudes_time_evolution = temp
-            return new_obj
+            with open(link_to_file, "rb") as file:
+                # Load the data.
+                loaded_data = dl.load(file)
+                # Save the time evolution matrix for later use.
+                temp = loaded_data[-1]
+                # Delete the time evolution matrix since it is not needed in the initializer.
+                del loaded_data[-1]
+                # Make new instance of the class using the loaded data.
+                new_sim = cls(*loaded_data)
+                # Set the time evolution matrix.
+                new_sim.amplitudes_time_evolution = temp
+                return new_sim
         else:
             raise ValueError("The provided link must be a string.")
 
@@ -136,26 +136,28 @@ class NumericWaveSimulator(ABC):
         # Save the UTC time.
         utc_time = dt.datetime.utcnow().replace(microsecond=0)
         # Save the important values of the simulator in numpy array.
-        obj_to_save = np.array([self.delta_x,
-                                self.delta_t,
-                                self.speed_of_sound,
-                                self.number_of_grid_points,
-                                self.number_of_time_steps,
-                                self.initial_amplitude_function,
-                                self.initial_velocities_function,
-                                self.amplitudes_time_evolution], dtype=object)
+        obj_to_save = [self.delta_x,
+                       self.delta_t,
+                       self.speed_of_sound,
+                       self.number_of_grid_points,
+                       self.number_of_time_steps,
+                       self.initial_amplitude_function,
+                       self.initial_velocities_function,
+                       self.amplitudes_time_evolution]
         # Check if a link was provided
         if link_to_file is not None:
             # Check if the provided link is a string
             if isinstance(link_to_file, str):
                 # Save the data in the npy format.
-                np.save(link_to_file, obj_to_save, allow_pickle=True)
+                with open(link_to_file, "wb") as file:
+                    dl.dump(obj_to_save, file)
             else:
                 raise ValueError("The provided link must be a string.")
         else:
             # If no link was provided save the file with the following name
-            file_name = ("wave_sim_1D" + str(utc_time) + ".npy").replace(" ", "_")
-            np.save(file_name, obj_to_save, allow_pickle=True)
+            file_name = ("wave_sim_1D" + str(utc_time) + ".pkl").replace(" ", "_")
+            with open(file_name, "wb") as file:
+                dl.dump(obj_to_save, file)
 
     @property
     @abstractmethod
@@ -664,6 +666,41 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Set the constructor flag to False.
         self.constructor_call_flag = False
 
+    def save_data(self, link_to_file: str = None) -> None:
+        """
+        This method saves the current attributes of a simulator object in a npy-file. If no link is provided in the form
+        of a string, the method will create a file using the current date and time.
+
+        :param link_to_file: Optional variable which is a link to a npy-file, where the data is saved.
+        :return: None
+        """
+        # Save the UTC time.
+        utc_time = dt.datetime.utcnow().replace(microsecond=0)
+        # Save the important values of the simulator in numpy array.
+        obj_to_save = [self.delta_x,
+                       self.delta_t,
+                       self.speed_of_sound,
+                       self.number_of_grid_points,
+                       self.number_of_time_steps,
+                       self.initial_amplitude_function,
+                       self.initial_velocities_function,
+                       self.boundary_condition,
+                       self.amplitudes_time_evolution]
+        # Check if a link was provided
+        if link_to_file is not None:
+            # Check if the provided link is a string
+            if isinstance(link_to_file, str):
+                # Save the data in the npy format.
+                with open(link_to_file, "wb") as file:
+                    dl.dumps(obj_to_save, file)
+            else:
+                raise ValueError("The provided link must be a string.")
+        else:
+            # If no link was provided save the file with the following name
+            file_name = ("wave_sim_1D" + str(utc_time) + ".pkl").replace(" ", "_")
+            with open(file_name, "wb") as file:
+                dl.dump(obj_to_save, file)
+
     def calculate_courant_number(self) -> float:
         """
         Calculates the courant number.
@@ -877,8 +914,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         temp = np.zeros((dim, dim))
         rearrange_array = np.arange(dim - 1)
         temp[rearrange_array, rearrange_array + 1] = 1
-        temp = (1 - 2 * self.courant_number) * np.identity(dim) + self.courant_number * temp \
-            + self.courant_number * temp.T
+        temp = (1 - 2 * self.courant_number) * np.identity(dim) + self.courant_number * temp +\
+            self.courant_number * temp.T
         if self.boundary_condition == "cyclical":
             # Set the off diagonal edges to fulfill he cyclical boundary conditions.
             temp[dim - 1, 0] = self.courant_number
@@ -907,7 +944,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         # Save the current amplitudes.
         temp = self.current_amplitudes
         # Calculate the new current amplitudes.
-        self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) + \
+        self.current_amplitudes = np.dot(self.time_step_matrix_left, self.current_amplitudes) +\
             np.dot(self.current_amplitudes, self.time_step_matrix_right) - self.former_amplitudes
         # Set the former amplitudes to the now overwritten current amplitudes.
         self.former_amplitudes = temp

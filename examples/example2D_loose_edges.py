@@ -9,7 +9,7 @@ import time
 # Spacing of the time steps.
 dt = 1.
 # speed of sound.
-c = 1 / np.sqrt(1)
+c = 1 / np.sqrt(2)
 # Number of grid points.
 n = 200
 m = 200
@@ -71,7 +71,7 @@ ax.set_title("2D wave equation simulation")
 
 def animate(i):
     ax.collections = []
-    ax.contour(y_coord, x_coord, result[i, ...])
+    ax.contour(x_coord, y_coord, result[i, ...])
     ax.set_title("Frame:" + str(i))
 
 
