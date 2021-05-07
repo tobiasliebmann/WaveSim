@@ -29,6 +29,7 @@ class TestCase2DSim(ut.TestCase):
     def setUp(self) -> None:
         """
         Is evaluated before each test function call.
+
         :return: None
         """
         # Dimension of the grid used in the simulation.
@@ -40,6 +41,7 @@ class TestCase2DSim(ut.TestCase):
     def tearDown(self) -> None:
         """
         is evaluated after each test function call.
+
         :return: None
         """
         pass
@@ -48,6 +50,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests if the delta_t-setter raises errors correctly and if the time step matrices are changed correctly when
         delta_t is changed.
+
         :return: None.
         """
         with self.assertRaises(TypeError):
@@ -99,6 +102,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests if the delta_x-setter raises errors correctly and if the time step matrices are changed correctly if
         delta_x is changed.
+
         :return: None.
         """
         with self.assertRaises(TypeError):
@@ -150,6 +154,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests if the speed_of_sound-setter raises errors correctly and if the time step matrices are changed correctly
         when speed_of_sound is changed.
+
         :return: None.
         """
         with self.assertRaises(TypeError):
@@ -197,6 +202,7 @@ class TestCase2DSim(ut.TestCase):
     def test_courant_number(self):
         """
         Tests if the courant number is calculated correctly by the initializer.
+
         :return: None.
         """
         np.testing.assert_almost_equal(self.my_sim.courant_number, 0.25)
@@ -204,6 +210,7 @@ class TestCase2DSim(ut.TestCase):
     def test_calculate_couant_number(self):
         """
         Tests the method which calculates the courant number using the formula courant number = ((c * dt)/dx)^2.
+
         :return: None
         """
         self.assertEqual(self.my_sim.calculate_courant_number(), 0.25)
@@ -216,6 +223,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests if the the setter method for the boundary condition of the 2D wave simulator correctly raises errors and
         if the getter function returns the correct values.
+
         :return: None.
         """
         self.assertEqual(self.my_sim.boundary_condition, "loose edges")
@@ -266,6 +274,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests the getter and setter methods for the number of grid points attribute. It is tested if the correct errors
         are raised if the wrong type is entered and if the getter returns the correct value.
+
         :return: None.
         """
         np.testing.assert_almost_equal(self.dim, self.my_sim.number_of_grid_points)
@@ -297,6 +306,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests the getter and setter methods for the initial amplitudes. It is tested if the getter returns the right
         value and if exceptions are thrown when incorrect types are entered.
+
         :return: None.
         """
         # np.testing.assert_almost_equal(self.init_amps, self.my_sim.initial_amplitudes)
@@ -314,6 +324,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests the getter and setter methods for the initial velocities. It is tested if the getter returns the right
         value and if exceptions are thrown when incorrect types are entered.
+
         :return: None.
         """
         # np.testing.assert_almost_equal(self.init_vel, self.my_sim.initial_velocities)
@@ -331,6 +342,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests if the time step matrices are created correctly. Teh time step matrices are tested for all three boundary
         conditions.
+
         :return: None
         """
         # Tests if the left matrix is implemented correctly for the boundary condition of loose edges.
@@ -415,6 +427,7 @@ class TestCase2DSim(ut.TestCase):
         """
         Tests the update method which is applied to get from one time step to another. The update method is tested two
         times to see if the update equation on the first and the following steps are correct.
+
         :return: None
         """
         # Update the simulator for the first time.
