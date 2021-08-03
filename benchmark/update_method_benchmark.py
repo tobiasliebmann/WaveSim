@@ -1,10 +1,8 @@
 import numpy as np
-
 from scipy import sparse as sp
-
 import time as tm
-
 import numba as nb
+
 
 # Spacing of the time steps.
 dt = 1
@@ -38,7 +36,7 @@ def a0_func(x: np.ndarray, y: np.ndarray, center_x: float, center_y: float, widt
     :param center_x: center x-coordinate of the bell curve.
     :param center_y: center y-coordinate of the bell curve.
     :param width: Width of the bell curve.
-    :return: Returns a 2D numpy array respresenting the values of the bell curve at the specified x- and y-coordinates.
+    :return: Returns a 2D numpy array representing the values of the bell curve at the specified x- and y-coordinates.
     """
     return np.exp(-((x - center_x) ** 2 + (y - center_y) ** 2) / (2 * width ** 2))
 
@@ -51,7 +49,7 @@ v0 = np.zeros(dim)
 def create_matrix(number: float, matrix_dimension: int) -> np.ndarray:
     """
     This function creates a quadratic matrix with a populated diagonal, populated off-diagonals and dimension
-    matrix_dimension. All entries in the diagonal are (1 - 2 * number) while the entreis in the off-diagonal are the
+    matrix_dimension. All entries in the diagonal are (1 - 2 * number) while the entries in the off-diagonal are the
     number number.
     :param number: A float number which populates the off-diagonals of the matrix.
     :param matrix_dimension: Dimension of the quadratic matrix which is returned.
@@ -89,8 +87,8 @@ def cal_amp(number_of_calls: int, left_mat: np.ndarray, right_mat: np.ndarray, i
 
 
 @nb.jit(nopython=True)
-def jitted_sim(dimension: tuple, delta_t:float, number_of_time_steps: int, matrix_l: np.ndarray, matrix_r: np.ndarray,
-               init_amps: np.ndarray, init_val:np.ndarray):
+def jitted_sim(dimension: tuple, delta_t: float, number_of_time_steps: int, matrix_l: np.ndarray, matrix_r: np.ndarray,
+               init_amps: np.ndarray, init_val: np.ndarray):
     """
 
     :param dimension:
