@@ -154,6 +154,7 @@ sparse_matrix = sp.csr_matrix(multiply_matrix)
 # Run the following loops for the benchmark.
 # The code could probably be a lot cleaner please don't hate me for this.
 for times in times_called:
+
     start1 = time.time()
     run_jited_opt_mat_mul(state_matrix, dim, num, times)
     end1 = time.time()
@@ -214,7 +215,7 @@ for dimension in dimensions:
 # Plotting the results
 # --------------------
 
-# Axes and fiure
+# Axes and figure
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10., 4.8))
 
 # Graphs for the first plot.
