@@ -52,8 +52,10 @@ class NumericWaveSimulator(ABC):
         """
         This method functions as a second constructor, which can be used to initialize a simulator via a file.
 
-        :param link_to_file: This is the link to the file in which the data is stored. It should be a .npy file.
-        :return: Returns a Numeric1DWaveSimulator object with the variables that are declared in the file.
+        :param link_to_file:
+            This is the link to the file in which the data is stored. It should be a .npy file.
+        :return:
+            Returns a Numeric1DWaveSimulator object with the variables that are declared in the file.
         """
         if isinstance(link_to_file, str):
             with open(link_to_file, "rb") as file:
@@ -340,6 +342,7 @@ class NumericWaveSimulator(ABC):
         dim x dim. The Matrix has only zeros in the first and last row and only diagonal and off diagonals are
         populated.
 
+        :param dim: Dimension of the time-step matrix (n x n matrix).
         :return: The matrix used to calculate the next time step.
         """
         pass
@@ -638,6 +641,7 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         courant number and the initializer sets the current amplitudes to the initial amplitudes. Further, the time
         step matrix is calculated. Lastly, the time evolution matrix, which saves the amplitudes for all the time steps,
         is initialized.
+
         :param delta_x: Distance between two neighbouring grid points.
         :param delta_t: Time difference between two time steps in the simulation.
         :param speed_of_sound: Speed of sound of the medium in which the wave equation is solved.
@@ -645,8 +649,8 @@ class Numeric2DWaveSimulator(NumericWaveSimulator):
         :param number_of_time_steps: Number of time steps after which the simulation terminates.
         :param initial_amplitude_function: Amplitudes corresponding to the first initial condition.
         :param initial_velocities_function: Velocities of the amplitudes corresponding to the second initial condition.
-        :param boundary_condition: Boundary condition for the wave simulation. It can be cyclical, fixed edges or
-        loose edges.
+        :param boundary_condition: Boundary condition for the wave simulation. It can be cyclical, fixed edges or loose edges.
+        :return: None.
         """
         # Call the initializer of the parent class
         super().__init__(delta_x, delta_t, speed_of_sound, number_of_grid_points, number_of_time_steps,
