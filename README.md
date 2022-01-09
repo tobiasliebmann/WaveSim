@@ -1,4 +1,5 @@
 # Wave equation simulator
+Test
 The Python code in this repository solves a 1D wave equation on a grid. Additionally, a 2D wave equation
 simulator was added. The topics which will be discussed are:
 
